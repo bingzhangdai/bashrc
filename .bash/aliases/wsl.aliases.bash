@@ -13,7 +13,18 @@ if _is_in_wsl; then
         fi
     }
 
-    alias cmd='cmd.exe'
+    # function _setup_exe_aliases() {
+    #     local -A _aliases=(
+    #         ["cmd"]="cmd.exe"
+    #         ["pwsh"]="powershell.exe"
+    #     )
+    #     local _cmd;
+    #     for _cmd in "${!_aliases[@]}"; do
+    #         alias "${_cmd}"="${_aliases[$_cmd]}";
+    #     done
+    # }
+
+    # _setup_exe_aliases
 
     function _get_win_path() {
         if [[ $# -eq 0 ]]; then
