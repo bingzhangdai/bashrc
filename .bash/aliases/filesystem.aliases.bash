@@ -10,7 +10,6 @@ fi
 
 # quickly search for file
 function _qfind() {
-    echo $@
     while [ $# -gt 0 ]; do
         # printf -- '%s\n' "${RED}${1}${NONE}:"
         if command -v fd > /dev/null; then
