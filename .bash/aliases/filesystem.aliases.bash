@@ -10,6 +10,7 @@ fi
 
 # quickly search for file
 function _qfind() {
+    echo $@
     while [ $# -gt 0 ]; do
         # printf -- '%s\n' "${RED}${1}${NONE}:"
         if command -v fd > /dev/null; then
@@ -19,9 +20,16 @@ function _qfind() {
         fi
         shift
     done
-    set +o noglob
+    if [ -n "$_qf_noglob" ]; then
+        set +o noglob
+        unset _qf_noglob
+    fi
 }
+# temporarily stop shell wildcard character expansion
+# restore expansion in _qfind function
+alias qfind='[[ ! -o noglob ]] && _qf_noglob=false && set -o noglob; _qfind'
 
+# regex find
 function _rfind() {
     while [ $# -gt 0 ]; do
         # printf -- '%s\n' "${RED}${1}${NONE}:"
@@ -32,11 +40,10 @@ function _rfind() {
         fi
         shift
     done
-    set +o noglob
+    if [ -n "$_rf_noglob" ]; then
+        set +o noglob
+        unset _rf_noglob
+    fi
 }
 
-# temporarily stop shell wildcard character expansion
-# re-enable expansion in _qfind function
-alias qfind='set -o noglob; _qfind'
-# regex find
-alias rfind='set -o noglob; _rfind'
+alias rfind='[[ ! -o noglob ]] && _rf_noglob=false && set -o noglob; _rfind'
