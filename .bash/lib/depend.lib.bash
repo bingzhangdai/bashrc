@@ -22,10 +22,11 @@ function pragma_once_cleanup() {
     unset -f pragma_once_cleanup
 }
 
+# return true if dependency exists
 function depends_on() {
     local script=$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")
     local dir="$(dirname ${BASH_SOURCE[1]})"
 
-    source "$dir/$script"
+    [ -e "$dir/$script" ] && source "$dir/$script"
 }
 
