@@ -6,7 +6,7 @@ HISTCONTROL=ignoreboth:erasedups
 # HISTTIMEFORMAT='%F %T '
 
 # Ignore these commands
-[[ -z "$HISTIGNORE" ]] && HISTIGNORE="ls:j:pwd"
+[[ -z "$HISTIGNORE" ]] && HISTIGNORE="&:[ ]*:exit:ls:j:pwd:z:bg:fg:history:clear"
 
 # append to the history file, don't overwrite it
 shopt -s histappend
