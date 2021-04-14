@@ -1,5 +1,8 @@
+pragma_once
 # z - jump around
 # https://github.com/rupa/z
+
+_Z_OWNER
 
 zsh_plugin="${_DOT_BASH_CACHE}/z.plugin.bash"
 
@@ -13,12 +16,11 @@ fi
 
 source $zsh_plugin
 
-function j() {
-    if [[ "$argv[1]" == "-"* ]]; then
-        z "$@"
-    else
-        cd "$@" 2> /dev/null || z "$@"
-    fi
+depends_on fzf
+unalias z 2> /dev/null
+function z() {
+  [ $# -gt 0 ] && _z "$*" && return
+  cd "$(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" | sed 's/^[0-9,.]* *//')"
 }
 
 unset zsh_plugin

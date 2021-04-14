@@ -40,9 +40,11 @@ export EDITOR='vi'
 # plugins should source before aliases
 for path in ~/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
-        [[ -e "$file" ]] && source $file || echo "Unable to read $file" > /dev/stderr
+        [[ -e "$file" ]] && source "$file" || echo "Unable to read $file" > /dev/stderr
     done
 done
 unset path file
 # theme
 source ~/.bash/theme.bash
+# clean up
+source ~/.bash/cleanup.bash

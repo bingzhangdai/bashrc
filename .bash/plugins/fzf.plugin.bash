@@ -1,3 +1,5 @@
+pragma_once
+
 function _setup_using_package() {
     # Auto-completion
     local completions="/usr/share/doc/fzf/examples/completion.bash"
