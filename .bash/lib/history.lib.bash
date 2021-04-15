@@ -27,4 +27,4 @@ function rh {
     history | awk '{a[$2]++}END{for(i in a){print a[i] " " i}}' | sort -rn | head
 }
 
-alias shrink_history='nl ~/.bash_history | sort -k 2  -k 1,1nr| uniq -f 1 | sort -n | cut -f 2 > ~/.bash_history_tmp && mv ~/.bash_history_tmp ~/.bash_history'
+trap 'nl ~/.bash_history | sort -k 2  -k 1,1nr| uniq -f 1 | sort -n | cut -f 2 > ~/.bash_history_tmp && mv ~/.bash_history_tmp ~/.bash_history' EXIT
