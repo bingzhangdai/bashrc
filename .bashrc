@@ -47,4 +47,4 @@ unset path file
 # theme
 source ~/.bash/theme.bash
 # clean up
-source ~/.bash/cleanup.bash
+builtin source ~/.bash/cleanup.bash
