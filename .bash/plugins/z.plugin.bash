@@ -14,7 +14,7 @@ fi
 
 source $zsh_plugin
 
-if depends_on fzf; then
+if source fzf; then
     unalias z 2> /dev/null
     function z() {
         [ $# -gt 0 ] && _z "$*" && return
