@@ -7,7 +7,12 @@ function _pragma_once() {
     esac
 
     declare -g -A _pragma_once_already_seen
-    local script="$(cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/$(basename "${BASH_SOURCE[1]}")"
+
+    local script="${BASH_SOURCE[1]}"
+    if [ "$script" = "${script#/}" ]; then
+        script="$(cd "$(dirname "$script" )" && pwd)/$(basename "$script")"
+    fi
+
     [[ ${_pragma_once_already_seen["$script"]} ]] && return
     _pragma_once_already_seen["$script"]=0
 
@@ -16,7 +21,7 @@ function _pragma_once() {
 
 alias pragma_once='_pragma_once && return'
 
-function _source_once() {
+function source_impl() {
     declare -g -A _pragma_once_already_seen
 
     [[ ${_pragma_once_already_seen["$1"]} ]] && return ${_pragma_once_already_seen["$1"]}
@@ -34,16 +39,14 @@ function include() {
     local script="$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")"
     script="$(cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
 
-    _source_once $script
+    source_impl $script
 }
 
 function source() {
-    case $1 in
-        /*) script=$1 ;;
-        *) script="$(cd "$(dirname "$1" )" && pwd)/$(basename "$1")" ;;
-    esac
+    local script=$1
+    [ "$script" = "${script#/}" ] && script="$(cd "$(dirname "$1" )" && pwd)/$(basename "$1")"
 
-    _source_once $script
+    source_impl $script
 }
 
 alias .=source
