@@ -50,9 +50,11 @@ alias .=source
 
 function pragma_once_cleanup() {
     unset -f _pragma_once
-    unset _pragma_once_already_seen
+    # unset _pragma_once_already_seen
     unalias pragma_once
 
+    unset -f _source_once
+    unset -f include
     unset -f source
     unalias .
 
