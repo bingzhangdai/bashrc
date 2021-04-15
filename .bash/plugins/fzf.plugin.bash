@@ -3,11 +3,11 @@ pragma_once
 function _setup_using_package() {
     # Auto-completion
     local completions="/usr/share/doc/fzf/examples/completion.bash"
-    [[ $- == *i* ]] && source $completions 2> /dev/null || return
+    [ -e "$completions" ] && source $completions 2> /dev/null || return
 
     # Key bindings
     local key_bindings="/usr/share/doc/fzf/examples/key-bindings.bash"
-    source $key_bindings
+    [ -e "$key_bindings" ] && source $key_bindings
 }
 
 function _setup_using_base_dir() {

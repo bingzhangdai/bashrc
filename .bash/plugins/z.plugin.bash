@@ -2,8 +2,6 @@ pragma_once
 # z - jump around
 # https://github.com/rupa/z
 
-_Z_OWNER
-
 zsh_plugin="${_DOT_BASH_CACHE}/z.plugin.bash"
 
 # download rupa/z if not exist
