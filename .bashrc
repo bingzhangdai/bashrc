@@ -20,9 +20,6 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-## fd
-FD_OPTIONS="--follow --exclude .git"
-
 ## less
 export LESS='-R -S -M -i -# .2'
 
