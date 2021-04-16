@@ -1,3 +1,6 @@
+# save already sourced scripts
+declare -g -A _pragma_once_already_seen
+
 # return true if already processed
 function _pragma_once() {
     case $BASH_VERSION in
@@ -5,8 +8,6 @@ function _pragma_once() {
         return 1
         ;;
     esac
-
-    declare -g -A _pragma_once_already_seen
 
     local script="${BASH_SOURCE[1]}"
     if [ "$script" = "${script#/}" ]; then
@@ -22,8 +23,6 @@ function _pragma_once() {
 alias pragma_once='_pragma_once && return'
 
 function source_impl() {
-    declare -g -A _pragma_once_already_seen
-
     [[ ${_pragma_once_already_seen["$1"]} ]] && return ${_pragma_once_already_seen["$1"]}
 
     [ -e "$1" ] && builtin source "$1"
