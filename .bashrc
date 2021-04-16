@@ -20,11 +20,6 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# This defines where cd looks for targets
-# Add the directories you want to have fast access to, separated by colon
-# Ex: CDPATH=".:~:~/projects" will look for targets in the current working directory, in home and in the ~/projec
-CDPATH=".:~"
-
 ## fd
 FD_OPTIONS="--follow --exclude .git"
 
