@@ -1,11 +1,13 @@
+pragma_once
+
 function _setup_using_package() {
     # Auto-completion
     local completions="/usr/share/doc/fzf/examples/completion.bash"
-    [[ $- == *i* ]] && source $completions 2> /dev/null || return
+    [ -e "$completions" ] && source $completions 2> /dev/null || return
 
     # Key bindings
     local key_bindings="/usr/share/doc/fzf/examples/key-bindings.bash"
-    source $key_bindings
+    [ -e "$key_bindings" ] && source $key_bindings
 }
 
 function _setup_using_base_dir() {
@@ -54,7 +56,10 @@ function _set_fzf_default_opts() {
         local cat='cat'
         local less='less -f'
     fi
-    export FZF_DEFAULT_OPTS="--height 50% -1 --reverse --multi --inline-info --preview='([[ -d {} ]] && ls -Al --color=always {}) || ([[ \$(file --mime {}) =~ binary ]] && stat {}) || $cat -n {} | head -100' --preview-window='right:hidden:wrap' --bind='f2:toggle-preview,ctrl-p:execute($less -n {}),ctrl-v:execute(vim -n {}),ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-a:select-all+accept'"
+    export FZF_DEFAULT_OPTS="--height 50% -1 --reverse --multi --inline-info \
+                            --preview='([[ -d {} ]] && ls -Al --color=always {}) || ([[ \$(file --mime {}) =~ binary ]] && stat {}) || $cat -n {} | head -100' \
+                            --preview-window='right:hidden:wrap' \
+                            --bind='f2:toggle-preview,ctrl-p:execute($less -n {}),ctrl-v:execute(vim -n {}),ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-a:select-all+accept'"
 }
 
 _set_fzf_default_opts

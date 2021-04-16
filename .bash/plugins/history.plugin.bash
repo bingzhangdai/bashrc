@@ -6,7 +6,7 @@ HISTCONTROL=ignoreboth:erasedups
 # HISTTIMEFORMAT='%F %T '
 
 # Ignore these commands
-[[ -z "$HISTIGNORE" ]] && HISTIGNORE="ls:j:pwd"
+[[ -z "$HISTIGNORE" ]] && HISTIGNORE="&:[ ]*:exit:ls:j:pwd:z:bg:fg:history:clear"
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -26,3 +26,5 @@ shopt -u lithist
 function rh {
     history | awk '{a[$2]++}END{for(i in a){print a[i] " " i}}' | sort -rn | head
 }
+
+trap 'nl ~/.bash_history | sort -k 2  -k 1,1nr| uniq -f 1 | sort -n | cut -f 2 > ~/.bash_history_tmp && mv ~/.bash_history_tmp ~/.bash_history' EXIT

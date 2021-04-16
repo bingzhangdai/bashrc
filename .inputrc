@@ -47,7 +47,7 @@ set output-meta on
 set convert-meta off
 
 # 250 milliseconds timeout for Readline
-set keyseq-timeout 50
+set keyseq-timeout 250
 
 # bind -p: list the current Readline function names and bindings
 # showkey -a 
