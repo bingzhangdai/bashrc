@@ -1,4 +1,4 @@
-export _DOT_BASH_CACHE="$(cd $(dirname ${BASH_SOURCE[0]})/../ && pwd)/cache"
+export _DOT_BASH_CACHE="$(builtin cd $(dirname ${BASH_SOURCE[0]})/../ && pwd)/cache"
 
 util_log_info() {
     printf -- "$@\n"

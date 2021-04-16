@@ -11,7 +11,7 @@ function _pragma_once() {
 
     local script="${BASH_SOURCE[1]}"
     if [ "$script" = "${script#/}" ]; then
-        script="$(cd "$(dirname "$script" )" && pwd)/$(basename "$script")"
+        script="$(builtin cd "$(dirname "$script" )" && pwd)/$(basename "$script")"
     fi
 
     [[ ${_pragma_once_already_seen["$script"]} ]] && return
@@ -36,14 +36,14 @@ function source_impl() {
 
 function include() {
     local script="$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")"
-    script="$(cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
+    script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
 
     source_impl $script
 }
 
 function source() {
     local script=$1
-    [ "$script" = "${script#/}" ] && script="$(cd "$(dirname "$1" )" && pwd)/$(basename "$1")"
+    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "$1" )" && pwd)/$(basename "$1")"
 
     source_impl $script
 }
