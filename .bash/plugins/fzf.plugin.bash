@@ -22,11 +22,11 @@ function _setup_using_base_dir() {
 
 _setup_using_package || _setup_using_base_dir || util_log_warn "Setup fzf failed"
 
-command -v fdfind > /dev/null && alias fd=fdfind && fd=fdfind
-
-if command -v fd > /dev/null; then
+if include fd; then
+    command -v fdfind > /dev/null && fd=fdfind
     export FZF_DEFAULT_COMMAND="${fd:-fd} --type f --type l --follow --hidden --exclude .git"
     export FZF_ALT_C_COMMAND="${fd:-fd} --type d --type l --follow --hidden --exclude .git 2> /dev/null"
+    unset fd
     _fzf_compgen_path() {
         fd --hidden --follow --exclude ".git" . "$1"
     }
@@ -45,8 +45,6 @@ function fcd() {
     [[ "$ex" -ne 0 ]] && return $ex
     cd "$dir"
 }
-
-unset fd
 
 function _set_fzf_default_opts() {
     if command -v bat > /dev/null; then

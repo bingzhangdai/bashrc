@@ -4,10 +4,6 @@ alias dud='du -d 1 -h | sort -h'
 # short and human-readable file listing
 alias duf='du -sh * | sort -h | while read -r size file; do printf "${size}\t"; [[ -d "$file" ]] && printf "./${file}/\n" || printf -- "${file}\n"; done'
 
-if command -v fdfind > /dev/null; then
-    alias fd='fdfind'
-fi
-
 # quickly search for file
 function _qfind() {
     while [ $# -gt 0 ]; do
