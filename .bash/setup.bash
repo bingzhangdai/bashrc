@@ -20,7 +20,7 @@ alias pragma_once='_pragma_once && return'
 
 function source_impl() {
     if [[ ${_pragma_once_already_seen["$1"]} ]]; then
-        log DEBUG "file '$1' already processed, skipped."
+        log DEBUG "'${BASH_SOURCE[2]}' line ${BASH_LINENO[1]}: skipped '$1'"
         return ${_pragma_once_already_seen["$1"]}
     fi
 
