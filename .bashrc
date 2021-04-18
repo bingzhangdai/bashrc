@@ -27,12 +27,13 @@ export LESS='-R -S -M -i -# .2'
 export EDITOR='vi'
 
 ## source scripts in .bash folder
+source ~/.bash/setup.bash
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
 for path in ~/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
-        [[ -e "$file" ]] && source "$file" || echo "Unable to read $file" > /dev/stderr
+        [[ -e "$file" ]] && source "$file"
     done
 done
 unset path file

@@ -1,19 +1,40 @@
 export _DOT_BASH_CACHE="$(builtin cd $(dirname ${BASH_SOURCE[0]})/../ && pwd)/cache"
 
-util_log_info() {
-    printf -- "$@\n"
+# info
+iecho() {
+    echo ${GREEN}$*${NONE}
 }
 
-util_log_sucess() {
-    printf -- "${GREEN}$@${NONE}\n"
+# warning
+wecho() {
+    echo "${YELLOW}$*${NONE}" > /dev/stderr
 }
 
-util_log_warn() {
-    printf -- "${YELLOW}$@${NONE}\n" > /dev/stderr
+# error
+eecho() {
+    echo "${RED}$*${NONE}" > /dev/stderr
 }
 
-util_log_error() {
-    printf -- "${RED}$@${NONE}\n" > /dev/stderr
+declare -A LogLevelEnum
+LogLevelEnum["DEBUG"]=1
+LogLevelEnum["INFO"]=2
+LogLevelEnum["WARN"]=3
+LogLevelEnum["ERROR"]=4
+
+# first argument is loglevel
+log() {
+    local level="$1"
+    shift
+
+    if [[ ${LogLevelEnum[$level]} -lt ${LogLevelEnum[${LOGLEVEL:-ERROR}]} ]]
+    case "$level" in
+        DEBUG|INFO )
+            commands ;;
+        WARN )
+            commands ;;
+        ERROR)
+        esac
+
 }
 
 util_download() {
@@ -38,12 +59,12 @@ util_download() {
     elif command -v wget > /dev/null; then
         wget "$URL" -O "$DEST"
     else
-        util_log_error "ERROR: Please install curl or wget before downloading!"
+        eecho "ERROR: Please install curl or wget before downloading!"
         return 127
     fi
     local ex=$?
     if [[ $ex -ne 0 ]]; then
-        util_log_error "ERROR: downloading ${URL##*/} failed!"
+        eecho "ERROR: downloading ${URL##*/} failed!"
         return $ex
     fi
 }

@@ -4,8 +4,9 @@
 # Usage: Put "source bash_completion_tmux.sh" into your .bashrc
 # Based upon the example at http://paste-it.appspot.com/Pj4mLycDE
 
-_tmux_expand ()
-{
+command -v tmux > /dev/null || return
+
+_tmux_expand () {
     [ "$cur" != "${cur%\\}" ] && cur="$cur"'\';
     if [[ "$cur" == \~*/* ]]; then
         eval cur=$cur;
@@ -18,8 +19,7 @@ _tmux_expand ()
     fi
 }
 
-_tmux_filedir ()
-{
+_tmux_filedir () {
     local IFS='
 ';
     _tmux_expand || return 0;
@@ -182,5 +182,3 @@ _tmux() {
 
 }
 complete -F _tmux tmux
-
-# END tmux completion

@@ -4,7 +4,7 @@ declare -g -A _pragma_once_already_seen
 # return true if already processed
 function _pragma_once() {
     case $BASH_VERSION in
-        ''|[0-3].*) util_log_error "ERROR: Bash 4.0+ required"
+        ''|[0-3].*) eecho "ERROR: Bash 4.0+ required"
         return 1
         ;;
     esac

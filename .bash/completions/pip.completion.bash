@@ -1,5 +1,7 @@
 # https://pip.pypa.io/en/stable/user_guide/#command-completion
 
+command -v pip pip3 > /dev/null || return
+
 function _setup_pip_completion() {
     local -r _pip_completion="${_DOT_BASH_CACHE}/pip.completion.bash"
     

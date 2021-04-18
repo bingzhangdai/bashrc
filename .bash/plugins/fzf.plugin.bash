@@ -20,7 +20,7 @@ function _setup_using_base_dir() {
     fi
 }
 
-_setup_using_package || _setup_using_base_dir || util_log_warn "Setup fzf failed"
+_setup_using_package || _setup_using_base_dir || wecho "Setup fzf failed"
 
 if include fd; then
     command -v fdfind > /dev/null && fd=fdfind
