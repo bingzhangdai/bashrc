@@ -34,9 +34,13 @@ source ~/.bash/setup.bash
 for path in ~/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
+        _exit=$?
+        if [[ "$_exit" -ne "0" ]]; then
+            log "'$file' returned non-zero code."
+        fi
     done
 done
-unset path file
+unset path file _exit
 # theme
 source ~/.bash/theme.bash
 # clean up

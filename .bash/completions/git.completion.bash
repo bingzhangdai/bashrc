@@ -10,8 +10,8 @@ if [[ -f /usr/share/bash-completion/completions/git ]]; then
 elif [[ ! -e "$_git_completion" ]]; then
     echo "Downloading git-completion.bash ..."
     util_download "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash" "$_git_completion"
-    [[ $? -ne 0 ]] && eecho "Download git-completion.bash failed" && return 1
-    iecho "Download git-completion.bash succeeded"
+    [[ $? -ne 0 ]] && log ERROR "download git-completion.bash failed" && return 1
+    log "Download git-completion.bash succeeded"
 fi
 
 source $_git_completion

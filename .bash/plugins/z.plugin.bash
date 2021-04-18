@@ -8,8 +8,8 @@ zsh_plugin="${_DOT_BASH_CACHE}/z.plugin.bash"
 if [[ ! -e "$zsh_plugin" ]]; then
     echo "Downloading rupa/z ..."
     util_download "https://raw.githubusercontent.com/rupa/z/master/z.sh" "$zsh_plugin"
-    [[ $? -ne 0 ]] && eecho "Download rupa/z failed" && return 1
-    iecho "Download rupa/z succeeded"
+    [[ $? -ne 0 ]] && log ERROR "download rupa/z failed" && return 1
+    log "download rupa/z succeeded"
 fi
 
 source $zsh_plugin
