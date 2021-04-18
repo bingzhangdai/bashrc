@@ -61,4 +61,4 @@ builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
 
 # end time
 end_time=$(date +%s%3N)
-log "total time spend: $(( ("$end_time" - "$start_time") / 1000))s $(( ("$end_time" - "$start_time") % 1000))ms"
+log "total time spent: $(( ("$end_time" - "$start_time") / 1000))s $(( ("$end_time" - "$start_time") % 1000))ms"
