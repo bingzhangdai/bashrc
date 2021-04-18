@@ -27,6 +27,8 @@ export LESS='-R -S -M -i -# .2'
 export EDITOR='vi'
 
 ## source scripts in .bash folder
+start_time=$(date +%s%3N)
+
 export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 # lib should be sourced first. It contais predefined vars and funcs 
@@ -35,11 +37,16 @@ source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 for path in "${_DOT_BASH_BASEDIR}"/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
-        [[ "$?" -ne "0" ]] && log "'$file' returned non-zero code."
+        [[ "$?" -ne "0" ]] && log WARN "'$file' returned non-zero code."
     done
 done
 unset path file
+
 # theme
 source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
+
+end_time=$(date +%s%3N)
+log "total time spend: $(( ("$end_time" - "$start_time") / 1000))s $(( ("$end_time" - "$start_time") % 1000))ms"
+
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
