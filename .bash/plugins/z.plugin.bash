@@ -12,7 +12,7 @@ if [[ ! -e "$zsh_plugin" ]]; then
     log "download rupa/z succeeded"
 fi
 
-source $zsh_plugin
+builtin source $zsh_plugin
 
 if include fzf; then
     unalias z 2> /dev/null

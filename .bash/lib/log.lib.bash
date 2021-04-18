@@ -1,6 +1,7 @@
 pragma_once
 
 declare -g -A LogLevelEnum
+LogLevelEnum["TRACE"]=0
 LogLevelEnum["DEBUG"]=1
 LogLevelEnum["INFO"]=2
 LogLevelEnum["WARN"]=3
@@ -9,6 +10,11 @@ LogLevelEnum["ERROR"]=4
 # first argument (optional, default to INFO) is log level
 # exmaple: log 'hello world!'
 # example: log ERROR 'no such file or directory.'
+
+_is_loglevel_enabled() {
+    [[ "${LogLevelEnum[$1]}" -ge "${LogLevelEnum[${LOGLEVEL:-ERROR}]}" ]]
+}
+
 log() {
     local level="$1"
     if [ -v "LogLevelEnum[$level]" ]; then
@@ -17,17 +23,19 @@ log() {
         level=INFO
     fi
 
-    [[ "${LogLevelEnum[$level]}" -lt "${LogLevelEnum[${LOGLEVEL:-ERROR}]}" ]] && return
+    ! _is_loglevel_enabled $level && return
 
     local time=$(date +"%b %-d %T.%3N")
     local msg="${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: $*"
 
     case "$level" in
+        TRACE)
+            [ -t 1 ] && level="${DARK_GRAY}${level}${NONE}" ;;&
         DEBUG)
             [ -t 1 ] && level="${GREEN}${level}${NONE}" ;;&
         INFO)
             [ -t 1 ] && level="${WHITE}${level}${NONE}" ;;&
-        DEBUG|INFO)
+        TRACE|DEBUG|INFO)
             [ -t 1 ] && time="${DARK_GRAY}${time}${NONE}"
             echo "${time} ${level} ${msg}" ;;
         WARN)
