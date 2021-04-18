@@ -1,5 +1,4 @@
-export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
-export _DOT_BASH_CACHE="${_DOT_BASH_BASEDIR}/cache"
+export _DOT_BASH_CACHE="${_DOT_BASH_BASEDIR}/.bash/cache"
 
 # save already sourced scripts
 declare -g -A _pragma_once_already_seen
@@ -71,7 +70,7 @@ function cleanup_pragma_once() {
     unalias .
 }
 
-source ${_DOT_BASH_BASEDIR}/lib/log.lib.bash
+source ${_DOT_BASH_BASEDIR}/.bash/lib/log.lib.bash
 
 # see cleanup.bash
 declare -g -a CLEANUP_HANDLER

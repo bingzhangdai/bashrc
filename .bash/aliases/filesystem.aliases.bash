@@ -9,7 +9,7 @@ function _qfind() {
     while [ $# -gt 0 ]; do
         # printf -- '%s\n' "${RED}${1}${NONE}:"
         if command -v fd > /dev/null; then
-            fd --type f ${FD_OPTIONS} --glob "$1" .
+            fd --type f --hidden ${FD_OPTIONS} --glob "$1" .
         else
             find . -type d \( -name .git \) -prune -false -o -iname "$1"
         fi
@@ -29,7 +29,7 @@ function _rfind() {
     while [ $# -gt 0 ]; do
         # printf -- '%s\n' "${RED}${1}${NONE}:"
         if command -v fd > /dev/null; then
-            fd --type f ${FD_OPTIONS} "$1" .
+            fd --type f --hidden ${FD_OPTIONS} "$1" .
         else
             find . -type d \( -name .git \) -prune -false -o -iregex "$1"
         fi

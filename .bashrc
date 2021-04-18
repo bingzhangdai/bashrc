@@ -27,21 +27,19 @@ export LESS='-R -S -M -i -# .2'
 export EDITOR='vi'
 
 ## source scripts in .bash folder
-source ~/.bash/setup.bash
+export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
-for path in ~/.bash/{lib,completions,plugins,aliases}; do
+for path in "${_DOT_BASH_BASEDIR}"/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
-        _exit=$?
-        if [[ "$_exit" -ne "0" ]]; then
-            log "'$file' returned non-zero code."
-        fi
+        [[ "$?" -ne "0" ]] && log "'$file' returned non-zero code."
     done
 done
-unset path file _exit
+unset path file
 # theme
-source ~/.bash/theme.bash
+source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
 # clean up
-builtin source ~/.bash/cleanup.bash
+builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
