@@ -26,13 +26,12 @@ log() {
     ! _is_loglevel_enabled $level && return
 
     local time
-    # bash version >= 4.2
-    if [ "${BASH_VERSINFO[0]}" -gt 4 ] || { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -ge 2 ]; }; then
+    if [ ${BASH_VERSINFO} -ge 5 ]; then
         local ms=0
         get_miliseconds ms
         printf -v time '%(%b %-d %T)T.%d' -1 $(( ms % 1000 ))
     else
-        printf -v time '%s' "$(date +"%b %-d %T.%3N")"
+        time="$(date +"%b %-d %T.%3N")"
     fi
 
     local msg="${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: $*"
