@@ -37,9 +37,7 @@ esac
 
 function get_miliseconds() {
     if [ ${BASH_VERSINFO} -ge 5 ]; then
-        local time="${EPOCHREALTIME%???}"
-        time="${time/./}"
-        printf -v "$1" '%s' "$time"
+        printf -v "$1" '%s' "$((${EPOCHREALTIME/./}/1000))"
     else
         printf -v "$1" '%s' "$(date +%s%3N)"
     fi
@@ -75,4 +73,4 @@ builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
 
 # end time
 get_miliseconds end_time
-log "total time spent: $(( ("$end_time" - "$start_time") / 1000))s $(( ("$end_time" - "$start_time") % 1000))ms"
+log "total time spent: $(( (end_time - start_time) / 1000))s $(( (end_time - start_time) % 1000))ms"
