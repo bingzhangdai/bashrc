@@ -27,6 +27,7 @@ export LESS='-R -S -M -i -# .2'
 export EDITOR='vi'
 
 ## source scripts in .bash folder
+# require bash version 4+
 case $BASH_VERSION in
     ''|[0-3].*)
         echo "ERROR: Bash 4.0+ required" > /dev/stderr
@@ -35,10 +36,12 @@ case $BASH_VERSION in
     ;;
 esac
 
+# start time
 start_time=$(date +%s%3N)
 
 export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
-source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
+
+builtin source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
@@ -51,10 +54,11 @@ done
 unset path file
 
 # theme
-source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
+builtin source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
 
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
 
+# end time
 end_time=$(date +%s%3N)
 log "total time spend: $(( ("$end_time" - "$start_time") / 1000))s $(( ("$end_time" - "$start_time") % 1000))ms"
