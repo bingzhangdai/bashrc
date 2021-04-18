@@ -7,7 +7,7 @@ declare -g -A _pragma_once_already_seen
 function _pragma_once() {
     local script="${BASH_SOURCE[1]}"
     if [ "$script" = "${script#/}" ]; then
-        script="$(builtin cd "$(dirname "$script" )" && pwd)/$(basename "$script")"
+        script="$(builtin cd "$(dirname "$script" )" && pwd)/${script##*/}"
     fi
 
     [[ ${_pragma_once_already_seen["$script"]} ]] && return
@@ -20,7 +20,7 @@ alias pragma_once='_pragma_once && return'
 
 function source_impl() {
     if [[ ${_pragma_once_already_seen["$1"]} ]]; then
-        log DEBUG "'${BASH_SOURCE[2]}' line ${BASH_LINENO[1]}: skipped '$1'"
+        log DEBUG "'${BASH_SOURCE[2]##*/}' line ${BASH_LINENO[1]}: source '${1##*/}' skipped"
         return ${_pragma_once_already_seen["$1"]}
     fi
 
@@ -46,7 +46,7 @@ function include() {
 
 function source() {
     local script=$1
-    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "$1" )" && pwd)/$(basename "$1")"
+    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "$1" )" && pwd)/${1##*/}"
 
     source_impl $script
 }

@@ -20,7 +20,7 @@ log() {
     [[ "${LogLevelEnum[$level]}" -lt "${LogLevelEnum[${LOGLEVEL:-ERROR}]}" ]] && return
 
     local time=$(date +"%b %-d %T.%3N")
-    local msg="$(basename "${BASH_SOURCE[1]}")[${BASH_LINENO[0]}]: $*"
+    local msg="${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: $*"
 
     case "$level" in
         DEBUG)
