@@ -29,4 +29,6 @@ if _is_in_wsl; then
             orig_command_not_found_handle $*
         fi
     }
+else
+    log INFO "not in wsl, skipped"
 fi

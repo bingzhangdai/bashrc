@@ -5,12 +5,6 @@ declare -g -A _pragma_once_already_seen
 
 # return true if already processed
 function _pragma_once() {
-    case $BASH_VERSION in
-        ''|[0-3].*) echo "ERROR: Bash 4.0+ required" > /dev/stderr
-        return 1
-        ;;
-    esac
-
     local script="${BASH_SOURCE[1]}"
     if [ "$script" = "${script#/}" ]; then
         script="$(builtin cd "$(dirname "$script" )" && pwd)/$(basename "$script")"

@@ -27,6 +27,14 @@ export LESS='-R -S -M -i -# .2'
 export EDITOR='vi'
 
 ## source scripts in .bash folder
+case $BASH_VERSION in
+    ''|[0-3].*)
+        echo "ERROR: Bash 4.0+ required" > /dev/stderr
+        false
+        return
+    ;;
+esac
+
 start_time=$(date +%s%3N)
 
 export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"

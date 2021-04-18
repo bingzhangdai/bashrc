@@ -1,9 +1,3 @@
-declare -A LogLevelEnum
-LogLevelEnum["DEBUG"]=1
-LogLevelEnum["INFO"]=2
-LogLevelEnum["WARN"]=3
-LogLevelEnum["ERROR"]=4
-
 util_download() {
     local URL="$1"
     local DEST="${2}"
