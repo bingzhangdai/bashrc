@@ -45,8 +45,8 @@ unset path file
 # theme
 source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
 
-end_time=$(date +%s%3N)
-log "total time spend: $(( ("$end_time" - "$start_time") / 1000))s $(( ("$end_time" - "$start_time") % 1000))ms"
-
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
+
+end_time=$(date +%s%3N)
+log "total time spend: $(( ("$end_time" - "$start_time") / 1000))s $(( ("$end_time" - "$start_time") % 1000))ms"
