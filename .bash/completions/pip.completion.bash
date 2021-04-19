@@ -1,5 +1,11 @@
 # https://pip.pypa.io/en/stable/user_guide/#command-completion
 
+if ! command -v pip pip3 > /dev/null; then
+    log INFO "cannot find pip3/pip command, skipped."
+    false
+    return
+fi
+
 function _setup_pip_completion() {
     local -r _pip_completion="${_DOT_BASH_CACHE}/pip.completion.bash"
     

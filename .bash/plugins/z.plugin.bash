@@ -6,13 +6,13 @@ zsh_plugin="${_DOT_BASH_CACHE}/z.plugin.bash"
 
 # download rupa/z if not exist
 if [[ ! -e "$zsh_plugin" ]]; then
-    util_log_info "Downloading rupa/z ..."
+    echo "Downloading rupa/z ..."
     util_download "https://raw.githubusercontent.com/rupa/z/master/z.sh" "$zsh_plugin"
-    [[ $? -ne 0 ]] && util_log_error "Download rupa/z failed" && return 1
-    util_log_sucess "Download rupa/z succeeded"
+    [[ $? -ne 0 ]] && log ERROR "download rupa/z failed" && return 1
+    log "download rupa/z succeeded"
 fi
 
-source $zsh_plugin
+builtin source $zsh_plugin
 
 if include fzf; then
     unalias z 2> /dev/null

@@ -1,17 +1,19 @@
 if _is_in_wsl; then
-    function git() {
-        if /usr/bin/git config --get remote.origin.url | \grep -q 'visualstudio\|azure'; then
-            if [[ "$1" == "update" ]]; then
-                git.exe fetch --all --prune
-            elif [[ "$1" =~ ^(purge)$ ]]; then
-                /usr/bin/git "$@"
+    if command -v git > /dev/null; then
+        function git() {
+            if /usr/bin/git config --get remote.origin.url | \grep -q 'visualstudio\|azure'; then
+                if [[ "$1" == "update" ]]; then
+                    git.exe fetch --all --prune
+                elif [[ "$1" =~ ^(purge)$ ]]; then
+                    /usr/bin/git "$@"
+                else
+                    git.exe "$@"
+                fi
             else
-                git.exe "$@"
+                /usr/bin/git "$@"
             fi
-        else
-            /usr/bin/git "$@"
-        fi
-    }
+        }
+    fi
 
     # function _setup_exe_aliases() {
     #     local -A _aliases=(

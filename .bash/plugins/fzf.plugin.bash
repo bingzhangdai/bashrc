@@ -1,26 +1,42 @@
 pragma_once
 
-function _setup_using_package() {
+function _setup_fzf_using_package() {
     # Auto-completion
     local completions="/usr/share/doc/fzf/examples/completion.bash"
-    [ -e "$completions" ] && source $completions 2> /dev/null || return
+    if [ -e "$completions" ]; then
+        builtin source $completions 2> /dev/null || return
+    # old location
+    elif [ -e '/usr/share/bash-completion/completions/fzf' ]; then
+        builtin source /usr/share/bash-completion/completions/fzf || return
+    else
+        return
+    fi
 
     # Key bindings
     local key_bindings="/usr/share/doc/fzf/examples/key-bindings.bash"
-    [ -e "$key_bindings" ] && source $key_bindings
+    [ -e "$key_bindings" ] && builtin source $key_bindings
 }
 
-function _setup_using_base_dir() {
+function _setup_fzf_using_base_dir() {
     if [ -f ~/.fzf.bash ]; then
-        source ~/.fzf.bash
+        builtin source ~/.fzf.bash
     elif [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ]; then
-        source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
+        builtin source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
     else
         false
     fi
 }
 
-_setup_using_package || _setup_using_base_dir || util_log_warn "Setup fzf failed"
+if ! _setup_fzf_using_package && ! _setup_fzf_using_base_dir; then
+    if command -v fzf > /dev/null; then
+        # fzf installed from package manager, but _setup_fzf_using_package failed to properly config fzf
+        log ERROR "fzf setup failed."
+    else
+        log INFO "command fzf cannot be found, skipped."
+    fi
+    false
+    return
+fi
 
 if include fd; then
     command -v fdfind > /dev/null && fd=fdfind
