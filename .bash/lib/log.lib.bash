@@ -52,7 +52,7 @@ log() {
             [ -t 2 ] && level="${RED}${level}${NONE}" ;;&
         WARN|ERROR)
             [ -t 2 ] && time="${DARK_GRAY}${time}${NONE}"
-            echo "${time} ${level} ${msg}" > /dev/stderr;;
+            echo "${time} ${level} ${msg}" > /dev/stderr ;;
         *)
             false ;;
     esac

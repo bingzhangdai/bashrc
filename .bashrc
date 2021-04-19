@@ -35,41 +35,36 @@ case $BASH_VERSION in
     ;;
 esac
 
-function get_miliseconds() {
-    if [ ${BASH_VERSINFO} -ge 5 ]; then
-        printf -v "$1" '%s' "$((${EPOCHREALTIME/./}/1000))"
-    else
-        printf -v "$1" '%s' "$(date +%s%3N)"
-    fi
-}
-
 # start time
+export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+
+# library used to profile the script
+builtin source "${_DOT_BASH_BASEDIR}"/.bash/profile.bash
 get_miliseconds start_time
 
-export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
 declare -i _trace_start=0 _trace_end=0
-_is_loglevel_enabled TRACE && get_miliseconds _trace_start
+stopwatch_start 0 TRACE
 for path in "${_DOT_BASH_BASEDIR}"/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
         [[ "$?" -ne "0" ]] && log WARN "'$file' returned non-zero code."
-        _is_loglevel_enabled TRACE && get_miliseconds _trace_end
-        log TRACE "source ${file##*/} used $(( "${_trace_end}" - "${_trace_start}" )) miliseconds"
-        _trace_start=$_trace_end
+        stopwatch_log_interval "$file"
     done
 done
 unset path file _trace_start _trace_end
 
 # theme
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
+stopwatch_log_interval "theme.bash"
 
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
+stopwatch_log_interval "cleanup.bash"
 
 # end time
 get_miliseconds end_time
