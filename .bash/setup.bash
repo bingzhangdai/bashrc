@@ -31,10 +31,6 @@ function source_impl() {
     # save exit state
     [[ ${_pragma_once_already_seen["$1"]} ]] && _pragma_once_already_seen["$1"]=$_exit
 
-    if [[ $_exit -ne 0 ]]; then
-        log DEBUG "'${1##*/}' returned non-zero code."
-    fi
-
     return $_exit
 }
 
