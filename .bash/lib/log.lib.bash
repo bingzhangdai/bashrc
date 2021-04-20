@@ -1,5 +1,7 @@
 pragma_once
 
+include color
+
 declare -g -A LogLevelEnum
 LogLevelEnum["TRACE"]=0
 LogLevelEnum["DEBUG"]=1

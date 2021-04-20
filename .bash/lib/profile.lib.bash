@@ -1,5 +1,7 @@
 pragma_once
 
+include log
+
 function get_miliseconds() {
     if [ ${BASH_VERSINFO} -ge 5 ]; then
         printf -v "$1" '%s' "$((${EPOCHREALTIME/./}/1000))"
