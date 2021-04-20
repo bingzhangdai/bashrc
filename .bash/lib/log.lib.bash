@@ -35,7 +35,10 @@ log() {
         time="$(date +"%b %-d %T.%3N")"
     fi
 
-    local msg="${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: $*"
+    if [ -z "$_source" ] || [ -z "$_line" ]; then
+        local _source="${BASH_SOURCE[1]##*/}" _line=${BASH_LINENO[0]}
+    fi
+    local msg="$_source[$_line]: $*"
 
     case "$level" in
         TRACE)

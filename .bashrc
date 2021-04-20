@@ -41,29 +41,27 @@ export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 
-get_miliseconds start_time
-timelogger_start 0
+timelogger_start 0 INFO
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
-timelogger_start 1
+timelogger_start 1 TRACE
 for path in "${_DOT_BASH_BASEDIR}"/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
         [[ "$?" -ne "0" ]] && log WARN "'$file' returned non-zero code."
-        timelogger_log_interval 1 "source ${file##*/} used %d miliseconds."
+        timelogger_log_interval 1 "source ${file##*/} used %s."
     done
 done
 unset path file
 
 # theme
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
-timelogger_log_interval 1 "source theme.bash used %d miliseconds."
+timelogger_log_interval 1 "source theme.bash used %s."
 
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
-timelogger_log_interval 1 "source cleanup.bash used %d miliseconds."
+timelogger_log_interval 1 "source cleanup.bash used %s."
 
 # end time
-get_miliseconds end_time
-log "total time spent: $(( (end_time - start_time) / 1000))s $(( (end_time - start_time) % 1000))ms"
+timelogger_log_interval 0 "total time spent: %s."
