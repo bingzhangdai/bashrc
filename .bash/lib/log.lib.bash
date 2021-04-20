@@ -40,7 +40,6 @@ log() {
     if [ -z "$_source" ] || [ -z "$_line" ]; then
         local _source="${BASH_SOURCE[1]##*/}" _line=${BASH_LINENO[0]}
     fi
-    local msg="$_source[$_line]: $*"
 
     case "$level" in
         TRACE)
@@ -55,6 +54,6 @@ log() {
             [ -t 2 ] && level="${RED}${level}${NONE}" ;;&
         *)
             [ -t 2 ] && time="${DARK_GRAY}${time}${NONE}"
-            echo "${time} ${level} ${msg}" > /dev/stderr ;;
+            echo "${time} ${level} $_source[$_line]: $*" > /dev/stderr ;;
     esac
 }
