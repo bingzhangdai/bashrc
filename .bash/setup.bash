@@ -65,6 +65,7 @@ function cleanup_pragma_once() {
 }
 
 source ${_DOT_BASH_BASEDIR}/.bash/lib/log.lib.bash
+source ${_DOT_BASH_BASEDIR}/.bash/lib/profile.lib.bash
 
 # see cleanup.bash
 declare -g -a CLEANUP_HANDLER

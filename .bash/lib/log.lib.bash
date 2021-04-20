@@ -24,6 +24,7 @@ log() {
     fi
 
     ! _is_loglevel_enabled $level && return
+    [ /dev/stderr -ef /dev/null ] && return
 
     local time
     if [ ${BASH_VERSINFO} -ge 5 ]; then
@@ -38,22 +39,17 @@ log() {
 
     case "$level" in
         TRACE)
-            [ -t 1 ] && level="${DARK_GRAY}${level}${NONE}" ;;&
+            [ -t 2 ] && level="${DARK_GRAY}${level}${NONE}" ;;&
         DEBUG)
-            [ -t 1 ] && level="${GREEN}${level}${NONE}" ;;&
+            [ -t 2 ] && level="${GREEN}${level}${NONE}" ;;&
         INFO)
-            [ -t 1 ] && level="${WHITE}${level}${NONE}" ;;&
-        TRACE|DEBUG|INFO)
-            [ -t 1 ] && time="${DARK_GRAY}${time}${NONE}"
-            echo "${time} ${level} ${msg}" ;;
+            [ -t 2 ] && level="${WHITE}${level}${NONE}" ;;&
         WARN)
             [ -t 2 ] && level="${YELLOW}${level}${NONE}" ;;&
         ERROR)
             [ -t 2 ] && level="${RED}${level}${NONE}" ;;&
-        WARN|ERROR)
+        *)
             [ -t 2 ] && time="${DARK_GRAY}${time}${NONE}"
             echo "${time} ${level} ${msg}" > /dev/stderr ;;
-        *)
-            false ;;
     esac
 }

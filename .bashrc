@@ -38,33 +38,31 @@ esac
 # start time
 export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 
-# library used to profile the script
-builtin source "${_DOT_BASH_BASEDIR}"/.bash/profile.bash
-get_miliseconds start_time
-
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
+
+get_miliseconds start_time
+timelogger_start 0
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
-declare -i _trace_start=0 _trace_end=0
-stopwatch_start 0 TRACE
+timelogger_start 1
 for path in "${_DOT_BASH_BASEDIR}"/.bash/{lib,completions,plugins,aliases}; do
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
         [[ "$?" -ne "0" ]] && log WARN "'$file' returned non-zero code."
-        stopwatch_log_interval "$file"
+        timelogger_log_interval 1 "source ${file##*/} used %d miliseconds."
     done
 done
-unset path file _trace_start _trace_end
+unset path file
 
 # theme
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
-stopwatch_log_interval "theme.bash"
+timelogger_log_interval 1 "source theme.bash used %d miliseconds."
 
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
-stopwatch_log_interval "cleanup.bash"
+timelogger_log_interval 1 "source cleanup.bash used %d miliseconds."
 
 # end time
 get_miliseconds end_time
