@@ -35,13 +35,24 @@ case $BASH_VERSION in
     ;;
 esac
 
+
+# region profile
+function get_miliseconds() {
+    if [ ${BASH_VERSINFO} -ge 5 ]; then
+        printf -v "$1" '%s' "$((${EPOCHREALTIME/./}/1000))"
+    else
+        printf -v "$1" '%s' "$(date +%s%3N)"
+    fi
+}
 # start time
+get_miliseconds start_time
+# endregion
+
 export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 
-timelogger_start 0 INFO
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
@@ -63,5 +74,8 @@ timelogger_log_interval 1 "source theme.bash used %s."
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
 timelogger_log_interval 1 "source cleanup.bash used %s."
 
+# region profile
 # end time
-timelogger_log_interval 0 "total time spent: %s."
+get_miliseconds end_time
+log  "total time spent: $(((end_time - start_time) / 1000))s $(((end_time - start_time) % 1000))ms."
+# endregion

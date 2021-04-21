@@ -36,7 +36,7 @@ function source_impl() {
 
 function include() {
     local script="$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")"
-    script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
+    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
 
     source_impl $script
 }
