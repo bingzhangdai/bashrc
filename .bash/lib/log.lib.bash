@@ -32,7 +32,7 @@ log() {
     if [ ${BASH_VERSINFO} -ge 5 ]; then
         local ms=0
         get_miliseconds ms
-        printf -v time '%(%b %-d %T)T.%d' -1 $(( ms % 1000 ))
+        printf -v time '%(%b %-d %T)T.%-3d' -1 $(( ms % 1000 ))
     else
         time="$(date +"%b %-d %T.%3N")"
     fi
