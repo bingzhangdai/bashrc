@@ -1,3 +1,5 @@
+pragma_once
+
 NONE=$'\033[00m'
 DARK_GRAY=$'\033[1;30m'
 GREEN=$'\033[1;32m'

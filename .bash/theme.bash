@@ -19,8 +19,13 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+# _collapse(in path, out val)
+# input path, output val, save collapsed path to val.
+# if the second parameter is missing, print to stdout
+# _collapse /mnt/c/Users/bingzhang
+# _collapse /mnt/c/Users/bingzhang short_path && echo "$short_path"
 function _collapse() {
-    local path="$*"
+    local path="$1"
     local dir=''
     [[ "${path:0:1}" == '/' ]] && dir='/'
     local path="${path%%*(/)}"
@@ -31,7 +36,11 @@ function _collapse() {
         [[ -z "$d" ]] && continue
         [[ "${d:0:1}" == '.' ]] && dir+="${d:0:2}/" || dir+="${d:0:1}/"
     done
-    printf '%s' "${dir}${base}"
+    if [ "$#" -eq 2 ]; then
+        printf -v "$2" '%s' "${dir}${base}"
+    else
+        printf '%s' "${dir}${base}"
+    fi
 }
 
 function _show_pwd() {
@@ -42,7 +51,9 @@ function _show_pwd() {
     local format='%s'
     format="${1:-$format}"
     [[ "$path" != "$PWD" ]] && prefix='~'
-    printf -- "$format" "$prefix$(_collapse "$path")"
+    local _short_path
+    _collapse "$path" _short_path
+    printf -- "$format" "$prefix$_short_path"
     return $exit
 }
 
@@ -67,12 +78,20 @@ function _show_git() {
     local exit=$?
     local format='[%s]'
     format="${1:-$format}"
-    local _git_branch=$(_get_git_branch)
+    local _git_branch
+    _get_git_branch _git_branch
     [[ -z "$_git_branch" ]] && return $exit
-    printf -- "$format" "$(_collapse ${_git_branch})"
+    local _short_branch
+    _collapse "${_git_branch}" _short_branch
+    printf -- "$format" "$_short_branch"
     return $exit
 }
 
+# _get_git_branch(out branch)
+# save collapsed path to val.
+# if the parameter is missing, print to stdout
+# _get_git_branch
+# _get_git_branch branch && echo "$branch"
 function _get_git_branch() {
     local _head_file _head
     local _dir="$PWD"
@@ -86,14 +105,20 @@ function _get_git_branch() {
         _dir="${_dir%/*}"
     done
 
+    local branch=''
     if [[ -e "$_head_file" ]]; then
         read -r _head < "$_head_file" || return
         case "$_head" in
-            ref:*) printf "${_head#ref: refs/heads/}" ;;
+            ref:*) branch="${_head#ref: refs/heads/}" ;;
             "") ;;
             # HEAD detached
-            *) printf "${_head:0:9}" ;;
+            *) branch="${_head:0:9}" ;;
         esac
+        if [ "$#" -eq 1 ]; then
+            printf -v "$1" '%s' "$branch"
+        else
+            printf '%s' "$branch"
+        fi
         return 0
     fi
 

@@ -19,27 +19,24 @@ function _pragma_once() {
 alias pragma_once='_pragma_once && return'
 
 function source_impl() {
+    local _source="${BASH_SOURCE[2]##*/}" _line="${BASH_LINENO[1]}"
     if [[ ${_pragma_once_already_seen["$1"]} ]]; then
-        log DEBUG "'${BASH_SOURCE[2]##*/}' line ${BASH_LINENO[1]}: source '${1##*/}' skipped"
+        log DEBUG "'${1##*/}' skipped"
         return ${_pragma_once_already_seen["$1"]}
     fi
 
-    [ -e "$1" ] && builtin source "$1"
+    builtin source "$1"
     local _exit=$?
 
     # save exit state
     [[ ${_pragma_once_already_seen["$1"]} ]] && _pragma_once_already_seen["$1"]=$_exit
-
-    if [[ $_exit -ne 0 ]]; then
-        log DEBUG "$1 returned non-zero code."
-    fi
 
     return $_exit
 }
 
 function include() {
     local script="$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")"
-    script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
+    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
 
     source_impl $script
 }
@@ -65,6 +62,7 @@ function cleanup_pragma_once() {
 }
 
 source ${_DOT_BASH_BASEDIR}/.bash/lib/log.lib.bash
+source ${_DOT_BASH_BASEDIR}/.bash/lib/profile.lib.bash
 
 # see cleanup.bash
 declare -g -a CLEANUP_HANDLER

@@ -1,5 +1,7 @@
 pragma_once
 
+include color
+
 declare -g -A LogLevelEnum
 LogLevelEnum["TRACE"]=0
 LogLevelEnum["DEBUG"]=1
@@ -24,36 +26,34 @@ log() {
     fi
 
     ! _is_loglevel_enabled $level && return
+    [ /dev/stderr -ef /dev/null ] && return
 
     local time
     if [ ${BASH_VERSINFO} -ge 5 ]; then
         local ms=0
         get_miliseconds ms
-        printf -v time '%(%b %-d %T)T.%d' -1 $(( ms % 1000 ))
+        printf -v time '%(%b %-d %T)T.%03d' -1 $(( ms % 1000 ))
     else
         time="$(date +"%b %-d %T.%3N")"
     fi
 
-    local msg="${BASH_SOURCE[1]##*/}[${BASH_LINENO[0]}]: $*"
+    if [ -z "$_source" ] || [ -z "$_line" ]; then
+        local _source="${BASH_SOURCE[1]##*/}" _line=${BASH_LINENO[0]}
+    fi
 
     case "$level" in
         TRACE)
-            [ -t 1 ] && level="${DARK_GRAY}${level}${NONE}" ;;&
+            [ -t 2 ] && level="${DARK_GRAY}${level}${NONE}" ;;&
         DEBUG)
-            [ -t 1 ] && level="${GREEN}${level}${NONE}" ;;&
+            [ -t 2 ] && level="${GREEN}${level}${NONE}" ;;&
         INFO)
-            [ -t 1 ] && level="${WHITE}${level}${NONE}" ;;&
-        TRACE|DEBUG|INFO)
-            [ -t 1 ] && time="${DARK_GRAY}${time}${NONE}"
-            echo "${time} ${level} ${msg}" ;;
+            [ -t 2 ] && level="${WHITE}${level}${NONE}" ;;&
         WARN)
             [ -t 2 ] && level="${YELLOW}${level}${NONE}" ;;&
         ERROR)
             [ -t 2 ] && level="${RED}${level}${NONE}" ;;&
-        WARN|ERROR)
-            [ -t 2 ] && time="${DARK_GRAY}${time}${NONE}"
-            echo "${time} ${level} ${msg}" > /dev/stderr;;
         *)
-            false ;;
+            [ -t 2 ] && time="${DARK_GRAY}${time}${NONE}"
+            echo "${time} ${level} $_source[$_line]: $*" > /dev/stderr ;;
     esac
 }
