@@ -11,15 +11,23 @@ source bashrc/.bashrc
 
 ## key points
 
-* bash：发行版自带 bash，远端服务器有时也不能更改终端，不想让远端和本地的使用习惯有不一致
+这份祖传的 bash 配置文件有什么特别之处呢?
 
-* 快：在功能丰富与性能之间做出良好的平衡，所有功能尽量以 shell 脚本的方式实现，避免启动新进程
+* 快
+  * 不像 oh-my-zsh 那样无脑的引入插件，引入新功能的时候以不拖慢 bash 性能为主
+  * 所有功能尽量以 shell 脚本的方式实现，避免启动新进程（参考这里：[如何用最快的方式获取 git 分支](https://gist.github.com/bingzhangdai/dd4e283a14290c079a76c4ba17f19d69)）
+* less is more
+  * 所有定义的 alias，函数等都是 non-trivial 的，不会为了只是少打几个字符而定义一堆 alias，快捷键之类的增加记忆负担（例如不会有 `alias gc='git commit'`）
+  * 不改变使用习惯，虽然增加了许多功能，但是不会增加太多记忆负担，只有直观并且被广泛使用的 alias/function/快捷键 才会被接受
+* 为 WSL 优化（例如：在 WSL 上，自动补全会忽略 `*.dll` 作为可执行命令)
+
+## features
+
+* bash：大多数发行版自带 bash，并且服务器脚本都是跑的 bash 脚本
 
 * 在便捷性，操作快捷上尽量与 zsh 靠近
 
 * 素雅的命令提示符，最短的 prompt 提供尽可能多的信息
-
-## cheatsheet
 
 ### 命令提示符
 
