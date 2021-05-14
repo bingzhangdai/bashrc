@@ -53,12 +53,8 @@ cd () {
         fi
     else
         # go to next working directory
-        if [ $# -ge 1 ]; then
-            builtin cd "$@"
-        else
-            # `cd` and `cd ''` is different
-            builtin cd
-        fi
+        # "$*" is not correct: `cd -- .bash`
+        builtin cd "$@"
         result="$?"
         if [[ "$result" -eq 0 ]]; then
             # go back and use pushd to change dir
