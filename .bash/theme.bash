@@ -28,11 +28,12 @@ function _collapse() {
     local path="$1"
     local dir=''
     [[ "${path:0:1}" == '/' ]] && dir='/'
+    # remove tailing '/'
     local path="${path%%*(/)}"
     local base="${path##*/}"
     local d
     local IFS='/'
-    for d in ${path%$base}; do
+    for d in ${path%"$base"}; do
         [[ -z "$d" ]] && continue
         [[ "${d:0:1}" == '.' ]] && dir+="${d:0:2}/" || dir+="${d:0:1}/"
     done

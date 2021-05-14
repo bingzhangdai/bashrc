@@ -44,7 +44,7 @@ cd () {
         # and move this directory onto the forward directory stack
         if [[ ${#DIRSTACKREV[*]} -gt 0 ]]; then
             local i=$((${#DIRSTACKREV[*]} - 1))
-            builtin pushd ${DIRSTACKREV[$i]/#~/$HOME} > /dev/null
+            builtin pushd "${DIRSTACKREV[$i]/#~/$HOME}" > /dev/null
             result="$?"
             unset DIRSTACKREV["$i"]
         else
@@ -53,12 +53,17 @@ cd () {
         fi
     else
         # go to next working directory
-        builtin cd $*
+        if [ $# -ge 1 ]; then
+            builtin cd "$*"
+        else
+            # `cd` and `cd ''` is different
+            builtin cd
+        fi
         result="$?"
         if [[ "$result" -eq 0 ]]; then
             # go back and use pushd to change dir
             builtin cd - > /dev/null
-            builtin pushd $OLDPWD > /dev/null
+            builtin pushd "$OLDPWD" > /dev/null
             # avoid duplicates on forward directory stack
             if [[ "${#DIRSTACK[*]}" -ge 2 && "${DIRSTACK[0]/#~/$HOME}" == "${DIRSTACK[1]/#~/$HOME}" ]]; then
                 builtin popd -n > /dev/null
