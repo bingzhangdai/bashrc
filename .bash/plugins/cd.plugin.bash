@@ -54,7 +54,7 @@ cd () {
     else
         # go to next working directory
         if [ $# -ge 1 ]; then
-            builtin cd "$*"
+            builtin cd "$@"
         else
             # `cd` and `cd ''` is different
             builtin cd
