@@ -23,11 +23,16 @@ if _is_in_wsl; then
         }
     fi
     command_not_found_handle() {
-        if cmd.exe /c "(where $1 || (help $1 |findstr /V Try)) >nul 2>nul && ($* || exit 0)"; then
-            return $?
+        if powershell.exe Get-Command "$1" -errorAction SilentlyContinue > /dev/null; then
+            powershell.exe "$@"
         else
-            orig_command_not_found_handle $*
+            orig_command_not_found_handle "$*"
         fi
+        # if cmd.exe /c "(where $1 || (help $1 |findstr /V Try)) >nul 2>nul && ($* || exit 0)"; then
+        #     return $?
+        # else
+        #     orig_command_not_found_handle $*
+        # fi
     }
 else
     log INFO "not in wsl, skipped"
