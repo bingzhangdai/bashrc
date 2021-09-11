@@ -34,7 +34,7 @@ alias l='ls -CF'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 alias ..='cd ..'
-alias sudo='sudo '
+alias sudo='sudo --preserve-env '
 alias xargs='xargs '
 alias g++='g++ -g -std=c++17'
 command -v vim > /dev/null && alias vi=vim
