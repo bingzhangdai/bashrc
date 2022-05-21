@@ -138,15 +138,26 @@ if _is_in_wsl; then
     fi
 fi
 
+# ternary_operator(cond, out1, out2)
+# cond == 0 ? printf out1 : printf out2
+function ternary_operator() {
+    # preserve exit status
+    local exit=$?
+    [ "$1" -eq 0 ] && printf "$2" || printf "$3"
+    return $exit
+}
+
 if [ "$color_prompt" = yes ]; then
+    JOB='$(ternary_operator \j "\[${NONE}\]" "\[${RED}\]")'
     if [[ "$UID" == "0" ]]; then
-        PS1="\[${ORANGE}\]\u@${hostname}\[${NONE}\]" # username@hostname
+        PS1="\[${ORANGE}\]\u${JOB}@\[${ORANGE}\]${hostname}" # username@hostname
     else
-        PS1="\[${GREEN}\]\u@${hostname}\[${NONE}\]"
+        PS1="\[${GREEN}\]\u${JOB}@\[${GREEN}\]${hostname}"
     fi
-    PS1+=':$(_show_pwd "\[${YELLOW}\]%s\[${NONE}\]")' # :_show_pwd
-    PS1+='$(_show_git "[\[${DARK_GRAY}\]%s\[${NONE}\]]")' # [_git_branch]
-    PS1+='$([[ "$?" == "0" ]] || printf "\[${RED}\]")\$\[${NONE}\] '
+    PS1+="${JOB}:"
+    PS1+='$(_show_pwd "\[${YELLOW}\]%s")' # _show_pwd
+    PS1+='$(_show_git "\[${DARK_GRAY}\](%s)")' # (_git_branch)
+    PS1+='$(ternary_operator $? "\[${NONE}\]" "\[${RED}\]")\$\[${NONE}\] '
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
 else
     PS1="\u@${hostname}"
@@ -155,6 +166,7 @@ else
     PS1+='\$ '
 fi
 
+unset JOB
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir

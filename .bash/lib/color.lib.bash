@@ -1,15 +1,18 @@
 pragma_once
 
+# https://gist.github.com/vratiu/9780109
+# bold color
 NONE=$'\033[00m'
+BLACK=$'\033[1;30m'
 DARK_GRAY=$'\033[1;30m'
 GREEN=$'\033[1;32m'
 YELLOW=$'\033[1;33m'
 ORANGE=$'\033[1;33m'
 RED=$'\033[1;31m'
-BLUE=$'\033[0;34m'
+BLUE=$'\033[1;34m'
 VIOLET=$'\033[1;35m'
-CYAN=$'\033[0;36m'
-WHITE=$'\033[0;37m'
+CYAN=$'\033[1;36m'
+WHITE=$'\033[1;37m'
 
 if tput setaf 1 &> /dev/null; then
     NONE=$(tput sgr0);

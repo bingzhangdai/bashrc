@@ -27,7 +27,18 @@ function _setup_fzf_using_base_dir() {
     fi
 }
 
-if ! _setup_fzf_using_package && ! _setup_fzf_using_base_dir; then
+function _setup_fzf_using_homebrew() {
+    local auto_completion="$_brew_prefxi"/opt/fzf/shell/completion.bash
+    local key_bindings="$_brew_prefxi"/opt/fzf/shell/key-bindings.bash
+    if [ -r $auto_completion ] && [ -r $key_bindings ]; then
+        builtin source $auto_completion
+        builtin source $key_bindings
+    else
+        false
+    fi
+}
+
+if ! _setup_fzf_using_package && ! _setup_fzf_using_base_dir && ! _setup_fzf_using_homebrew; then
     if command -v fzf > /dev/null; then
         # fzf installed from package manager, but _setup_fzf_using_package failed to properly config fzf
         log ERROR "fzf setup failed."

@@ -78,4 +78,4 @@ timelogger_log_interval 1 "source cleanup.bash used %s."
 # end time
 get_miliseconds end_time
 log  "total time spent: $(((end_time - start_time) / 1000))s $(((end_time - start_time) % 1000))ms."
-# endregion
+# endregion_is_in_wsl
