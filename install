@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -u
+
+abort() {
+  printf "%s\n" "$@" >&2
+  exit 1
+}
+
+# Fail fast with a concise message when not using bash
+# Single brackets are needed here for POSIX compatibility
+if [ -z "${BASH_VERSION:-}" ]; then
+    abort "Bash is required to interpret this script."
+fi
+
+if ! command -v git > /dev/null; then
+    abort "Git is required before install this script."
+fi
+
+cd $HOME
+git clone https://github.com/bingzhangdai/bashrc.git .bashrc.git
+
+BASHRC_REPO=$HOME/.bashrc.git
+echo "source $BASHRC_REPO/.bashrc" >> ~/.bashrc
+
+# .bash_aliases
+if [ -f ~/.bash_aliases ]; then
+    echo "source $BASHRC_REPO/.bash_aliases" >> ~/.bash_aliases
+else
+    ln -s $BASHRC_REPO/.bash_aliases ~/.bash_aliases
+
+ln -s $BASHRC_REPO/.bash_logout ~/.bash_logout
+
+ln -s $BASHRC_REPO/.inputrc ~/.inputrc
+
