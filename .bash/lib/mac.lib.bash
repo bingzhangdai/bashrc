@@ -1,5 +1,5 @@
 function _is_on_mac() {
-    [[ $OSTYPE == 'darwin'* ]]
+    [[ "$OSTYPE" == 'darwin'* ]]
 }
 
 # store the homebrew prefix, avoid unncessary calls of brew command
