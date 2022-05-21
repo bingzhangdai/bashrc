@@ -17,3 +17,7 @@ if command -v glances > /dev/null; then
 elif command -v htop > /dev/null; then
     alias top='htop'
 fi
+
+if command -v brew > /dev/null; then
+    alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
+fi

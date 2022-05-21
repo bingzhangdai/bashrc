@@ -8,21 +8,29 @@ if [ -x /usr/bin/dircolors ]; then
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
+elif _is_on_mac; then
+    test -r ~/.dircolors
+    export CLICOLOR=1
+    alias ls='ls -G'
 
-    # colored less
-    if test -e /usr/share/source-highlight/src-hilite-lesspipe.sh; then
-        alias cless='LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s" less'
-    elif command -v bat > /dev/null; then
-        alias cless='LESSOPEN="| bat --style=plain --color=always --paging=never %s" less'
-    fi
-
-    # colored cat
-    command -v batcat > /dev/null && alias bat=batcat
-    command -v bat > /dev/null && alias ccat='bat --style=plain --color=always --paging=never'
-
-    # colored diff
-    command -v icdiff > /dev/null && alias cdiff='icdiff --line-numbers'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
+
+# colored less
+if test -e /usr/share/source-highlight/src-hilite-lesspipe.sh; then
+    alias cless='LESSOPEN="| /usr/share/source-highlight/src-hilite-lesspipe.sh %s" less'
+elif command -v bat > /dev/null; then
+    alias cless='LESSOPEN="| bat --style=plain --color=always --paging=never %s" less'
+fi
+
+# colored cat
+command -v batcat > /dev/null && alias bat=batcat
+command -v bat > /dev/null && alias ccat='bat --style=plain --color=always --paging=never'
+
+# colored diff
+command -v icdiff > /dev/null && alias cdiff='icdiff --line-numbers'
 
 # some more ls aliases
 alias ll='ls -alhF'
@@ -31,10 +39,11 @@ alias l='ls -CF'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+if command -v notify-send > /dev/null; then
+    alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+fi
 
 alias ..='cd ..'
-alias sudo='sudo '
 alias xargs='xargs '
 alias g++='g++ -g -std=c++17'
 command -v vim > /dev/null && alias vi=vim
