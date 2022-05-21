@@ -20,14 +20,47 @@ fi
 cd $HOME
 git clone https://github.com/bingzhangdai/bashrc.git .bashrc.git
 
+append_line() {
+    set -e
+
+    local line="$1"
+    local file="$2"
+    local pat="${3:-}"
+    local lno=""
+
+    echo "Update $file:"
+    echo "  - $line"
+    if [ -f "$file" ]l then
+        if [ $# -lt 3 ]; then
+            lno=$(\grep -nF "$line" "$file" | sed 's/:.*//' | tr '\n' ' ')
+        else
+            lno=$(\grep -nF "$pat" "$file" | sed 's/:.*//' | tr '\n' ' ')
+        fi
+    fi
+    if [ -n "$lno" ]; then
+        echo "    - Already exists: line #$lno"
+    else
+        [ -f "$file" ] && echo >> "$file"
+        echo "$line" >> "$file"
+        echo "    + Added"
+    fi
+    echo
+
+    set +e
+}
+
+
 BASHRC_REPO=$HOME/.bashrc.git
-echo "source $BASHRC_REPO/.bashrc" >> ~/.bashrc
+append_line "source $BASHRC_REPO/.bashrc" ~/.bashrc
 
 # .bash_aliases
-if [ -f ~/.bash_aliases ]; then
-    echo "source $BASHRC_REPO/.bash_aliases" >> ~/.bash_aliases
+if [ -L ~/.bash_aliases ]; then
+    # already linked
+elif [ -f ~/.bash_aliases ]; then
+    append_line "source $BASHRC_REPO/.bash_aliases" ~/.bash_aliases
 else
     ln -s $BASHRC_REPO/.bash_aliases ~/.bash_aliases
+fi
 
 ln -s $BASHRC_REPO/.bash_logout ~/.bash_logout
 
