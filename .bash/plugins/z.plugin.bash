@@ -14,7 +14,7 @@ fi
 
 builtin source $zsh_plugin
 
-# export _Z_NO_RESOLVE_SYMLINKS=1
+export _Z_NO_RESOLVE_SYMLINKS=1
 
 if include fzf; then
     unalias z 2> /dev/null
