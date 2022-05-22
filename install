@@ -7,6 +7,22 @@ abort() {
   exit 1
 }
 
+shell_join() {
+    local arg
+    printf "%s" "$1"
+    shift
+    for arg in "$@"; do
+        printf " "
+        printf "%s" "${arg// /\ }"
+    done
+}
+
+execute() {
+    if ! "$@"; then
+        abort "$(printf "Failed during: %s" "$(shell_join "$@")")"
+    fi
+}
+
 # Fail fast with a concise message when not using bash
 # Single brackets are needed here for POSIX compatibility
 if [ -z "${BASH_VERSION:-}" ]; then
@@ -18,7 +34,16 @@ if ! command -v git > /dev/null; then
 fi
 
 builtin pushd $HOME
-git clone https://github.com/bingzhangdai/bashrc.git .bashrc.git
+if [ -d .bashrc.git ]; then
+    builtin pushd .bashrc.git
+    execute "git" "fetch" "--force" "origin"
+    execute "git" "fetch" "--force" "--tags" "origin"
+
+    execute "git" "reset" "--hard" "origin/main"
+    builtin popd
+else
+    execute "git" "clone" "https://github.com/bingzhangdai/bashrc.git" ".bashrc.git"
+fi
 
 append_line() {
     set -e
@@ -53,17 +78,31 @@ append_line() {
 BASHRC_REPO=$HOME/.bashrc.git
 append_line "source $BASHRC_REPO/.bashrc" ~/.bashrc
 
+append_line_or_line_file() {
+    set -e
+
+    local line="$1"
+    local source_file="$2"
+    local target_file="$3"
+
+    if [ -f "$target_file" ]; then
+        # do nothing if already linked
+        if [ ! -L "$target_file" ]; then
+            append_line "$line" "$target_file"
+        fi
+    else
+        ln -s "$source_file" "$target_file"
+        echo "Linked $target_file"
+        echo "  - source_file: $source_file"
+        echo 
+    fi
+
+    set +e
+}
+
 # .bash_aliases
-if [ -L ~/.bash_aliases ]; then
-    # already linked
-elif [ -f ~/.bash_aliases ]; then
-    append_line "source $BASHRC_REPO/.bash_aliases" ~/.bash_aliases
-else
-    ln -s $BASHRC_REPO/.bash_aliases ~/.bash_aliases
-fi
-
-ln -s $BASHRC_REPO/.bash_logout ~/.bash_logout
-
-ln -s $BASHRC_REPO/.inputrc ~/.inputrc
+append_line_or_line_file "source $BASHRC_REPO/.bash_aliases" "$BASHRC_REPO/.bash_aliases" ~/.bash_aliases
+append_line_or_line_file "source $BASHRC_REPO/.bash_logout" "$BASHRC_REPO/.bash_logout" ~/.bash_logout
+append_line_or_line_file "\$include $BASHRC_REPO/.inputrc" "$BASHRC_REPO/.inputrc" ~/.inputrc
 
 builtin popd
