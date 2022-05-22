@@ -106,5 +106,3 @@ $if mode=vi
     "\es": "\eIsudo \eA"
     "\ep": "\eIproxy \eA"
 $endif
-
-$include /Users/bidai/.bashrc.git/.inputrc
