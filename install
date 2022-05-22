@@ -17,7 +17,7 @@ if ! command -v git > /dev/null; then
     abort "Git is required before install this script."
 fi
 
-cd $HOME
+builtin pushd $HOME
 git clone https://github.com/bingzhangdai/bashrc.git .bashrc.git
 
 append_line() {
@@ -30,7 +30,7 @@ append_line() {
 
     echo "Update $file:"
     echo "  - $line"
-    if [ -f "$file" ]l then
+    if [ -f "$file" ]; then
         if [ $# -lt 3 ]; then
             lno=$(\grep -nF "$line" "$file" | sed 's/:.*//' | tr '\n' ' ')
         else
@@ -66,3 +66,4 @@ ln -s $BASHRC_REPO/.bash_logout ~/.bash_logout
 
 ln -s $BASHRC_REPO/.inputrc ~/.inputrc
 
+builtin popd
