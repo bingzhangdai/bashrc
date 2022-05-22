@@ -5,8 +5,7 @@
 ## quick start
 
 ```bash
-git clone https://github.com/bingzhangdai/bashrc.git
-source bashrc/.bashrc
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/bingzhangdai/bashrc/main/install)"
 ```
 
 ## key points

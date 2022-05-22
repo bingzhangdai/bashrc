@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+set -u
+
+abort() {
+  printf "%s\n" "$@" >&2
+  exit 1
+}
+
+shell_join() {
+    local arg
+    printf "%s" "$1"
+    shift
+    for arg in "$@"; do
+        printf " "
+        printf "%s" "${arg// /\ }"
+    done
+}
+
+execute() {
+    if ! "$@"; then
+        abort "$(printf "Failed during: %s" "$(shell_join "$@")")"
+    fi
+}
+
+# Fail fast with a concise message when not using bash
+# Single brackets are needed here for POSIX compatibility
+if [ -z "${BASH_VERSION:-}" ]; then
+    abort "Bash is required to interpret this script."
+fi
+
+if ! command -v git > /dev/null; then
+    abort "Git is required before install this script."
+fi
+
+builtin pushd $HOME
+if [ -d .bashrc.git ]; then
+    builtin pushd .bashrc.git
+    execute "git" "fetch" "--force" "origin"
+    execute "git" "fetch" "--force" "--tags" "origin"
+
+    execute "git" "reset" "--hard" "origin/main"
+    builtin popd
+else
+    execute "git" "clone" "https://github.com/bingzhangdai/bashrc.git" ".bashrc.git"
+fi
+
+append_line() {
+    set -e
+
+    local line="$1"
+    local file="$2"
+    local pat="${3:-}"
+    local lno=""
+
+    echo "Update $file:"
+    echo "  - $line"
+    if [ -f "$file" ]; then
+        if [ $# -lt 3 ]; then
+            lno=$(\grep -nF "$line" "$file" | sed 's/:.*//' | tr '\n' ' ')
+        else
+            lno=$(\grep -nF "$pat" "$file" | sed 's/:.*//' | tr '\n' ' ')
+        fi
+    fi
+    if [ -n "$lno" ]; then
+        echo "    - Already exists: line #$lno"
+    else
+        [ -f "$file" ] && echo >> "$file"
+        echo "$line" >> "$file"
+        echo "    + Added"
+    fi
+    echo
+
+    set +e
+}
+
+
+BASHRC_REPO=$HOME/.bashrc.git
+append_line "source $BASHRC_REPO/.bashrc" ~/.bashrc
+
+append_line_or_line_file() {
+    set -e
+
+    local line="$1"
+    local source_file="$2"
+    local target_file="$3"
+
+    if [ -f "$target_file" ]; then
+        # do nothing if already linked
+        if [ ! -L "$target_file" ]; then
+            append_line "$line" "$target_file"
+        fi
+    else
+        ln -s "$source_file" "$target_file"
+        echo "Linked $target_file"
+        echo "  - source_file: $source_file"
+        echo 
+    fi
+
+    set +e
+}
+
+# .bash_aliases
+append_line_or_line_file "source $BASHRC_REPO/.bash_aliases" "$BASHRC_REPO/.bash_aliases" ~/.bash_aliases
+append_line_or_line_file "source $BASHRC_REPO/.bash_logout" "$BASHRC_REPO/.bash_logout" ~/.bash_logout
+append_line_or_line_file "\$include $BASHRC_REPO/.inputrc" "$BASHRC_REPO/.inputrc" ~/.inputrc
+
+builtin popd
