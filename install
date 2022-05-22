@@ -78,31 +78,9 @@ append_line() {
 BASHRC_REPO=$HOME/.bashrc.git
 append_line "source $BASHRC_REPO/.bashrc" ~/.bashrc
 
-append_line_or_line_file() {
-    set -e
-
-    local line="$1"
-    local source_file="$2"
-    local target_file="$3"
-
-    if [ -f "$target_file" ]; then
-        # do nothing if already linked
-        if [ ! -L "$target_file" ]; then
-            append_line "$line" "$target_file"
-        fi
-    else
-        ln -s "$source_file" "$target_file"
-        echo "Linked $target_file"
-        echo "  - source_file: $source_file"
-        echo 
-    fi
-
-    set +e
-}
-
 # .bash_aliases
-append_line_or_line_file "source $BASHRC_REPO/.bash_aliases" "$BASHRC_REPO/.bash_aliases" ~/.bash_aliases
-append_line_or_line_file "source $BASHRC_REPO/.bash_logout" "$BASHRC_REPO/.bash_logout" ~/.bash_logout
-append_line_or_line_file "\$include $BASHRC_REPO/.inputrc" "$BASHRC_REPO/.inputrc" ~/.inputrc
+append_line "source $BASHRC_REPO/.bash_aliases" ~/.bash_aliases
+append_line "source $BASHRC_REPO/.bash_logout" ~/.bash_logout
+append_line "\$include $BASHRC_REPO/.inputrc" ~/.inputrc
 
 builtin popd
