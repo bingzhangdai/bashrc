@@ -8,6 +8,23 @@ case $- in
       *) return;;
 esac
 
+## source scripts in .bash folder
+# require bash version 4+
+case $BASH_VERSION in
+    ''|[0-3].*)
+        echo "ERROR: Bash 4.0+ required" > /dev/stderr
+        return
+    ;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+color_prompt=yes
+
+# uncomment to add git information to the prompt
+git_prompt=yes
+
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -25,16 +42,6 @@ export LESS='-R -S -M -i -# .2'
 
 ## default editor
 export EDITOR='vi'
-
-## source scripts in .bash folder
-# require bash version 4+
-case $BASH_VERSION in
-    ''|[0-3].*)
-        echo "ERROR: Bash 4.0+ required" > /dev/stderr
-        return
-    ;;
-esac
-
 
 # region profile
 function get_miliseconds() {

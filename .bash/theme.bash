@@ -1,24 +1,3 @@
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color) color_prompt=yes;;
-esac
-
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-force_color_prompt=yes
-
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        # We have color support; assume it's compliant with Ecma-48
-        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-        # a case would tend to support setf rather than setaf.)
-        color_prompt=yes
-    else
-        color_prompt=
-    fi
-fi
-
 # _collapse(in path, out val)
 # input path, output val, save collapsed path to val.
 # if the second parameter is missing, print to stdout
@@ -44,6 +23,9 @@ function _collapse() {
     fi
 }
 
+# TODO: eliminate the prefix ambiguity
+# ref: https://stackoverflow.com/questions/12422519/what-is-the-fastest-way-to-get-the-list-of-files-recursively-contained-in-a-dire
+# ref: https://stackoverflow.com/questions/11307257/is-there-a-bash-command-which-counts-files
 function _show_pwd() {
     # preserve exit status
     local exit=$?
@@ -126,9 +108,7 @@ function _get_git_branch() {
     return 128
 }
 
-# color can be found in lib/color.lib.bash
 # Special prompt variable: https://ss64.com/bash/syntax-prompt.html
-
 hostname='\h'
 if _is_in_wsl; then
     if [[ -n "$WSL_DISTRO_NAME" ]]; then
@@ -147,27 +127,30 @@ function ternary_operator() {
     return $exit
 }
 
-if [ "$color_prompt" = yes ]; then
-    JOB='$(ternary_operator \j "\[${NONE}\]" "\[${RED}\]")'
+# colors can be found in lib/color.lib.bash
+if [ "$_color_prompt" = yes ]; then
+     # username@hostname
     if [[ "$UID" == "0" ]]; then
-        PS1="\[${ORANGE}\]\u${JOB}@\[${ORANGE}\]${hostname}" # username@hostname
+        PS1="\[${ORANGE}\]\u\[${NONE}\]@\[\$(ternary_operator \\j \${ORANGE} \${RED})\]${hostname}"
     else
-        PS1="\[${GREEN}\]\u${JOB}@\[${GREEN}\]${hostname}"
+        PS1="\[${GREEN}\]\u\[${NONE}\]@\[\$(ternary_operator \\j \${GREEN} \${RED})\]${hostname}"
     fi
-    PS1+="${JOB}:"
+    PS1+="${NONE}:"
     PS1+='$(_show_pwd "\[${YELLOW}\]%s")' # _show_pwd
-    PS1+='$(_show_git "\[${DARK_GRAY}\](%s)")' # (_git_branch)
+    if [ -n "$git_prompt" ]; then
+        PS1+='$(_show_git "\[${BLACK_B}\](%s)")' # (_git_branch)
+    fi
     PS1+='$(ternary_operator $? "\[${NONE}\]" "\[${RED}\]")\$\[${NONE}\] '
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
 else
     PS1="\u@${hostname}"
     PS1+=':$(_show_pwd)'
-    PS1+='$(exit=$?; [[ "$exit" == "0" ]] || printf ":$exit")'
+    if [ -n "$git_prompt" ]; then
+        PS1+='$(_show_git "(%s)")' # (_git_branch)
+    fi
+    # PS1+='$(exit=$?; [[ "$exit" == "0" ]] || printf ":$exit")'
     PS1+='\$ '
 fi
-
-unset JOB
-unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
