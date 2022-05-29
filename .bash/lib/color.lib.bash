@@ -1,6 +1,5 @@
 pragma_once
 
-
 # set a fancy prompt (non-color, unless we know we "want" color)
 _color_prompt=
 if [ -n "$color_prompt" ]; then
