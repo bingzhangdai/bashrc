@@ -21,9 +21,13 @@ esac
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
 color_prompt=yes
+eliminate_ambiguity=no
 
 # uncomment to add git information to the prompt
 git_prompt=yes
+
+# uncomment to enable fish-style working directory in your command prompt
+fish_prompt=yes
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"

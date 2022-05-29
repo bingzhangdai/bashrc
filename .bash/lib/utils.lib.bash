@@ -29,3 +29,20 @@ util_download() {
         return $ex
     fi
 }
+
+# execute the command without changing the previous return status
+no_return_call() {
+    # preserve exit status
+    local exit=$?
+    local cmd="$1"
+    shift
+    $cmd $@
+    return "$exit"
+}
+
+no_return_eval() {
+    # preserve exit status
+    local exit=$?
+    eval "$@"
+    return "$exit"
+}

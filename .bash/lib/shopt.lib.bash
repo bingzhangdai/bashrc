@@ -7,7 +7,7 @@ shopt -s checkwinsize
 bind Space:magic-space
 
 # case-insensitive globbing (used in pathname expansion)
-shopt -s nocaseglob;
+shopt -s nocaseglob
 
 # recursive globbing, e.g. `echo **/*.txt`
 shopt -s globstar

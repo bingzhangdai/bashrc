@@ -1,48 +1,17 @@
-# _collapse(in path, out val)
-# input path, output val, save collapsed path to val.
-# if the second parameter is missing, print to stdout
-# _collapse /mnt/c/Users/bingzhang
-# _collapse /mnt/c/Users/bingzhang short_path && echo "$short_path"
-function _collapse() {
-    local path="$1"
-    local dir=''
-    [[ "${path:0:1}" == '/' ]] && dir='/'
-    # remove tailing '/'
-    local path="${path%%*(/)}"
-    local base="${path##*/}"
-    local d
-    local IFS='/'
-    for d in ${path%"$base"}; do
-        [[ -z "$d" ]] && continue
-        [[ "${d:0:1}" == '.' ]] && dir+="${d:0:2}/" || dir+="${d:0:1}/"
-    done
-    if [ "$#" -eq 2 ]; then
-        printf -v "$2" '%s' "${dir}${base}"
-    else
-        printf '%s' "${dir}${base}"
-    fi
-}
-
 # TODO: eliminate the prefix ambiguity
 # ref: https://stackoverflow.com/questions/12422519/what-is-the-fastest-way-to-get-the-list-of-files-recursively-contained-in-a-dire
 # ref: https://stackoverflow.com/questions/11307257/is-there-a-bash-command-which-counts-files
 function _show_pwd() {
-    # preserve exit status
-    local exit=$?
-    local path="${PWD#$HOME}"
-    local prefix=''
     local format='%s'
     format="${1:-$format}"
-    [[ "$path" != "$PWD" ]] && prefix='~'
+    local path="${2:-$PWD}"
+    path=${path/#$HOME/\~}
     local _short_path
-    _collapse "$path" _short_path
-    printf -- "$format" "$prefix$_short_path"
-    return $exit
+    shrink_path -d -e _short_path "$path"
+    printf -- "$format" "$_short_path"
 }
 
 # function _show_git() {
-#     # preserve exit status
-#     local exit=$?
 #     local format='[%s]'
 #     format="${1:-$format}"
 #     (! command -v git > /dev/null) && return $exit
@@ -51,27 +20,23 @@ function _show_pwd() {
 #     [[ "$_git_branch" = *"fatal: not a git repository"* ]] && return $exit
 #     [[ "$_git_branch" = *"fatal: ref HEAD is not a symbolic ref"* ]] && _git_branch=$(git rev-parse --short HEAD 2> /dev/null)
 #     [[ -z "$_git_branch" ]] && return $exit
-#     printf -- "$format" "$(_collapse ${_git_branch})"
-#     return $exit
+#     printf -- "$format" "$(shrink_path ${_git_branch})"
 # }
 
 # pure Bash version
 function _show_git() {
-    # preserve exit status
-    local exit=$?
     local format='[%s]'
     format="${1:-$format}"
     local _git_branch
     _get_git_branch _git_branch
     [[ -z "$_git_branch" ]] && return $exit
     local _short_branch
-    _collapse "${_git_branch}" _short_branch
+    shrink_path -e _short_branch "${_git_branch}"
     printf -- "$format" "$_short_branch"
-    return $exit
 }
 
 # _get_git_branch(out branch)
-# save collapsed path to val.
+# save shrinked path to val.
 # if the parameter is missing, print to stdout
 # _get_git_branch
 # _get_git_branch branch && echo "$branch"
@@ -135,18 +100,18 @@ if [ "$_color_prompt" = yes ]; then
     else
         PS1="\[${GREEN}\]\u\[${NONE}\]@\[\$(ternary_operator \\j \${GREEN} \${RED})\]${hostname}"
     fi
-    PS1+="${NONE}:"
-    PS1+='$(_show_pwd "\[${YELLOW}\]%s")' # _show_pwd
+    PS1+="\[${NONE}\]:"
+    PS1+='$(no_return_call _show_pwd "\[${YELLOW}\]%s" "\w")' # _show_pwd
     if [ -n "$git_prompt" ]; then
-        PS1+='$(_show_git "\[${BLACK_B}\](%s)")' # (_git_branch)
+        PS1+='$(no_return_call _show_git "\[${BLACK_B}\](%s)")' # (_git_branch)
     fi
     PS1+='$(ternary_operator $? "\[${NONE}\]" "\[${RED}\]")\$\[${NONE}\] '
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
 else
     PS1="\u@${hostname}"
-    PS1+=':$(_show_pwd)'
+    PS1+=':$(no_return_call _show_pwd "%s" "\w")' # _show_pwd
     if [ -n "$git_prompt" ]; then
-        PS1+='$(_show_git "(%s)")' # (_git_branch)
+        PS1+='$(no_return_call _show_git "(%s)")' # (_git_branch)
     fi
     # PS1+='$(exit=$?; [[ "$exit" == "0" ]] || printf ":$exit")'
     PS1+='\$ '
