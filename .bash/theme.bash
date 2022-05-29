@@ -7,7 +7,11 @@ function _show_pwd() {
     local path="${2:-$PWD}"
     path=${path/#$HOME/\~}
     local _short_path
-    shrink_path -d -e _short_path "$path"
+    if [ -n "$eliminate_ambiguity" ]; then
+        shrink_path -d -e _short_path "$path"
+    else
+        shrink_path -e _short_path "$path"
+    fi
     printf -- "$format" "$_short_path"
 }
 
@@ -101,17 +105,29 @@ if [ "$_color_prompt" = yes ]; then
         PS1="\[${GREEN}\]\u\[${NONE}\]@\[\$(ternary_operator \\j \${GREEN} \${RED})\]${hostname}"
     fi
     PS1+="\[${NONE}\]:"
-    PS1+='$(no_return_call _show_pwd "\[${YELLOW}\]%s" "\w")' # _show_pwd
+    # \w
+    if [ -n "$fish_prompt" ]; then
+        PS1+='$(no_return_call _show_pwd "\[${YELLOW}\]%s" "\w")' # _show_pwd
+    else
+        PS1+='\[${YELLOW}\]\w' # _show_pwd
+    fi
+    # git branch
     if [ -n "$git_prompt" ]; then
-        PS1+='$(no_return_call _show_git "\[${BLACK_B}\](%s)")' # (_git_branch)
+        PS1+='$(no_return_call _show_git "\[${BLACK_B}\](%s)")'
     fi
     PS1+='$(ternary_operator $? "\[${NONE}\]" "\[${RED}\]")\$\[${NONE}\] '
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
 else
     PS1="\u@${hostname}"
-    PS1+=':$(no_return_call _show_pwd "%s" "\w")' # _show_pwd
+    # \w
+    if [ -n "$fish_prompt" ]; then
+        PS1+=':$(no_return_call _show_pwd "%s" "\w")'
+    else
+        PS1+='\w' # _show_pwd
+    fi
+    # git branch
     if [ -n "$git_prompt" ]; then
-        PS1+='$(no_return_call _show_git "(%s)")' # (_git_branch)
+        PS1+='$(no_return_call _show_git "(%s)")'
     fi
     # PS1+='$(exit=$?; [[ "$exit" == "0" ]] || printf ":$exit")'
     PS1+='\$ '
