@@ -11,3 +11,11 @@ shopt -s nocaseglob
 
 # recursive globbing, e.g. `echo **/*.txt`
 shopt -s globstar
+
+# If set, local variables inherit the value and attributes 
+# of a variable of the same name that exists at a previous 
+# scope before any new value is assigned. The nameref 
+# attribute is not inherited.
+# if (( BASH_VERSINFO >= 5 )); then
+#     shopt -s localvar_inherit
+# fi
