@@ -18,7 +18,17 @@
 # return true if the path prefix is ambuguous
 function _is_path_ambiguous() {
     local prefix="${1/#\~/$HOME}"
+
+    local noglob=false
+    if [ -o noglob ]; then
+        noglob=true
+        set +o noglob
+    fi
     local list_files=("$prefix"*)
+    if [ "$noglob" = true ]; then
+        set -o noglob
+    fi
+
     [ "${#list_files[@]}" -ne 1 ]
 }
 

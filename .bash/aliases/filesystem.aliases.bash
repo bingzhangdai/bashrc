@@ -22,7 +22,7 @@ function _qfind() {
 }
 # temporarily stop shell wildcard character expansion
 # restore expansion in _qfind function
-alias qfind='[[ ! -o noglob ]] && _qf_noglob=false && set -o noglob; _qfind'
+alias qfind='[[ ! -o noglob ]] && _qf_noglob=false || set -o noglob; _qfind'
 
 # regex find
 function _rfind() {
@@ -41,4 +41,4 @@ function _rfind() {
     fi
 }
 
-alias rfind='[[ ! -o noglob ]] && _rf_noglob=false && set -o noglob; _rfind'
+alias rfind='[[ ! -o noglob ]] && _rf_noglob=false || set -o noglob; _rfind'
