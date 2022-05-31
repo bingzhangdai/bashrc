@@ -5,7 +5,7 @@ alias dud='du -d 1 -h | sort -h'
 alias duf='du -sh * | sort -h | while read -r size file; do printf "${size}\t"; [[ -d "$file" ]] && printf "./${file}/\n" || printf -- "${file}\n"; done'
 
 # quickly search for file
-function _qfind() {
+function qfind() {
     while [ $# -gt 0 ]; do
         # printf -- '%s\n' "${RED}${1}${NONE}:"
         if command -v fd > /dev/null; then
@@ -15,6 +15,7 @@ function _qfind() {
         fi
         shift
     done
+
     if [ -n "$_qf_noglob" ]; then
         set +o noglob
         unset _qf_noglob
@@ -22,10 +23,10 @@ function _qfind() {
 }
 # temporarily stop shell wildcard character expansion
 # restore expansion in _qfind function
-alias qfind='[[ ! -o noglob ]] && _qf_noglob=false || set -o noglob; _qfind'
+alias qfind='[[ ! -o noglob ]] && _qf_noglob=false && set -o noglob; qfind'
 
 # regex find
-function _rfind() {
+function rfind() {
     while [ $# -gt 0 ]; do
         # printf -- '%s\n' "${RED}${1}${NONE}:"
         if command -v fd > /dev/null; then
@@ -41,4 +42,4 @@ function _rfind() {
     fi
 }
 
-alias rfind='[[ ! -o noglob ]] && _rf_noglob=false || set -o noglob; _rfind'
+alias rfind='[[ ! -o noglob ]] && _rf_noglob=false && set -o noglob; rfind'
