@@ -1,40 +1,68 @@
-# faster git function
-# _get_git_branch(out branch)
-# save shrinked path to val.
-# if the parameter is missing, print to stdout
-# _get_git_branch
-# _get_git_branch branch && echo "$branch"
+# pure bash version of git branch, even faster than git symbolic-ref --short -q HEAD
+#
+# The following options are available:
+#   -o, --output VAR        the variable to save the branch
+#
+# usage:
+#   git::branch [-o VAR]
+#
+# example:
+#   git::branch -> 'master'
+#   git::branch -o branch -> branch='master'
 function git::branch() {
     local _head_file _head
     local _dir="$PWD"
-
-    while [[ -n "$_dir" ]]; do
+    while [ -n "$_dir" ]; do
         _head_file="$_dir/.git/HEAD"
-        if [[ -f "$_dir/.git" ]]; then
+        if [ -f "$_dir/.git" ]; then
             read -r _head_file < "$_dir/.git" && _head_file="$_dir/${_head_file#gitdir: }/HEAD"
         fi
-        [[ -e "$_head_file" ]] && break
+        [ -f "$_head_file" ] && break
         _dir="${_dir%/*}"
     done
 
-    local branch=''
-    if [[ -e "$_head_file" ]]; then
-        read -r _head < "$_head_file" || return
-        case "$_head" in
-            ref:*) branch="${_head#ref: refs/heads/}" ;;
-            "") ;;
-            # HEAD detached
-            *) branch="${_head:0:9}" ;;
-        esac
-        if [ "$#" -eq 1 ]; then
-            printf -v "$1" '%s' "$branch"
-        else
-            printf '%s' "$branch"
-        fi
-        return 0
-    fi
+    [ -f "$_head_file" ] || return
+    read -r _head < "$_head_file" || return
 
-    return 128
+    local branch=''
+    case "$_head" in
+        ref:*)
+            branch="${_head#ref: refs/heads/}"
+            ;;
+        [0-9,a-z]*)
+            # HEAD detached
+            branch="${_head:0:9}"
+            ;;
+        *)
+            false
+            return
+            ;;
+    esac
+
+    if [ "$1" = '-o' ]; then
+        printf -v "$2" '%s' "$branch"
+    else
+        echo "$branch"
+    fi
 }
 
-# tracked: git diff --no-ext-diff --quiet --cached HEAD -- # Only tracked
+# # slower version
+# function git::branch() {
+#     command -v git > /dev/null || return
+#     # "git symbolic-ref --short -q HEAD" is 40% faster than "git rev-parse --abbrev-ref HEAD"
+#     local branch=$(git symbolic-ref --short HEAD 2>&1)
+#     if [[ "$branch" = *"fatal: not a git repository"* ]]; then
+#         false
+#         return
+#     fi
+#     if  [[ "$branch" = *"fatal: ref HEAD is not a symbolic ref"* ]]; then
+#         branch=$(git rev-parse --short HEAD 2> /dev/null)
+#     fi
+#     [[ -n "$branch" ]] || return
+
+#     if [ "$1" = '-o' ]; then
+#         printf -v "$2" '%s' "$branch"
+#     else
+#         echo "$branch"
+#     fi
+# }
