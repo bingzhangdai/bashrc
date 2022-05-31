@@ -1,6 +1,3 @@
-# TODO: eliminate the prefix ambiguity
-# ref: https://stackoverflow.com/questions/12422519/what-is-the-fastest-way-to-get-the-list-of-files-recursively-contained-in-a-dire
-# ref: https://stackoverflow.com/questions/11307257/is-there-a-bash-command-which-counts-files
 function _show_pwd() {
     local format='%s'
     format="${1:-$format}"
@@ -90,19 +87,16 @@ fi
 # ternary_operator(cond, out1, out2)
 # cond == 0 ? printf out1 : printf out2
 function ternary_operator() {
-    # preserve exit status
-    local exit=$?
     [ "$1" -eq 0 ] && printf "$2" || printf "$3"
-    return $exit
 }
 
 # colors can be found in lib/color.lib.bash
 if [ "$_color_prompt" = yes ]; then
      # username@hostname
     if [[ "$UID" == "0" ]]; then
-        PS1="\[${ORANGE}\]\u\[${NONE}\]@\[\$(ternary_operator \\j \${ORANGE} \${RED})\]${hostname}"
+        PS1="\[${ORANGE}\]\u\[${NONE}\]@\[\$(no_return_call ternary_operator \\j \${ORANGE} \${RED})\]${hostname}"
     else
-        PS1="\[${GREEN}\]\u\[${NONE}\]@\[\$(ternary_operator \\j \${GREEN} \${RED})\]${hostname}"
+        PS1="\[${GREEN}\]\u\[${NONE}\]@\[\$(no_return_call ternary_operator \\j \${GREEN} \${RED})\]${hostname}"
     fi
     PS1+="\[${NONE}\]:"
     # \w

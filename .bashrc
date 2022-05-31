@@ -54,7 +54,7 @@ get_miliseconds start_time
 export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
-builtin source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
+source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
@@ -70,7 +70,7 @@ done
 unset path file
 
 # theme
-builtin source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
+source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
 timelogger_log_interval 1 "source theme.bash used %s."
 
 # clean up
