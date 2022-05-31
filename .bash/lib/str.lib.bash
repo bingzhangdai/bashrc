@@ -5,9 +5,12 @@
 #   -o, --output VAR        the variable to save the joined string to
 #
 # usage:
-#   join delimiter string...
+#   str::join [-d DELI] [-o VAR] [STRING...]
+#
 # example:
-#   join ',' 'a' 'b' 'c' -> 'a,b,c'
+#   join 'a' 'b' 'c' -> 'a b c'
+#   join -d ':' 'a' 'b' 'c' -> 'a:b:c'
+#   join -o output_var 'a' 'b' 'c' -> output_var='a b c'
 function str::join() {
     local deli=' ' val='' output_var=''
     while [[ "$1" == -* ]]; do
@@ -48,4 +51,3 @@ function str::join() {
         echo $val
     fi
 }
-

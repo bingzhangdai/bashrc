@@ -1,7 +1,7 @@
 # Shrink paths, e.g. /foo/bar/quux -> /f/b/quux.
 #
 # This lib can shrink any kind of path-like argument, e.g. git branch name:
-#   shrink_path.feature/user_name/branch_name -> f/u/branch_name
+#   shrink_path feature/user_name/branch_name -> f/u/branch_name
 #
 # The following options are available:
 #

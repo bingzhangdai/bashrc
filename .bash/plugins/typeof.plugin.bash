@@ -29,12 +29,11 @@ typeof () {
             *'i'*) attributes+=('integer') ;;
             *'-'*) attributes+=('string') ;;
             *'n'*) attributes+=('reference') ;;
-            *'x'*) attributes+=('environment variable') ;;
-            *) attributes+=('variable') ;;
+            *'x'*) attributes+=('environment') ;;
         esac
 
         local variable_attributes;
-        str::join -o variable_attributes "${attributes[@]}"
+        str::join -o variable_attributes "${attributes[@]}" 'variable'
         values+=("$variable_attributes")
     fi
 
