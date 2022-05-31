@@ -19,6 +19,11 @@
 function _is_path_ambiguous() {
     local prefix="${1/#\~/$HOME}"
 
+    # return true if it is already a full directory/file path
+    if [[ -d "$prefix" ]] || [[ -f "$prefix" ]]; then
+        return 0
+    fi
+
     local noglob=false
     if [ -o noglob ]; then
         noglob=true
