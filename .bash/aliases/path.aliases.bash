@@ -1,3 +1,6 @@
+# print each PATH entry on a separate line
+alias path='echo -e ${PATH//:/\\n}'
+
 # deduplicate the variable separated by ':' while keeping the first occurrence.
 # example:
 #   dedup PATH

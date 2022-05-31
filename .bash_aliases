@@ -1,9 +1,6 @@
 # temporarily use proxy
 alias proxy='http_proxy=http://127.0.0.1:1080 https_proxy=http://127.0.0.1:1080 '
 
-# print each PATH entry on a separate line
-alias path='echo -e ${PATH//:/\\n}'
-
 # reload bash
 alias reload="exec ${SHELL} -l"
 alias rl='reload'
