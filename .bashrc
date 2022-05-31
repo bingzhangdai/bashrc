@@ -17,13 +17,9 @@ case $BASH_VERSION in
     ;;
 esac
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-color_prompt=yes
-
-# uncomment to add git information to the prompt
-git_prompt=yes
+if [ -f ~/.theme.bash ]; then
+    builtin source ~/.theme.bash
+fi
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -58,7 +54,7 @@ get_miliseconds start_time
 export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
-builtin source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
+source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
@@ -74,7 +70,7 @@ done
 unset path file
 
 # theme
-builtin source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
+source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
 timelogger_log_interval 1 "source theme.bash used %s."
 
 # clean up
