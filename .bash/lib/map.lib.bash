@@ -5,4 +5,9 @@ function map::contains_key() {
     [ "${map[$key]+isset}" ]
 }
 
+function map::is_map() {
+    local signature=$(declare -p "$1" 2>/dev/null)
+    [[ "$signature" =~ declare\ -.*A.*\ $1 ]]
+}
+
 alias map='declare -A '

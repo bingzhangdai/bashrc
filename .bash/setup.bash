@@ -7,6 +7,7 @@ function path::is_abs() {
     [[ "$file" == "/"* ]]
 }
 
+# preload some dependencies
 function load_dependency() {
     declare -a _dependencies=(
         "lib/map.lib.bash"
@@ -45,6 +46,7 @@ function source() {
 
 alias .=source
 
+# load logging library
 . lib/log.lib.bash
 
 function cleanup() {
