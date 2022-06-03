@@ -1,32 +1,60 @@
-export _DOT_BASH_CACHE="${_DOT_BASH_BASEDIR}/.bash/cache"
+_DOT_BASH_CACHE="$_DOT_BASH_BASEDIR/.bash/cache"
 
+declare -g -A _SOURCED_FILES
 
-function include() {
-    local script=$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")
-    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
-
-    builtin source $script
+function path::is_abs() {
+    local file="$1"
+    [[ "$file" == "/"* ]]
 }
 
+function load_dependency() {
+    declare -a _dependencies=(
+        "lib/map.lib.bash"
+        "lib/array.lib.bash"
+    )
+    local dependency
+    for dependency in "${_dependencies[@]}"; do
+        dependency=$(dirname ${BASH_SOURCE[0]})/$dependency
+        dependency="$(builtin cd $(dirname $dependency) && builtin pwd)/${dependency##*/}"
+        builtin source "$dependency"
+        _SOURCED_FILES[$dependency]=$?
+    done
+}
+
+load_dependency
+unset -f load_dependency
+
+# support source function by relative path and files will only be sourced once
 function source() {
     local script=$1
-    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "$1" )" && pwd)/${1##*/}"
+    if ! path::is_abs "$script"; then
+        script=$(dirname ${BASH_SOURCE[1]})/$script
+        script="$(builtin cd $(dirname $script) && builtin pwd)/${script##*/}"
+    fi
 
-    builtin source "$1"
+    if map::contains_key "$script" _SOURCED_FILES; then
+        logger::log DEBUG "source $script skipped"
+        return "${_SOURCED_FILES[$script]}"
+    fi
+
+    builtin source $script
+    _SOURCED_FILES[$script]=$?
+
+    return "${_SOURCED_FILES[$script]}"
 }
 
 alias .=source
 
-function cleanup_pragma_once() {
-    unset -f _source_once
-    unset -f include
+. lib/log.lib.bash
+
+function cleanup() {
     unset -f source
     unalias .
+    unset _DOT_BASH_CACHE
+    unset _SOURCED_FILES
 }
-
-source ${_DOT_BASH_BASEDIR}/.bash/lib/log.lib.bash
 
 # see cleanup.bash
 declare -g -a CLEANUP_HANDLER
 
-CLEANUP_HANDLER+=(cleanup_pragma_once)
+CLEANUP_HANDLER+=(cleanup)

@@ -1,8 +1,8 @@
 # You can specify one of the following severity levels (in increasing order of severity): INFO, WARNING, ERROR, and FATAL. Logging a FATAL message terminates the program (after the message is logged). Note that messages of a given severity are logged not only in the logfile for that severity, but also in all logfiles of lower severity. E.g., a message of severity FATAL will be logged to the logfiles of severity FATAL, ERROR, WARNING, and INFO.
-include color
-include map
 
 # region log level
+
+source color.lib.bash
 
 LOG_DEBUG=0
 LOG_INFO=1

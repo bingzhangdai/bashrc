@@ -47,7 +47,7 @@ if ! _setup_fzf_using_package && ! _setup_fzf_using_base_dir && ! _setup_fzf_usi
     return
 fi
 
-if include fd; then
+if source fd.plugin.bash; then
     command -v fdfind > /dev/null && fd=fdfind
     export FZF_DEFAULT_COMMAND="${fd:-fd} --type f --type l --follow --hidden --exclude .git"
     export FZF_ALT_C_COMMAND="${fd:-fd} --type d --type l --follow --hidden --exclude .git 2> /dev/null"

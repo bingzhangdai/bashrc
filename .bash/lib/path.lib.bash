@@ -138,8 +138,17 @@ function path::shrink() {
 function path::abs() {
     local file="$1"
     if ! [[ "$file" == "/"* ]]; then
-        file="$(builtin cd "$(dirname "$file")" && pwd)/$(basename "$file")"
+        file="$(builtin cd "$(dirname "$file")" && builtin pwd)/${file##*/}"
     fi
 
     echo "$file"
+}
+
+# get the absolute path of the caller
+function path::pwd() {
+    if [ "${#BASH_SOURCE[@]}" -eq 1 ]; then
+        builtin pwd
+    else
+        echo "$(builtin cd $(dirname ${BASH_SOURCE[1]}) && builtin pwd)"
+    fi
 }

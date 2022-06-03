@@ -15,7 +15,7 @@ builtin source $zsh_plugin
 
 export _Z_NO_RESOLVE_SYMLINKS=1
 
-if include fzf; then
+if source fzf.plugin.bash; then
     unalias z 2> /dev/null
     function z() {
         if [ $# -gt 0 ]; then

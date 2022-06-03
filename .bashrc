@@ -39,10 +39,18 @@ export LESS='-R -S -M -i -# .2'
 ## default editor
 export EDITOR='vi'
 
-export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+
+# region setup
+
+_DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && builtin pwd)"
+
+# endregion
+
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
+
+logger::minloglevel DEBUG
 
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
