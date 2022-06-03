@@ -1,60 +1,23 @@
 export _DOT_BASH_CACHE="${_DOT_BASH_BASEDIR}/.bash/cache"
 
-# save already sourced scripts
-declare -g -A _pragma_once_already_seen
-
-# return true if already processed
-function _pragma_once() {
-    local script="${BASH_SOURCE[1]}"
-    if [ "$script" = "${script#/}" ]; then
-        script="$(builtin cd "$(dirname "$script" )" && pwd)/${script##*/}"
-    fi
-
-    [[ ${_pragma_once_already_seen["$script"]} ]] && return
-    _pragma_once_already_seen["$script"]=0
-
-    false
-}
-
-alias pragma_once='_pragma_once && return'
-
-function source_impl() {
-    local _source="${BASH_SOURCE[2]##*/}" _line="${BASH_LINENO[1]}"
-    if [[ ${_pragma_once_already_seen["$1"]} ]]; then
-        logger::log DEBUG "'${1##*/}' skipped"
-        return ${_pragma_once_already_seen["$1"]}
-    fi
-
-    builtin source "$1"
-    local _exit=$?
-
-    # save exit state
-    [[ ${_pragma_once_already_seen["$1"]} ]] && _pragma_once_already_seen["$1"]=$_exit
-
-    return $_exit
-}
 
 function include() {
     local script=$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")
     [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
 
-    source_impl $script
+    builtin source $script
 }
 
 function source() {
     local script=$1
     [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "$1" )" && pwd)/${1##*/}"
 
-    source_impl $script
+    builtin source "$1"
 }
 
 alias .=source
 
 function cleanup_pragma_once() {
-    unset -f _pragma_once
-    unset _pragma_once_already_seen
-    unalias pragma_once
-
     unset -f _source_once
     unset -f include
     unset -f source

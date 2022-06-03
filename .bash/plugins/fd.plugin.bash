@@ -1,5 +1,3 @@
-pragma_once
-
 command -v fdfind > /dev/null && alias fd=fdfind
 
 if ! command -v fd > /dev/null; then

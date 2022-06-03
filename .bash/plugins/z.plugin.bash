@@ -1,4 +1,3 @@
-pragma_once
 # z - jump around
 # https://github.com/rupa/z
 
