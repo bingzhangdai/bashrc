@@ -1,7 +1,7 @@
 # https://pip.pypa.io/en/stable/user_guide/#command-completion
 
 if ! command -v pip pip3 > /dev/null; then
-    log INFO "cannot find pip3/pip command, skipped."
+    logger::log INFO "cannot find pip3/pip command, skipped."
     false
     return
 fi

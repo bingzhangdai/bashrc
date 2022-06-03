@@ -1,22 +1,22 @@
 # Shrink paths, e.g. /foo/bar/quux -> /f/b/quux.
 #
 # This lib can shrink any kind of path-like argument, e.g. git branch name:
-#   shrink_path feature/user_name/branch_name -> f/u/branch_name
+#   path::shrink feature/user_name/branch_name -> f/u/branch_name
 #
 # The following options are available:
 #
 #   -d, --directory     The path is assumed to be a directory, and will by default eliminate
-#                       the ambiguity, equivalent to -f _is_path_ambiguous
+#                       the ambiguity, equivalent to -f path::is_dir_prefix_ambiguous
 #   -f FUNC             The function to indicate if the path trunncated prefix is ambigous, names
 #                       will be collapsed to their shortest unambiguous form. The function must
 #                       return 0 if the path is ambiguous. Without this option, the directory name
 #                       is truncated without checking if it is ambiguous.
 #   -#                  Truncate each directly to at least this many characters exclusive of the
 #                       period character(s) (defaulting to 1).
-#   -e VAR              The variable to save the shrunken path to.
+#   -o, --output VAR    The variable to save the shrunken path to.
 
 # return true if the path prefix is ambuguous
-function _is_path_ambiguous() {
+function is_dir_prefix_ambiguous() {
     local prefix="${1/#\~/$HOME}"
 
     # return true if it is already a full directory/file path
@@ -37,12 +37,12 @@ function _is_path_ambiguous() {
     [ "${#list_files[@]}" -ne 1 ]
 }
 
-function _default_is_path_ambiguous() {
+function path::_default_is_dir_prefix_ambiguous() {
     false
 }
 
-function shrink_path() {
-    local is_anbiguous_func=_default_is_path_ambiguous length=1
+function path::shrink() {
+    local is_anbiguous_func=path::_default_is_dir_prefix_ambiguous length=1
     local output_var=''
 
     while [[ "$1" == -* ]]; do
@@ -52,26 +52,26 @@ function shrink_path() {
                 break
                 ;;
             -d|--directory)
-                is_anbiguous_func=_is_path_ambiguous
+                is_anbiguous_func=is_dir_prefix_ambiguous
                 ;;
             -f)
-                _is_path_ambiguous="$2"
+                is_dir_prefix_ambiguous="$2"
                 shift
                 ;;
             -[0-9]|-[0-9][0-9])
                 length=${1/-/}
                 ;;
-            -e)
+            -o|--output)
                 output_var="$2"
                 shift
                 ;;
             -h|--help)
-                echo "Usage: shrink_path [-d|--directory] [-f FUNC] [-#] [-e VAR] PATH"
+                echo "Usage: path::shrink [-d|--directory] [-f FUNC] [-#] [-e VAR] PATH"
                 return 0
                 ;;
             -*)
                 echo "Unknown option: $1" >&2
-                shrink_path --help >&2
+                path::shrink --help >&2
                 return 1
                 ;;
         esac
@@ -132,4 +132,14 @@ function shrink_path() {
     else
         printf '%s\n' "${dir}${base}"
     fi
+}
+
+# get the absolute path of the file
+function path::abs() {
+    local file="$1"
+    if ! [[ "$file" == "/"* ]]; then
+        file="$(builtin cd "$(dirname "$file")" && pwd)/$(basename "$file")"
+    fi
+
+    echo "$file"
 }

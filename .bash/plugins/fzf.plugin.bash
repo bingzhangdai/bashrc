@@ -41,9 +41,9 @@ function _setup_fzf_using_homebrew() {
 if ! _setup_fzf_using_package && ! _setup_fzf_using_base_dir && ! _setup_fzf_using_homebrew; then
     if command -v fzf > /dev/null; then
         # fzf installed from package manager, but _setup_fzf_using_package failed to properly config fzf
-        log ERROR "fzf setup failed."
+        logger::log ERROR "fzf setup failed."
     else
-        log INFO "command fzf cannot be found, skipped."
+        logger::log INFO "command fzf cannot be found, skipped."
     fi
     false
     return

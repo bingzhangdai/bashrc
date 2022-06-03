@@ -21,7 +21,7 @@ alias pragma_once='_pragma_once && return'
 function source_impl() {
     local _source="${BASH_SOURCE[2]##*/}" _line="${BASH_LINENO[1]}"
     if [[ ${_pragma_once_already_seen["$1"]} ]]; then
-        log DEBUG "'${1##*/}' skipped"
+        logger::log DEBUG "'${1##*/}' skipped"
         return ${_pragma_once_already_seen["$1"]}
     fi
 
@@ -62,7 +62,6 @@ function cleanup_pragma_once() {
 }
 
 source ${_DOT_BASH_BASEDIR}/.bash/lib/log.lib.bash
-source ${_DOT_BASH_BASEDIR}/.bash/lib/profile.lib.bash
 
 # see cleanup.bash
 declare -g -a CLEANUP_HANDLER
