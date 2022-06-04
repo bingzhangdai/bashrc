@@ -1,8 +1,9 @@
-# You can specify one of the following severity levels (in increasing order of severity): INFO, WARNING, ERROR, and FATAL. Logging a FATAL message terminates the program (after the message is logged). Note that messages of a given severity are logged not only in the logfile for that severity, but also in all logfiles of lower severity. E.g., a message of severity FATAL will be logged to the logfiles of severity FATAL, ERROR, WARNING, and INFO.
-
-# region log level
+# A logging library for bash
+# You can specify one of the following severity levels (in increasing order of severity): DEBUG, INFO, WARNING, ERROR, and FATAL. Logging a FATAL message terminates the program (after the message is logged).
 
 source color.lib.bash
+
+# region log level
 
 LOG_DEBUG=0
 LOG_INFO=1
@@ -45,10 +46,10 @@ function logger::loglevel() {
 function logger::_get_current_time() {
     local current_time
     if [ ${BASH_VERSINFO} -ge 5 ]; then
-        printf -v current_time '%(%m%d %H:%M:%S)T.%06d' -1 $(( ${EPOCHREALTIME/./} % 1000000 ))
+        printf -v current_time '%(%m%d %H:%M:%S)T.%06d' -1 $(( 10#${EPOCHREALTIME#*.} ))
     else
         if command -v gdate > /dev/null; then
-            current_time=$(gdate +%m%d_%H:%M:%S.%N)
+            current_time=$(gdate +%m%d %H:%M:%S.%6N)
         else
             current_time=$(date +'%m%d %H:%M:%S.%6N')
         fi
@@ -110,3 +111,5 @@ logger::log() {
         exit 1
     fi
 }
+
+alias log=logger::log

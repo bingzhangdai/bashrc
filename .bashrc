@@ -17,10 +17,6 @@ case $BASH_VERSION in
     ;;
 esac
 
-if [ -f ~/.theme.bash ]; then
-    builtin source ~/.theme.bash
-fi
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -39,6 +35,9 @@ export LESS='-R -S -M -i -# .2'
 ## default editor
 export EDITOR='vi'
 
+if [ -f ~/.theme.bash ]; then
+    source ~/.theme.bash
+fi
 
 # region setup
 
@@ -56,7 +55,8 @@ logger::minloglevel DEBUG
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
 
-for path in "${_DOT_BASH_BASEDIR}"/.bash/{lib,completions,plugins,aliases}; do
+for path in ./.bash/{lib,completions,plugins,aliases}; do
+    path=$(path::abs $path)
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
         [[ "$?" -ne "0" ]] && logger::log WARN "'$file' returned non-zero code."
@@ -65,7 +65,7 @@ done
 unset path file
 
 # theme
-source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
+source ./.bash/theme.bash
 
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash

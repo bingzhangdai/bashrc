@@ -2,16 +2,12 @@ _DOT_BASH_CACHE="$_DOT_BASH_BASEDIR/.bash/cache"
 
 declare -g -A _SOURCED_FILES
 
-function path::is_abs() {
-    local file="$1"
-    [[ "$file" == "/"* ]]
-}
-
 # preload some dependencies
 function load_dependency() {
     declare -a _dependencies=(
         "lib/map.lib.bash"
         "lib/array.lib.bash"
+        "lib/path.lib.bash"
     )
     local dependency
     for dependency in "${_dependencies[@]}"; do
@@ -25,11 +21,11 @@ function load_dependency() {
 load_dependency
 unset -f load_dependency
 
-# support source function by relative path and files will only be sourced once
+# support source by relative path and files will only be sourced only once
 function source() {
     local script=$1
     if ! path::is_abs "$script"; then
-        script=$(dirname ${BASH_SOURCE[1]})/$script
+        script=$(path::caller_path)/$script
         script="$(builtin cd $(dirname $script) && builtin pwd)/${script##*/}"
     fi
 
