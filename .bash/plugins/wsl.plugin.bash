@@ -35,5 +35,5 @@ if _is_in_wsl; then
         # fi
     }
 else
-    logger::log INFO "not in wsl, skipped"
+    logger.log INFO "not in wsl, skipped"
 fi

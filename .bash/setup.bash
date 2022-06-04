@@ -1,5 +1,3 @@
-_DOT_BASH_CACHE="$_DOT_BASH_BASEDIR/.bash/cache"
-
 declare -g -A _SOURCED_FILES
 
 # preload some dependencies
@@ -21,16 +19,18 @@ function load_dependency() {
 load_dependency
 unset -f load_dependency
 
+_DOT_BASH_CACHE="$(path.current_path)/cache"
+
 # support source by relative path and files will only be sourced only once
 function source() {
     local script=$1
-    if ! path::is_abs "$script"; then
-        script=$(path::caller_path)/$script
+    if ! path.is_abs "$script"; then
+        script=$(path.caller_path)/$script
         script="$(builtin cd $(dirname $script) && builtin pwd)/${script##*/}"
     fi
 
     if map::contains_key "$script" _SOURCED_FILES; then
-        logger::log DEBUG "source $script skipped"
+        logger.log DEBUG "source $script skipped"
         return "${_SOURCED_FILES[$script]}"
     fi
 

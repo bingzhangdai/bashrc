@@ -24,26 +24,26 @@ if [ -z "$_log_loglevel" ]; then
 fi
 
 # log messages at or above this level, default is ERROR
-function logger::minloglevel() {
+function logger.minloglevel() {
     if ! map::contains_key $1 _log_loglevel_enum; then
-        logger::log ERROR "invalid log level '$1'"
+        logger.log ERROR "invalid log level '$1'"
         return 1
     fi
     _log_lib_loglevel=$1
 }
 
-function logger::is_enabled() {
+function logger.is_enabled() {
     [ "${_log_loglevel_enum[$1]}" -ge "${_log_loglevel_enum[$_log_lib_loglevel]}" ]
 }
 
 # get the current loglevel
-function logger::loglevel() {
+function logger.loglevel() {
     echo "${_log_loglevel_rev[$_log_lib_loglevel]}"
 }
 
 # endregion
 
-function logger::_get_current_time() {
+function logger._get_current_time() {
     local current_time
     if [ ${BASH_VERSINFO} -ge 5 ]; then
         printf -v current_time '%(%m%d %H:%M:%S)T.%06d' -1 $(( 10#${EPOCHREALTIME#*.} ))
@@ -58,7 +58,7 @@ function logger::_get_current_time() {
     printf -v $1 '%s' "$current_time"
 }
 
-logger::log() {
+logger.log() {
     local level="$1"
     if map::contains_key $level _log_loglevel_enum; then
         shift
@@ -66,14 +66,14 @@ logger::log() {
         level=INFO
     fi
 
-    ! logger::is_enabled $level && return
+    ! logger.is_enabled $level && return
     [ /dev/stderr -ef /dev/null ] && return
 
     local source_file="${BASH_SOURCE[1]##*/}"
     source_file="${source_file:-$0}":"${BASH_LINENO[0]}"
 
     local time
-    logger::_get_current_time time
+    logger._get_current_time time
 
     local format color
     case "$level" in
@@ -112,4 +112,4 @@ logger::log() {
     fi
 }
 
-alias log=logger::log
+alias log=logger.log
