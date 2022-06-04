@@ -1,70 +1,58 @@
-export _DOT_BASH_CACHE="${_DOT_BASH_BASEDIR}/.bash/cache"
+declare -g -A _SOURCED_FILES
 
-# save already sourced scripts
-declare -g -A _pragma_once_already_seen
-
-# return true if already processed
-function _pragma_once() {
-    local script="${BASH_SOURCE[1]}"
-    if [ "$script" = "${script#/}" ]; then
-        script="$(builtin cd "$(dirname "$script" )" && pwd)/${script##*/}"
-    fi
-
-    [[ ${_pragma_once_already_seen["$script"]} ]] && return
-    _pragma_once_already_seen["$script"]=0
-
-    false
+# preload some dependencies
+function load_dependency() {
+    declare -a _dependencies=(
+        "lib/map.lib.bash"
+        "lib/array.lib.bash"
+        "lib/path.lib.bash"
+    )
+    local dependency
+    for dependency in "${_dependencies[@]}"; do
+        dependency=$(dirname ${BASH_SOURCE[0]})/$dependency
+        dependency="$(builtin cd $(dirname $dependency) && builtin pwd)/${dependency##*/}"
+        builtin source "$dependency"
+        _SOURCED_FILES[$dependency]=$?
+    done
 }
 
-alias pragma_once='_pragma_once && return'
+load_dependency
+unset -f load_dependency
 
-function source_impl() {
-    local _source="${BASH_SOURCE[2]##*/}" _line="${BASH_LINENO[1]}"
-    if [[ ${_pragma_once_already_seen["$1"]} ]]; then
-        log DEBUG "'${1##*/}' skipped"
-        return ${_pragma_once_already_seen["$1"]}
-    fi
+_DOT_BASH_CACHE="$(path.current_path)/cache"
 
-    builtin source "$1"
-    local _exit=$?
-
-    # save exit state
-    [[ ${_pragma_once_already_seen["$1"]} ]] && _pragma_once_already_seen["$1"]=$_exit
-
-    return $_exit
-}
-
-function include() {
-    local script=$(basename ${BASH_SOURCE[1]} | awk "{ sub(/^[^.]*/, \"$1\"); print }")
-    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "${BASH_SOURCE[1]}" )" && pwd)/${script}"
-
-    source_impl $script
-}
-
+# support source by relative path and files will only be sourced only once
 function source() {
     local script=$1
-    [ "$script" = "${script#/}" ] && script="$(builtin cd "$(dirname "$1" )" && pwd)/${1##*/}"
+    if ! path.is_abs "$script"; then
+        script=$(path.caller_path)/$script
+        script="$(builtin cd $(dirname $script) && builtin pwd)/${script##*/}"
+    fi
 
-    source_impl $script
+    if map::contains_key "$script" _SOURCED_FILES; then
+        logger.log DEBUG "source $script skipped"
+        return "${_SOURCED_FILES[$script]}"
+    fi
+
+    builtin source $script
+    _SOURCED_FILES[$script]=$?
+
+    return "${_SOURCED_FILES[$script]}"
 }
 
 alias .=source
 
-function cleanup_pragma_once() {
-    unset -f _pragma_once
-    unset _pragma_once_already_seen
-    unalias pragma_once
+# load logging library
+. lib/log.lib.bash
 
-    unset -f _source_once
-    unset -f include
+function cleanup() {
     unset -f source
     unalias .
+    unset _DOT_BASH_CACHE
+    unset _SOURCED_FILES
 }
-
-source ${_DOT_BASH_BASEDIR}/.bash/lib/log.lib.bash
-source ${_DOT_BASH_BASEDIR}/.bash/lib/profile.lib.bash
 
 # see cleanup.bash
 declare -g -a CLEANUP_HANDLER
 
-CLEANUP_HANDLER+=(cleanup_pragma_once)
+CLEANUP_HANDLER+=(cleanup)

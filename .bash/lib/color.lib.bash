@@ -1,5 +1,3 @@
-pragma_once
-
 # set a fancy prompt (non-color, unless we know we "want" color)
 _color_prompt=
 if [ -n "$color_prompt" ]; then
@@ -8,25 +6,25 @@ if [ -n "$color_prompt" ]; then
     xterm-*color)
       _color_prompt=yes
       ;;
-  *)
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-      # We have color support; assume it's compliant with Ecma-48
-      # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-      # a case would tend to support setf rather than setaf.)
-      _color_prompt=yes
-    fi
-    ;;
+    *)
+      if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        _color_prompt=yes
+      fi
+      ;;
   esac
 fi
 
 # region https://github.com/tmux/tmux/blob/dae2868d1227b95fd076fb4a5efa6256c7245943/colour.c#L57
 # TODO: test: https://gist.github.com/MicahElliott/719710
-function _color_dist_sq() {
+function color::_color_dist_sq() {
   local R=$1 G=$2 B=$3 r=$4 g=$5 b=$6
   echo $(( (R - r) * (R - r) + (G - g) * (G - g) + (B - b) * (B - b) ))
 }
 
-function _colour_to_6cube() {
+function color::_colour_to_6cube() {
     local v="$1"
     if (( v < 48 )); then
       echo 0
@@ -39,9 +37,9 @@ function _colour_to_6cube() {
 
 _q2c=(0x00 0x5f 0x87 0xaf 0xd7 0xff)
 
-function rgb_to_256() {
+function color::rgb_to_256() {
   local r=$1 g=$2 b=$3
-  local qr=$(_colour_to_6cube $r) qg=$(_colour_to_6cube $g) qb=$(_colour_to_6cube $b)
+  local qr=$(color::_colour_to_6cube $r) qg=$(color::_colour_to_6cube $g) qb=$(color::_colour_to_6cube $b)
   local cr=${_q2c[$qr]} cg=${_q2c[$qg]} cb=${_q2c[$qb]}
 
   # if we have hit the colour exactly, return early.
@@ -60,8 +58,8 @@ function rgb_to_256() {
   grey=$(( 8 + (10 * grey_idx) ))
 
   # is grey or 6x6x6 colour closest?
-  local d=$(_color_dist_sq $cr $cg $cb $r $g $b)
-  local gd=$(_color_dist_sq $grey $grey $grey $r $g $b)
+  local d=$(color::_color_dist_sq $cr $cg $cb $r $g $b)
+  local gd=$(color::_color_dist_sq $grey $grey $grey $r $g $b)
   local idx
   if (( gd < d )); then
     idx=$(( 232 + grey_idx ))
@@ -76,13 +74,21 @@ function rgb_to_256() {
 
 # 256 Colors Cheat Sheet
 # https://www.ditig.com/256-colors-cheat-sheet
-function hex_to_256() {
+function color::hex_to_256() {
     local hex=${1#"#"}
     local r=${hex:0:2} g=${hex:2:2} b=${hex:4:2}
     r=$((16#${r}))
     g=$((16#${g}))
     b=$((16#${b}))
-    rgb_to_256 $r $g $b
+    color::rgb_to_256 $r $g $b
+}
+
+function color::256() {
+  tput setaf $1
+}
+
+function color::hex() {
+  color::256 $(color::hex_to_256 "$1")
 }
 
 # http://wiki.bash-hackers.org/scripting/terminalcodes
@@ -166,15 +172,15 @@ if [ -n "$_color_prompt" ]; then
     NONE=$(tput sgr0)
     # monokai
     # ref: https://github.com/microsoft/vscode/blob/main/extensions/theme-monokai/themes/monokai-color-theme.json
-    ORANGE=$(tput setaf $(hex_to_256 "#FD971F"))
-    BLACK=$(tput setaf $(hex_to_256 "#272822")) # background
-    YELLOW=$(tput setaf $(hex_to_256 "#E6DB74"))
-    PURPLE=$(tput setaf $(hex_to_256 "#AE81FF"))
-    BLUE=$(tput setaf $(hex_to_256 "#66D9EF"))
-    GREEN=$(tput setaf $(hex_to_256 "#A6E22E"))
-    RED=$(tput setaf $(hex_to_256 "#F92672"))
-    WHITE=$(tput setaf $(hex_to_256 "#F8F8F2")) # foreground
-    BLACK_B=$(tput setaf $(hex_to_256 "#75715E")) # comment
+    ORANGE=$(color::hex "#FD971F")
+    BLACK=$(color::hex "#272822") # background
+    YELLOW=$(color::hex "#E6DB74")
+    PURPLE=$(color::hex "#AE81FF")
+    BLUE=$(color::hex "#66D9EF")
+    GREEN=$(color::hex "#A6E22E")
+    RED=$(color::hex "#F92672")
+    WHITE=$(color::hex "#F8F8F2") # foreground
+    BLACK_B=$(color::hex "#75715E") # comment
   fi
 fi
 

@@ -17,10 +17,6 @@ case $BASH_VERSION in
     ;;
 esac
 
-if [ -f ~/.theme.bash ]; then
-    builtin source ~/.theme.bash
-fi
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -39,46 +35,38 @@ export LESS='-R -S -M -i -# .2'
 ## default editor
 export EDITOR='vi'
 
-# region profile
-function get_miliseconds() {
-    if [ ${BASH_VERSINFO} -ge 5 ]; then
-        printf -v "$1" '%s' "$((${EPOCHREALTIME/./}/1000))"
-    else
-        printf -v "$1" '%s' "$(date +%s%3N)"
-    fi
-}
-# start time
-get_miliseconds start_time
+if [ -f ~/.theme.bash ]; then
+    source ~/.theme.bash
+fi
+
+# region setup
+
+_DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && builtin pwd)"
+
 # endregion
 
-export _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
 
+logger.minloglevel DEBUG
+
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
-timelogger_start 1 TRACE
-for path in "${_DOT_BASH_BASEDIR}"/.bash/{lib,completions,plugins,aliases}; do
+
+for path in ./.bash/{lib,completions,plugins,aliases}; do
+    path=$(path.abs $path)
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
-        [[ "$?" -ne "0" ]] && log WARN "'$file' returned non-zero code."
-        timelogger_log_interval 1 "source ${file##*/} used %s."
+        [[ "$?" -ne "0" ]] && logger.log WARN "'$file' returned non-zero code."
     done
 done
 unset path file
 
 # theme
-source "${_DOT_BASH_BASEDIR}"/.bash/theme.bash
-timelogger_log_interval 1 "source theme.bash used %s."
+source ./.bash/theme.bash
 
 # clean up
 builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
-timelogger_log_interval 1 "source cleanup.bash used %s."
 
-# region profile
-# end time
-get_miliseconds end_time
-log  "total time spent: $(((end_time - start_time) / 1000))s $(((end_time - start_time) % 1000))ms."
-# endregion

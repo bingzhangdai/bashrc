@@ -21,12 +21,12 @@ util_download() {
     elif command -v wget > /dev/null; then
         wget "$URL" -O "$DEST"
     else
-        log ERROR "please install curl or wget before downloading!"
+        logger.log ERROR "please install curl or wget before downloading!"
         return 127
     fi
     local ex=$?
     if [[ $ex -ne 0 ]]; then
-        log ERROR "downloading ${URL##*/} failed!"
+        logger.log ERROR "downloading ${URL##*/} failed!"
         return $ex
     fi
 }

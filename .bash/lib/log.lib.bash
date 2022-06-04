@@ -1,59 +1,115 @@
-pragma_once
+# A logging library for bash
+# You can specify one of the following severity levels (in increasing order of severity): DEBUG, INFO, WARNING, ERROR, and FATAL. Logging a FATAL message terminates the program (after the message is logged).
 
-include color
+source color.lib.bash
 
-declare -g -A LogLevelEnum
-LogLevelEnum["TRACE"]=0
-LogLevelEnum["DEBUG"]=1
-LogLevelEnum["INFO"]=2
-LogLevelEnum["WARN"]=3
-LogLevelEnum["ERROR"]=4
+# region log level
 
-# first argument (optional, default to INFO) is log level
-# exmaple: log 'hello world!'
-# example: log ERROR 'no such file or directory.'
+LOG_DEBUG=0
+LOG_INFO=1
+LOG_WARN=2
+LOG_ERROR=3
+LOG_FATAL=4
 
-_is_loglevel_enabled() {
-    [[ "${LogLevelEnum[$1]}" -ge "${LogLevelEnum[${LOGLEVEL:-ERROR}]}" ]]
+declare -g -A _log_loglevel_enum
+_log_loglevel_enum['DEBUG']=$LOG_DEBUG
+_log_loglevel_enum['INFO']=$LOG_INFO
+_log_loglevel_enum['WARN']=$LOG_WARN
+_log_loglevel_enum['ERROR']=$LOG_ERROR
+_log_loglevel_enum['FATAL']=$LOG_FATAL
+
+# the defaul log level
+if [ -z "$_log_loglevel" ]; then
+    _log_lib_loglevel=ERROR
+fi
+
+# log messages at or above this level, default is ERROR
+function logger.minloglevel() {
+    if ! map::contains_key $1 _log_loglevel_enum; then
+        logger.log ERROR "invalid log level '$1'"
+        return 1
+    fi
+    _log_lib_loglevel=$1
 }
 
-log() {
+function logger.is_enabled() {
+    [ "${_log_loglevel_enum[$1]}" -ge "${_log_loglevel_enum[$_log_lib_loglevel]}" ]
+}
+
+# get the current loglevel
+function logger.loglevel() {
+    echo "${_log_loglevel_rev[$_log_lib_loglevel]}"
+}
+
+# endregion
+
+function logger._get_current_time() {
+    local current_time
+    if [ ${BASH_VERSINFO} -ge 5 ]; then
+        printf -v current_time '%(%m%d %H:%M:%S)T.%06d' -1 $(( 10#${EPOCHREALTIME#*.} ))
+    else
+        if command -v gdate > /dev/null; then
+            current_time=$(gdate +%m%d %H:%M:%S.%6N)
+        else
+            current_time=$(date +'%m%d %H:%M:%S.%6N')
+        fi
+    fi
+
+    printf -v $1 '%s' "$current_time"
+}
+
+logger.log() {
     local level="$1"
-    if [ -v "LogLevelEnum[$level]" ]; then
+    if map::contains_key $level _log_loglevel_enum; then
         shift
     else
         level=INFO
     fi
 
-    ! _is_loglevel_enabled $level && return
+    ! logger.is_enabled $level && return
     [ /dev/stderr -ef /dev/null ] && return
 
+    local source_file="${BASH_SOURCE[1]##*/}"
+    source_file="${source_file:-$0}":"${BASH_LINENO[0]}"
+
     local time
-    if [ ${BASH_VERSINFO} -ge 5 ]; then
-        local ms=0
-        get_miliseconds ms
-        printf -v time '%(%b %-d %T)T.%03d' -1 $(( ms % 1000 ))
-    else
-        time="$(date +"%b %-d %T.%3N")"
-    fi
+    logger._get_current_time time
 
-    if [ -z "$_source" ] || [ -z "$_line" ]; then
-        local _source="${BASH_SOURCE[1]##*/}" _line=${BASH_LINENO[0]}
-    fi
-
+    local format color
     case "$level" in
-        TRACE)
-            [ -t 2 ] && level="${DARK_GRAY}${level}${NONE}" ;;&
         DEBUG)
-            [ -t 2 ] && level="${GREEN}${level}${NONE}" ;;&
+        color=$GREEN
+            format="D$time $BASHPID $source_file] %s"
+            ;;
         INFO)
-            [ -t 2 ] && level="${WHITE}${level}${NONE}" ;;&
+            color=$NONE
+            format="I$time $BASHPID $source_file] %s"
+            ;;
         WARN)
-            [ -t 2 ] && level="${YELLOW}${level}${NONE}" ;;&
+            color=$YELLOW
+            format="W$time $BASHPID $source_file] %s"
+            ;;
         ERROR)
-            [ -t 2 ] && level="${RED}${level}${NONE}" ;;&
+            color=$RED
+            format="E$time $BASHPID $source_file] %s"
+            ;;
+        FATAL)
+            color=$RED
+            format="F$time $BASHPID $source_file] %s"
+            ;;
         *)
-            [ -t 2 ] && time="${DARK_GRAY}${time}${NONE}"
-            echo "${time} ${level} $_source[$_line]: $*" > /dev/stderr ;;
+            color=$NONE
+            format="$level$time $BASHPID $source_file] %s"
+            ;;
     esac
+
+    [ -t 2 ] && format="$color$format$NONE"
+
+    >&2 printf "$format\n" "$*"
+
+    if [ "$level" = 'FATAL' ]; then
+        exit 1
+    fi
 }
+
+alias log=logger.log

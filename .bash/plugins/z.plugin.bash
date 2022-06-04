@@ -1,4 +1,3 @@
-pragma_once
 # z - jump around
 # https://github.com/rupa/z
 
@@ -8,15 +7,15 @@ zsh_plugin="${_DOT_BASH_CACHE}/z.plugin.bash"
 if [[ ! -e "$zsh_plugin" ]]; then
     echo "Downloading rupa/z ..."
     util_download "https://raw.githubusercontent.com/rupa/z/master/z.sh" "$zsh_plugin"
-    [[ $? -ne 0 ]] && log ERROR "download rupa/z failed" && return 1
-    log "download rupa/z succeeded"
+    [[ $? -ne 0 ]] && logger.log ERROR "download rupa/z failed" && return 1
+    logger.log "download rupa/z succeeded"
 fi
 
 builtin source $zsh_plugin
 
 export _Z_NO_RESOLVE_SYMLINKS=1
 
-if include fzf; then
+if source fzf.plugin.bash; then
     unalias z 2> /dev/null
     function z() {
         if [ $# -gt 0 ]; then
