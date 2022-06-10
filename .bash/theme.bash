@@ -5,9 +5,9 @@ function _show_pwd() {
     path=${path/#$HOME/\~}
     local _short_path
     if [ -n "$eliminate_ambiguity" ]; then
-        path.shrink -d -o _short_path "$path"
+        path::shrink -d -o _short_path "$path"
     else
-        path.shrink -e _short_path "$path"
+        path::shrink -e _short_path "$path"
     fi
     printf -- "$format" "$_short_path"
 }
@@ -19,7 +19,7 @@ function _show_git() {
     git::branch -o _git_branch
     [[ -z "$_git_branch" ]] && return $exit
     local _short_branch
-    path.shrink -o _short_branch "${_git_branch}"
+    path::shrink -o _short_branch "${_git_branch}"
     printf -- "$format" "$_short_branch"
 }
 

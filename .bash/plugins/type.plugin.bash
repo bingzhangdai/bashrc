@@ -1,10 +1,61 @@
+
+function type::is_function() {
+    declare -F "$1" > /dev/null
+}
+
+function type::pprint() {
+    local type=$(var::type "$1")
+    if [ -n "$type" ] && type::is_function "$type".to_string; then
+        "$type".to_string "$1"
+        return
+    fi
+    if type::is_function "$1"; then
+        declare -f $1
+        return
+    fi
+    false
+}
+
+alias pprint=type::pprint
+
+# TODO: tab completion: https://metacpan.org/pod/Complete::Bash
+# https://stackoverflow.com/questions/49068871/override-bash-completion-for-every-command
+# https://opensource.apple.com/source/bash/bash-44.3/bash/examples/complete/complete-examples.auto.html
+# call the function like member function
+if declare -F command_not_found_handle > /dev/null; then
+    eval "$(echo "type_orig_command_not_found_handle()"; declare -f command_not_found_handle | tail -n +2)"
+else
+    function type_orig_command_not_found_handle() {
+        if [ -x /usr/lib/command-not-found ]; then
+            /usr/lib/command-not-found -- "$1";
+            return $?;
+        else
+            if [ -x /usr/share/command-not-found/command-not-found ]; then
+                /usr/share/command-not-found/command-not-found -- "$1";
+                return $?;
+            else
+                printf "%s: command not found\n" "$1" 1>&2;
+                return 127;
+            fi;
+        fi
+    }
+fi
+
+command_not_found_handle() {
+    if [ $# -eq 1 ] && type::pprint "$1" 2>/dev/null; then
+        return
+    fi
+
+    type_orig_command_not_found_handle "$@"
+}
+
 # get the type of variable, function, shell builtin, etc.
 # usage:
 #   typeof variable_name
 # exmaple:
 #   typeof PATH -> environment variable
 #   typeof typeof -> function
-typeof () {
+type::typeof () {
     declare -a values=()
     # variable
     local signature=$(declare -p "$1" 2>/dev/null)
@@ -64,3 +115,5 @@ typeof () {
         false
     fi
 }
+
+alias typeof='type::typeof'

@@ -2,6 +2,7 @@
 # You can specify one of the following severity levels (in increasing order of severity): DEBUG, INFO, WARNING, ERROR, and FATAL. Logging a FATAL message terminates the program (after the message is logged).
 
 source color.lib.bash
+source map.lib.bash
 
 # region log level
 
@@ -25,7 +26,7 @@ fi
 
 # log messages at or above this level, default is ERROR
 function logger.minloglevel() {
-    if ! map::contains_key $1 _log_loglevel_enum; then
+    if ! map.contains_key _log_loglevel_enum $1; then
         logger.log ERROR "invalid log level '$1'"
         return 1
     fi
@@ -60,7 +61,7 @@ function logger._get_current_time() {
 
 logger.log() {
     local level="$1"
-    if map::contains_key $level _log_loglevel_enum; then
+    if map.contains_key _log_loglevel_enum $level; then
         shift
     else
         level=INFO
