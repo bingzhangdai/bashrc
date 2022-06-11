@@ -9,8 +9,8 @@ function package() {
         return 1
     fi
 
-    local pkgmgr
-    case  $(os::os_family) in
+    local os_family="$(os::os_family)" pkgmgr
+    case  "$os_family" in
         alpine)
             pkgmgr="apk" ;;
         archlinux)
@@ -26,13 +26,13 @@ function package() {
         redhat)
             pkgmgr="yum" ;;
         *)
-            echo "Unsupported OS: $(os::os_family)"
+            echo "Unsupported OS: $os_family"
             return 1
             ;;
     esac
 
     if [ "$action" == 'install' ]; then
-        case $(os::os_family) in
+        case "$os_family" in
             alpine)
                 action='add' ;;
             archlinux)
@@ -43,7 +43,7 @@ function package() {
                 action='install -y' ;;
         esac
     elif [ "$action" == 'remove' ]; then
-        case $(os::os_family) in
+        case "$os_family" in
             archlinux)
                 action='-R' ;;
             darwin)
