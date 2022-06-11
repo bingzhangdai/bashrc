@@ -25,11 +25,11 @@ function _show_git() {
 
 # Special prompt variable: https://ss64.com/bash/syntax-prompt.html
 hostname='\h'
-if _is_in_wsl; then
+if os::is_wsl; then
     if [[ -n "$WSL_DISTRO_NAME" ]]; then
         hostname="$WSL_DISTRO_NAME"
     else
-        hostname="${NAME:-WSL}-$(_get_wsl_version)"
+        hostname="${NAME:-WSL}-$(os::wsl_version)"
     fi
 fi
 

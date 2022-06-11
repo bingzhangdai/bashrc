@@ -4,7 +4,7 @@ for handle in $CLEANUP_HANDLER; do
         $handle
         unset -f $handle
     else
-        log WARN "cannot find cleanup callback: '$handle'"
+        log ERROR "cannot find cleanup callback: '$handle'"
     fi
 done
 

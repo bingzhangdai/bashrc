@@ -54,5 +54,5 @@ function str::join() {
 
 function str.to_string() {
     local -n str=$1
-    printf "str %s = '%s'\n'" "$1" "$str"
+    printf "str %s = '%s'\n" "$1" "$str"
 }

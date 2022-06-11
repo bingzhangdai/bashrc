@@ -4,16 +4,22 @@ function type::is_function() {
 }
 
 function type::pprint() {
+    local ret=1
+
+    # print variable
     local type=$(var::type "$1")
     if [ -n "$type" ] && type::is_function "$type".to_string; then
         "$type".to_string "$1"
-        return
+        ret=0
     fi
+
+    # print function
     if type::is_function "$1"; then
         declare -f $1
-        return
+        ret=0
     fi
-    false
+
+    return $ret
 }
 
 alias pprint=type::pprint
@@ -36,7 +42,7 @@ else
             else
                 printf "%s: command not found\n" "$1" 1>&2;
                 return 127;
-            fi;
+            fi
         fi
     }
 fi
