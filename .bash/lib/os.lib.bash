@@ -14,6 +14,7 @@ function os::is_wsl() {
     [[ -n "$(os::wsl_version)" ]]
 }
 
+# try: uname -s
 function os::is_mac() {
     [[ "$OSTYPE" == 'darwin'* ]]
 }

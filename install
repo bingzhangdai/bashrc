@@ -85,5 +85,6 @@ append_line "\$include $BASHRC_REPO/.inputrc" ~/.inputrc
 
 # TODO: theme.bash
 
-
 builtin popd
+
+# TOD: install packages
