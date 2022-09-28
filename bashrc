@@ -17,33 +17,22 @@ case $BASH_VERSION in
     ;;
 esac
 
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+if [ -f ~/.settings.bash ]; then
+    source ~/.settings.bash
+fi
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-## less
-export LESS='-R -S -M -i -# .2'
-
 ## default editor
 export EDITOR='vi'
 
-if [ -f ~/.settings.bash ]; then
-    source ~/.settings.bash
-fi
-
-# region setup
-
 _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && builtin pwd)"
-
-# endregion
 
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
