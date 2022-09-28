@@ -76,14 +76,15 @@ append_line() {
 
 
 BASHRC_REPO=$HOME/.bashrc.git
-append_line "source $BASHRC_REPO/.bashrc" ~/.bashrc
+append_line "source $BASHRC_REPO/bashrc" ~/.bashrc
 
 # .bash_aliases
-append_line "source $BASHRC_REPO/.bash_aliases" ~/.bash_aliases
-append_line "source $BASHRC_REPO/.bash_logout" ~/.bash_logout
-append_line "\$include $BASHRC_REPO/.inputrc" ~/.inputrc
+append_line "source $BASHRC_REPO/bash_aliases" ~/.bash_aliases
+append_line "source $BASHRC_REPO/bash_logout" ~/.bash_logout
+append_line "\$include $BASHRC_REPO/inputrc" ~/.inputrc
 
-# TODO: theme.bash
-
+# TODO: settings.bash
 
 builtin popd
+
+# TOD: install packages

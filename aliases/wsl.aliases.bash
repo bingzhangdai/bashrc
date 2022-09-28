@@ -1,4 +1,4 @@
-if _is_in_wsl; then
+if os::is_wsl; then
     if command -v git > /dev/null; then
         function git() {
             if /usr/bin/git config --get remote.origin.url | \grep -q 'visualstudio\|azure'; then

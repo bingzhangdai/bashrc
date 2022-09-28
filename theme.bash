@@ -5,9 +5,9 @@ function _show_pwd() {
     path=${path/#$HOME/\~}
     local _short_path
     if [ -n "$eliminate_ambiguity" ]; then
-        path.shrink -d -o _short_path "$path"
+        path::shrink -d -o _short_path "$path"
     else
-        path.shrink -e _short_path "$path"
+        path::shrink -e _short_path "$path"
     fi
     printf -- "$format" "$_short_path"
 }
@@ -19,17 +19,17 @@ function _show_git() {
     git::branch -o _git_branch
     [[ -z "$_git_branch" ]] && return $exit
     local _short_branch
-    path.shrink -o _short_branch "${_git_branch}"
+    path::shrink -o _short_branch "${_git_branch}"
     printf -- "$format" "$_short_branch"
 }
 
 # Special prompt variable: https://ss64.com/bash/syntax-prompt.html
 hostname='\h'
-if _is_in_wsl; then
+if os::is_wsl; then
     if [[ -n "$WSL_DISTRO_NAME" ]]; then
         hostname="$WSL_DISTRO_NAME"
     else
-        hostname="${NAME:-WSL}-$(_get_wsl_version)"
+        hostname="${NAME:-WSL}-$(os::wsl_version)"
     fi
 fi
 
@@ -66,7 +66,7 @@ else
     if [ -n "$fish_prompt" ]; then
         PS1+=':$(no_return_call _show_pwd "%s" "\w")'
     else
-        PS1+='\w' # _show_pwd
+        PS1+=':\w' # _show_pwd
     fi
     # git branch
     if [ -n "$git_prompt" ]; then

@@ -8,7 +8,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
-elif _is_on_mac; then
+elif os::is_mac; then
     test -r ~/.dircolors
     export CLICOLOR=1
     alias ls='ls -G'

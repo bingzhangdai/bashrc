@@ -51,3 +51,8 @@ function str::join() {
         echo $val
     fi
 }
+
+function str.to_string() {
+    local -n str=$1
+    printf "str %s = '%s'\n" "$1" "$str"
+}
