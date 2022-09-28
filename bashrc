@@ -65,6 +65,4 @@ unset path file
 # theme
 source ./theme.bash
 
-# clean up
-builtin source "${_DOT_BASH_BASEDIR}"/cleanup.bash
-
+cleanup

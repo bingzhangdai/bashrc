@@ -43,14 +43,24 @@ alias .=source
 # load logging library
 . lib/log.lib.bash
 
+declare -g -a CLEANUP_HANDLER
+
 function cleanup() {
     unset -f source
     unalias .
     unset _DOT_BASH_CACHE
     unset _SOURCED_FILES
+
+    local handle
+    for handle in $CLEANUP_HANDLER; do
+        if declare -F "$handle" > /dev/null; then
+            $handle
+            unset -f $handle
+        else
+            log ERROR "cannot find cleanup callback: '$handle'"
+        fi
+    done
+
+    unset CLEANUP_HANDLER
+    unset -f cleanup
 }
-
-# see cleanup.bash
-declare -g -a CLEANUP_HANDLER
-
-CLEANUP_HANDLER+=(cleanup)
