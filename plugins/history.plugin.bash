@@ -1,12 +1,23 @@
-# don't put duplicate lines or lines starting with space in the history.
-# eliminate duplicates across the whole history
-# See bash(1) for more options
-HISTCONTROL=ignoreboth:erasedups
+# ignoreboth: don't put duplicate lines or lines starting with space in the history.
+# erasedups:  eliminate duplicates across the whole history
+# autoshare: automatically share history between multiple running shells
+HISTCONTROL=ignoreboth:erasedups:autoshare
 
 # HISTTIMEFORMAT='%F %T '
 
 # Ignore these commands
-[[ -z "$HISTIGNORE" ]] && HISTIGNORE="&:[ ]*:exit:ls:j:pwd:z:bg:fg:history:clear"
+[[ -z "$HISTIGNORE" ]] && HISTIGNORE="\
+&:[ ]*
+exit:reload:rl
+ls:l:ll:la
+j:pwd:z
+bg:fg
+history:rh:clear:cls
+kill
+true:false
+"
+HISTIGNORE=${HISTIGNORE%$'\n'}
+HISTIGNORE=${HISTIGNORE//$'\n'/:}
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -16,8 +27,8 @@ shopt -s cmdhist
 shopt -u lithist
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-[[ -z "$HISTSIZE" ]] && HISTSIZE=100000
-[[ -z "$HISTFILESIZE" ]] && HISTFILESIZE=200000
+readonly HISTSIZE=-1
+readonly HISTFILESIZE=-1
 
 # https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
 # store history immediately

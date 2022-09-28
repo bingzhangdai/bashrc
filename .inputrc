@@ -88,6 +88,8 @@ $if mode=vi
     # these are for vi-insert mode
     set keymap vi-insert
     Control-l: clear-screen
+    "\e[A": history-substring-search-backward
+	"\e[B": history-substring-search-forward
 
     # Ctrl + A
     "\C-a": beginning-of-line

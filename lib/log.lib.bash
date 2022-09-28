@@ -20,12 +20,16 @@ _log_loglevel_enum['ERROR']=$LOG_ERROR
 _log_loglevel_enum['FATAL']=$LOG_FATAL
 
 # the defaul log level
-if [ -z "$_log_loglevel" ]; then
+if [ -z "$_log_lib_loglevel" ]; then
     _log_lib_loglevel=ERROR
 fi
 
 # log messages at or above this level, default is ERROR
 function logger.minloglevel() {
+    if [ "$#" -eq 0 ]; then
+        logger.log ERROR "missing log level (DEBUG, INFO, WARN, ERROR, FATAL)"
+        return 1
+    fi
     if ! map.contains_key _log_loglevel_enum $1; then
         logger.log ERROR "invalid log level '$1'"
         return 1
@@ -39,7 +43,7 @@ function logger.is_enabled() {
 
 # get the current loglevel
 function logger.loglevel() {
-    echo "${_log_loglevel_rev[$_log_lib_loglevel]}"
+    echo "$_log_lib_loglevel"
 }
 
 # endregion

@@ -20,7 +20,12 @@ function os::is_mac() {
 }
 
 # store the homebrew prefix, avoid unncessary calls of brew command
-command -v brew > /dev/null && _brew_prefxi="$(brew --prefix)"
+if command -v brew > /dev/null; then
+    _brew_prefxi="$(brew --prefix)"
+    if os::is_mac && command -v gls > /dev/null; then
+        PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+    fi
+fi
 
 # https://www.freedesktop.org/software/systemd/man/os-release.html
 if [ -f /etc/os-release ]; then

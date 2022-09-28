@@ -47,13 +47,13 @@ _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && builtin pwd)"
 
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
-source "${_DOT_BASH_BASEDIR}"/.bash/setup.bash
+source "${_DOT_BASH_BASEDIR}"/setup.bash
 
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
 # plugins should be sourced before aliases
 
-for path in ./.bash/{lib,completions,plugins,aliases}; do
+for path in ./{lib,completions,plugins,aliases}; do
     path=$(path::abs $path)
     for file in $(sort <(ls -1 $path/*.bash 2> /dev/null)); do
         [[ -e "$file" ]] && source "$file"
@@ -63,8 +63,8 @@ done
 unset path file
 
 # theme
-source ./.bash/theme.bash
+source ./theme.bash
 
 # clean up
-builtin source "${_DOT_BASH_BASEDIR}"/.bash/cleanup.bash
+builtin source "${_DOT_BASH_BASEDIR}"/cleanup.bash
 

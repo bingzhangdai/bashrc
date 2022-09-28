@@ -66,7 +66,7 @@ else
     if [ -n "$fish_prompt" ]; then
         PS1+=':$(no_return_call _show_pwd "%s" "\w")'
     else
-        PS1+='\w' # _show_pwd
+        PS1+=':\w' # _show_pwd
     fi
     # git branch
     if [ -n "$git_prompt" ]; then
