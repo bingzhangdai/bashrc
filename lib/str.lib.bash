@@ -56,3 +56,7 @@ function str.to_string() {
     local -n str=$1
     printf "str %s = '%s'\n" "$1" "$str"
 }
+
+function str.to_upper() {
+    echo ${1^^}
+}
