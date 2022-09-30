@@ -27,11 +27,24 @@ alias pprint=type::pprint
 function type::_pprint_complete() {
     local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
 
+    local candidates=()
     # varibale
-    COMPREPLY=( ${COMPREPLY[@]} $(compgen -v -- "$CURRENT_PROMPT") )
-
+    candidates=( ${candidates[@]} $(compgen -v) )
     # function
-    COMPREPLY=( ${COMPREPLY[@]} $(compgen -A function -- "$CURRENT_PROMPT") )
+    candidates=( ${candidates[@]} $(compgen -A function) )
+
+    local i
+    if [[ -z "$CURRENT_PROMPT" ]]; then
+        # ignore the candidates starts with underscore
+        for i in "${candidates[@]}"; do
+            [[ "$i" != _* ]] && arr.add COMPREPLY "$i"
+        done
+    else
+        # ignore case
+        for i in "${candidates[@]}"; do
+            [[ "${i,,}" == ${CURRENT_PROMPT,,}* ]] && arr.add COMPREPLY "$i"
+        done
+    fi
 }
 
 complete -F type::_pprint_complete type::pprint pprint
