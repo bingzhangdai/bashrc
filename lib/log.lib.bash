@@ -119,7 +119,7 @@ logger.log() {
 
 alias log=logger.log
 
-function logger._loglevel_complete() {
+function logger::_loglevel_complete() {
     local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
     local PREV_PROMPT="${COMP_WORDS[COMP_CWORD-1]}"
 
@@ -130,4 +130,4 @@ function logger._loglevel_complete() {
     COMPREPLY=( $(compgen -W 'DEBUG INFO WARN ERROR FATAL' -- "${CURRENT_PROMPT^^}") )
 }
 
-complete -o default -F logger._loglevel_complete logger.minloglevel logger.is_enabled logger.log log
+complete -F logger::_loglevel_complete logger.minloglevel logger.is_enabled logger.log log

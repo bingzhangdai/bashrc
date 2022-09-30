@@ -1,6 +1,7 @@
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
+
 if ! shopt -oq posix; then
     if [ -r /usr/share/bash-completion/bash_completion ]; then
         builtin source /usr/share/bash-completion/bash_completion
@@ -18,3 +19,5 @@ if ! shopt -oq posix; then
         builtin source "$_brew_prefxi"/etc/bash_completion
     fi
 fi
+
+export COMP_WORDBREAKS=${COMP_WORDBREAKS/\:/}
