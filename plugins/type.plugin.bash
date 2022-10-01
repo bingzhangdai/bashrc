@@ -35,7 +35,7 @@ function type::_pprint_complete() {
 
     local i
     if [[ -z "$CURRENT_PROMPT" ]]; then
-        # ignore the candidates starts with underscore
+        # ignore the candidates starting with underscore
         for i in "${candidates[@]}"; do
             [[ "$i" != _* ]] && arr.add COMPREPLY "$i"
         done
