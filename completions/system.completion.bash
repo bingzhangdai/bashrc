@@ -32,11 +32,11 @@ if [ "${BASH_VERSINFO}" -ge 5 ]; then
 
         local candidates=( $(compgen -c -- "$CURRENT_PROMPT") )
 
-        if [[ "$CURRENT_PROMPT" =~ ^[^\.^:]*[\.:]*$ ]]; then
+        if [[ "$CURRENT_PROMPT" =~ ^[^\.^:]+[\.:]*$ ]]; then
             # log log. log::
             local i
             for i in "${candidates[@]}"; do
-                [[ ! "$i" =~ ^[^\.^:]*[\.:]+_.*$ ]] && arr.add COMPREPLY "$i"
+                [[ ! "$i" =~ ^[^\.^:]+[\.:]+_.*$ ]] && arr.add COMPREPLY "$i"
             done
         else
             COMPREPLY=( ${candidates[@]} )
