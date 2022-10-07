@@ -21,3 +21,27 @@ if ! shopt -oq posix; then
 fi
 
 export COMP_WORDBREAKS=${COMP_WORDBREAKS/\:/}
+
+# ignore private & protected functions
+if [ "${BASH_VERSINFO}" -ge 5 ]; then
+    function _bash_command_complete() {
+        local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
+        if [ -z "$CURRENT_PROMPT" ]; then
+            return
+        fi
+
+        local candidates=( $(compgen -c -- "$CURRENT_PROMPT") )
+
+        if [[ "$CURRENT_PROMPT" =~ ^[^\.^:]*[\.:]*$ ]]; then
+            # log log. log::
+            local i
+            for i in "${candidates[@]}"; do
+                [[ ! "$i" =~ ^[^\.^:]*[\.:]+_.*$ ]] && arr.add COMPREPLY "$i"
+            done
+        else
+            COMPREPLY=( ${candidates[@]} )
+        fi
+  }
+
+  complete -I -F _bash_command_complete
+fi
