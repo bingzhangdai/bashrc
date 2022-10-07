@@ -2,7 +2,7 @@
 function map.contains_key() {
     local -n map=$1
     local key=$2
-    [ "${map[$key]+isset}" ]
+    [ -n "$key" ] && [ "${map[$key]+isset}" ]
 }
 
 function map::is_map() {

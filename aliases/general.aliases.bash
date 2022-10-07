@@ -52,3 +52,10 @@ alias mkdir='mkdir -pv'
 alias du='du -h'
 alias df='df -h'
 alias cls='clear'
+
+# temporarily use proxy
+alias proxy='http_proxy=http://127.0.0.1:1080 https_proxy=http://127.0.0.1:1080 '
+
+# reload bash
+alias reload="exec ${SHELL} -l"
+alias rl='reload'

@@ -1,6 +1,7 @@
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
+
 if ! shopt -oq posix; then
     if [ -r /usr/share/bash-completion/bash_completion ]; then
         builtin source /usr/share/bash-completion/bash_completion
@@ -17,4 +18,30 @@ if ! shopt -oq posix; then
     elif [ -r "$_brew_prefxi"/etc/bash_completion ]; then
         builtin source "$_brew_prefxi"/etc/bash_completion
     fi
+fi
+
+export COMP_WORDBREAKS=${COMP_WORDBREAKS/\:/}
+
+# ignore private & protected functions
+if [ "${BASH_VERSINFO}" -ge 5 ]; then
+    function _bash_command_complete() {
+        local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
+        if [ -z "$CURRENT_PROMPT" ]; then
+            return
+        fi
+
+        local candidates=( $(compgen -c -- "$CURRENT_PROMPT") )
+
+        if [[ "$CURRENT_PROMPT" =~ ^[^\.^:]+[\.:]*$ ]]; then
+            # log log. log::
+            local i
+            for i in "${candidates[@]}"; do
+                [[ ! "$i" =~ ^[^\.^:]+[\.:]+_.*$ ]] && arr.add COMPREPLY "$i"
+            done
+        else
+            COMPREPLY=( ${candidates[@]} )
+        fi
+  }
+
+  complete -I -F _bash_command_complete
 fi

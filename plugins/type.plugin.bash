@@ -24,6 +24,31 @@ function type::pprint() {
 
 alias pprint=type::pprint
 
+function type::_pprint_complete() {
+    local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
+
+    local candidates=()
+    # varibale
+    candidates=( ${candidates[@]} $(compgen -v) )
+    # function
+    candidates=( ${candidates[@]} $(compgen -A function) )
+
+    local i
+    if [[ -z "$CURRENT_PROMPT" ]]; then
+        # ignore the candidates starting with underscore
+        for i in "${candidates[@]}"; do
+            [[ "$i" != _* ]] && arr.add COMPREPLY "$i"
+        done
+    else
+        # ignore case
+        for i in "${candidates[@]}"; do
+            [[ "${i,,}" == ${CURRENT_PROMPT,,}* ]] && arr.add COMPREPLY "$i"
+        done
+    fi
+}
+
+complete -F type::_pprint_complete type::pprint pprint
+
 # # TODO: tab completion: https://metacpan.org/pod/Complete::Bash
 # # https://stackoverflow.com/questions/49068871/override-bash-completion-for-every-command
 # # https://opensource.apple.com/source/bash/bash-44.3/bash/examples/complete/complete-examples.auto.html
@@ -123,3 +148,17 @@ type::typeof () {
 }
 
 alias typeof='type::typeof'
+
+# compgen
+# -a means Names of alias
+# -b means Names of shell builtins
+# -c means Names of all commands
+# -d means Names of directory
+# -e means Names of exported shell variables
+# -f means Names of file and functions
+# -g means Names of groups
+# -j means Names of job
+# -k means Names of Shell reserved words
+# -s means Names of service
+# -u means Names of userAlias names
+# -v means Names of shell variables

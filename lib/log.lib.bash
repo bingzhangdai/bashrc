@@ -118,3 +118,16 @@ logger.log() {
 }
 
 alias log=logger.log
+
+function logger::_loglevel_complete() {
+    local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
+    local PREV_PROMPT="${COMP_WORDS[COMP_CWORD-1]}"
+
+    if map.contains_key _log_loglevel_enum "$PREV_PROMPT"; then
+        return
+    fi
+
+    COMPREPLY=( $(compgen -W 'DEBUG INFO WARN ERROR FATAL' -- "${CURRENT_PROMPT^^}") )
+}
+
+complete -F logger::_loglevel_complete logger.minloglevel logger.is_enabled logger.log log

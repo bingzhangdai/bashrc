@@ -7,7 +7,7 @@ function _show_pwd() {
     if [ -n "$eliminate_ambiguity" ]; then
         path::shrink -d -o _short_path "$path"
     else
-        path::shrink -e _short_path "$path"
+        path::shrink -o _short_path "$path"
     fi
     printf -- "$format" "$_short_path"
 }
