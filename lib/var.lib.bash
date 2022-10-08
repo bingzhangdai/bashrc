@@ -160,16 +160,17 @@ function map::is_map() {
 }
 
 function map.to_string() {
-    local -n map=$1
-    local key val
-    if [ "${#map[@]}" -eq 0 ]; then
+    ref _map_var=$1
+    if [ "${#_map_var[@]}" -eq 0 ]; then
         printf 'map %s = {}\n' "$1"
         return
     fi
+
     printf 'map %s = {\n' "$1"
-    for key in "${!map[@]}"; do
-        val="${map[$key]}"
-        printf '    %s: %s\n' "$key" "$val"
+    local _map_key _map_val
+    for _map_key in "${!_map_var[@]}"; do
+        _map_val="${_map_var[$_map_key]}"
+        printf '    %s: %s\n' "$_map_key" "'$_map_val'"
     done
     printf '}\n'
 }
