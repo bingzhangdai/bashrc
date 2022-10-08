@@ -9,9 +9,9 @@ function decltype() {
             *'a'*) _decl_sig='arr' ;;
             *'A'*) _decl_sig='map' ;;
             *'i'*) _decl_sig='int' ;;
-            *'-'*) _decl_sig='str' ;;
             *'n'*) _decl_sig='ref' ;;
             *'x'*) _decl_sig='env' ;;
+            *) _decl_sig='str' ;;
         esac
 
         printf -- '%s\n' $_decl_sig
@@ -21,7 +21,7 @@ function decltype() {
 }
 
 function var::list_all() {
-    # compgen -v does not list all variable
+    # compgen -v does not list all variables
     #   e.g. `declare -a array; compgen -v` does not include `array`
     # on mac, brew install grep
     declare -p | grep -Po '^declare -[a-zA-Z\-]+ \K[a-zA-Z_][a-zA-Z_0-9]*'
@@ -129,11 +129,6 @@ function str::join() {
     fi
 }
 
-function str.to_string() {
-    ref _str_var=$1
-    printf "str %s = '%s'\n" "$1" "$_str_var"
-}
-
 function str.to_upper() {
     printf -- '%s\n' ${1^^}
 }
@@ -142,11 +137,21 @@ function str.to_lower() {
     printf -- '%s\n' ${1,,}
 }
 
+function str.length() {
+    ref _str_var=$1
+    echo "${#_str_var}"
+}
+
+function str.to_string() {
+    ref _str_var=$1
+    printf "str %s = '%s'\n" "$1" "$_str_var"
+}
+
 # endregion
 
 # region arr
 
-alias arr='declare -a '
+alias arr='declare -a'
 
 function arr.contains() {
     ref _arr_var=$1
@@ -164,9 +169,15 @@ function arr.add() {
     _arr_var[${#_arr_var[@]}]="$_arr_val"
 }
 
+function arr.length() {
+    ref _arr_var=$1
+    echo ${#_arr_var[@]}
+}
+
 function arr::is_array() {
     local _arr_sig=$(declare -p "$1" 2>/dev/null)
     [[ "$_arr_sig" =~ declare\ -.*a.*\ $1 ]]
+    # [[ "$(decltype $1)" == 'arr' ]]
 }
 
 function arr.to_string() {
@@ -184,7 +195,7 @@ function arr.to_string() {
     done
 
     local _arr_val
-    if (( _arr_count > _arr_width )); then
+    if [[ _arr_count -gt _arr_width ]]; then
         _arr_val=$(str::join -d ',\n    ' "${_arr_quote[@]}")
         _arr_val="\n    $_arr_val\n"
     elif [[ ${#_arr_quote[@]} -ne 0 ]]; then
@@ -195,17 +206,20 @@ function arr.to_string() {
     printf 'arr %s = {%b}\n' "$1" "$_arr_val"
 }
 
+function arr::list_all() {
+    declare -p | grep -Po '^declare -[a-zA-Z]*a[a-zA-Z]* \K[a-zA-Z_][a-zA-Z_0-9]*'
+}
+
 function arr::_completion() {
     local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
 
-    # local _arr_candidates=( $(compgen -v) )
-    local _arr_candidates=( $(var::list_all) )
+    local _arr_candidates=( $(arr::list_all) )
 
     local _arr_i
     for _arr_i in "${_arr_candidates[@]}"; do
-        if ! arr::is_array $_arr_i; then
-            continue
-        fi
+        # if ! arr::is_array $_arr_i; then
+        #     continue
+        # fi
 
         if [[ -z "$CURRENT_PROMPT" ]]; then
             [[ "$_arr_i" != _* ]] && arr.add COMPREPLY "$_arr_i"
@@ -214,13 +228,13 @@ function arr::_completion() {
         fi
     done
 }
-complete -F arr::_completion arr.contains arr.add arr.to_string
+complete -F arr::_completion arr.contains arr.add arr.length arr.to_string
 
 # endregion
 
 # region map
 
-alias map='declare -A '
+alias map='declare -A'
 
 function map.contains_key() {
     ref _map_var=$1
@@ -231,6 +245,7 @@ function map.contains_key() {
 function map::is_map() {
     local _map_sig=$(declare -p "$1" 2>/dev/null)
     [[ "$_map_sig" =~ declare\ -.*A.*\ $1 ]]
+    # [[ "$(decltype $1)" == 'map' ]]
 }
 
 function map.to_string() {
@@ -244,21 +259,25 @@ function map.to_string() {
     local _map_key _map_val
     for _map_key in "${!_map_var[@]}"; do
         _map_val="${_map_var[$_map_key]}"
-        printf '    %s: %s\n' "$_map_key" "'$_map_val'"
+        printf '    %s: %s\n' "'$_map_key'" "'$_map_val'"
     done
     printf '}\n'
+}
+
+function map::list_all() {
+    declare -p | grep -Po '^declare -[a-zA-Z]*A[a-zA-Z]* \K[a-zA-Z_][a-zA-Z_0-9]*'
 }
 
 function map::_completion() {
     local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
 
-    local _map_candidates=( $(var::list_all) )
+    local _map_candidates=( $(map::list_all) )
 
     local _map_i
     for _map_i in "${_map_candidates[@]}"; do
-        if ! map::is_map $_map_i; then
-            continue
-        fi
+        # if ! map::is_map $_map_i; then
+        #     continue
+        # fi
 
         if [[ -z "$CURRENT_PROMPT" ]]; then
             [[ "$_map_i" != _* ]] && arr.add COMPREPLY "$_map_i"
@@ -286,4 +305,4 @@ function var::_complete() {
     done
 }
 
-complete -F var::_complete arr::is_array map::is_map
+complete -F var::_complete decltype arr::is_array map::is_map
