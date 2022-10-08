@@ -48,7 +48,7 @@ function str::join() {
     if [ -n "$output_var" ]; then
         printf -v "$output_var" '%s' "${val// /\ }"
     else
-        echo $val
+        printf -- '%b\n' "$val"
     fi
 }
 
@@ -60,3 +60,5 @@ function str.to_string() {
 function str.to_upper() {
     echo ${1^^}
 }
+
+alias str='declare --'

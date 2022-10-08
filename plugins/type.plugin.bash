@@ -7,7 +7,7 @@ function type::pprint() {
     local ret=1
 
     # print variable
-    local _type=$(var::type "$1")
+    local _type=$(decltype "$1")
     if [ -n "$_type" ] && type::is_function "$_type".to_string; then
         "$_type".to_string "$1"
         ret=0
