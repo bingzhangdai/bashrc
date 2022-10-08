@@ -14,7 +14,7 @@ function decltype() {
             *'x'*) _decl_sig='env' ;;
         esac
 
-        echo $_decl_sig
+        printf -- '%s\n' $_decl_sig
         return
     fi
     false
@@ -88,7 +88,7 @@ alias str='declare --'
 #   join -d ':' 'a' 'b' 'c' -> 'a:b:c'
 #   join -o output_var 'a' 'b' 'c' -> output_var='a b c'
 function str::join() {
-    local deli=' ' val='' output_var=''
+    local _str_deli=' '  _str_output
     while [[ "$1" == -* ]]; do
         case "$1" in
             --)
@@ -96,49 +96,50 @@ function str::join() {
                 break
                 ;;
             -d|--delimiter)
-                deli="$2"
+                _str_deli="$2"
                 shift 2
                 ;;
             -o|--output)
-                output_var="$2"
+                _str_output="$2"
                 shift 2
                 ;;
             -h|--help)
-                echo "Usage: str::join [-d|--delimiter DELI] [-o|--output VAR] string..."
+                printf -- 'Usage: str::join [-d|--delimiter DELI] [-o|--output VAR] string...\n'
                 return 0
                 ;;
             -*)
-                echo "Unknown option: $1" >&2
+                printf -- 'Unknown option: %s\n' "$1" >&2
                 str::join --help >&2
                 return 1
                 ;;
         esac
     done
 
-    val="$1"
+    local _str_val="$1"
     shift
-    for arg in "$@"; do
-        val+="$deli$arg"
+    local _str_arg
+    for _str_arg in "$@"; do
+        _str_val+="$_str_deli$_str_arg"
     done
 
-    if [ -n "$output_var" ]; then
-        printf -v "$output_var" '%s' "${val// /\ }"
+    if [[ -n "$_str_output" ]]; then
+        printf -v "$_str_output" '%s' "${_str_val// /\ }"
     else
-        printf -- '%b\n' "$val"
+        printf -- '%s\n' "$_str_val"
     fi
 }
 
 function str.to_string() {
-    local -n str=$1
-    printf "str %s = '%s'\n" "$1" "$str"
+    ref _str_var=$1
+    printf "str %s = '%s'\n" "$1" "$_str_var"
 }
 
 function str.to_upper() {
-    echo ${1^^}
+    printf -- '%s\n' ${1^^}
 }
 
 function str.to_lower() {
-    echo ${1,,}
+    printf -- '%s\n' ${1,,}
 }
 
 # endregion
