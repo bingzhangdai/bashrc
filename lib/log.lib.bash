@@ -2,7 +2,7 @@
 # You can specify one of the following severity levels (in increasing order of severity): DEBUG, INFO, WARNING, ERROR, and FATAL. Logging a FATAL message terminates the program (after the message is logged).
 
 source color.lib.bash
-source map.lib.bash
+source var.lib.bash
 
 # region log level
 
