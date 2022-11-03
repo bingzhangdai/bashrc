@@ -25,6 +25,7 @@ if command -v brew > /dev/null; then
     if os::is_mac && command -v gls > /dev/null; then
         PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
     fi
+    PATH="$(brew --prefix grep)/libexec/gnubin:$PATH"
 fi
 
 # https://www.freedesktop.org/software/systemd/man/os-release.html
