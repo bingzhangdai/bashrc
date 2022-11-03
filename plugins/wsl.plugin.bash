@@ -1,6 +1,6 @@
 if os::is_wsl; then
     # ignore treating *.dll files as executable under WSL
-    export EXECIGNORE=*.dll
+    export EXECIGNORE=*.dll:*.pdb:*.mof:*.ini
 
     # invoke Windows exe when there is not Linux one with the same name
     # https://github.com/microsoft/WSL/issues/2003#issuecomment-297792622
