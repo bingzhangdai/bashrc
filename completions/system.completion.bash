@@ -39,9 +39,13 @@ if [ "${BASH_VERSINFO}" -ge 5 ]; then
                 [[ ! "$i" =~ ^[^\.^:]+[\.:]+_.*$ ]] && arr.add COMPREPLY "$i"
             done
         else
-            COMPREPLY=( ${candidates[@]} )
+            for i in "${candidates[@]}"; do
+                # add trailing slashes
+                [[ -d "$i" ]] && arr.add COMPREPLY "$i"/ || arr.add COMPREPLY "$i"
+            done
         fi
+        [[ -d "${candidates[0]}" ]] && compopt -o nospace
   }
 
-  complete -I -F _bash_command_complete
+  complete -o default -I -F _bash_command_complete
 fi

@@ -27,17 +27,6 @@ function var::list_all() {
     declare -p | grep -Po '^declare -[a-zA-Z\-]+ \K[a-zA-Z_][a-zA-Z_0-9]*'
 }
 
-# region env
-
-alias env='declare -x'
-
-function env.to_string() {
-    ref _env_var=$1
-    printf "env %s = '%s'\n" "$1" "$_env_var"
-}
-
-# endregion
-
 # region ref
 
 alias ref='declare -n'
@@ -56,6 +45,17 @@ function ref.to_string() {
     fi
     false
 }
+
+# region env
+
+# alias env='declare -x'
+
+function env.to_string() {
+    ref _env_var=$1
+    printf "env %s = '%s'\n" "$1" "$_env_var"
+}
+
+# endregion
 
 # endregion
 
@@ -129,13 +129,13 @@ function str::join() {
     fi
 }
 
-function str.to_upper() {
-    printf -- '%s\n' ${1^^}
-}
+# function str.to_upper() {
+#     printf -- '%s\n' ${1^^}
+# }
 
-function str.to_lower() {
-    printf -- '%s\n' ${1,,}
-}
+# function str.to_lower() {
+#     printf -- '%s\n' ${1,,}
+# }
 
 function str.length() {
     ref _str_var=$1
@@ -196,14 +196,14 @@ function arr.to_string() {
 
     local _arr_val
     if [[ _arr_count -gt _arr_width ]]; then
-        _arr_val=$(str::join -d ',\n    ' "${_arr_quote[@]}")
-        _arr_val="\n    $_arr_val\n"
+        _arr_val=$(str::join -d ","$'\n'"    " "${_arr_quote[@]}")
+        _arr_val=$'\n'"    $_arr_val"$'\n'
     elif [[ ${#_arr_quote[@]} -ne 0 ]]; then
         _arr_val=$(str::join -d ', ' "${_arr_quote[@]}")
         _arr_val=" $_arr_val "
     fi
 
-    printf 'arr %s = {%b}\n' "$1" "$_arr_val"
+    printf 'arr %s = {%s}\n' "$1" "$_arr_val"
 }
 
 function arr::list_all() {
