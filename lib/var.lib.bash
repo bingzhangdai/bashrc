@@ -53,8 +53,8 @@ function ref.to_string() {
 # alias env='declare -x'
 
 function env.to_string() {
-    ref _env_var=$1
-    printf "env %s = '%s'\n" "$1" "$_env_var"
+    local _self="${!1}"
+    printf "env %s = '%s'\n" "$1" "$_self"
 }
 
 # endregion
@@ -64,8 +64,8 @@ function env.to_string() {
 alias int='declare -i'
 
 function int.to_string() {
-    ref _int_var=$1
-    printf 'int %s = %s\n' "$1" "$_int_var"
+    local _self="${!1}"
+    printf 'int %s = %s\n' "$1" "$_self"
 }
 
 # endregion
@@ -138,25 +138,25 @@ function str::join() {
 # }
 
 function str.length() {
-    ref _str_var=$1
-    echo "${#_str_var}"
+    local _self="${!1}"
+    echo "${#_self}"
 }
 
 function str.to_string() {
-    ref _str_var=$1
-    printf "str %s = '%s'\n" "$1" "$_str_var"
+    local _self="${!1}"
+    printf "str %s = '%s'\n" "$1" "$_self"
 }
 
 function str.starts_with() {
-    ref _str_var=$1
+    local _self="${!1}"
     local _str_val=$2
-    [[ $_str_var == $_str_val* ]]
+    [[ $_self == $_str_val* ]]
 }
 
 function str.ends_with() {
-    ref _str_var=$1
+    local _self="${!1}"
     local _str_val=$2
-    [[ $_str_var == *$_str_val ]]
+    [[ $_self == *$_str_val ]]
 }
 
 # endregion
@@ -166,24 +166,24 @@ function str.ends_with() {
 alias arr='declare -a'
 
 function arr.contains() {
-    ref _arr_var=$1
+    ref _self=$1
     local _arr_val=$2
     local _arr_v
-    for _arr_v in "${_arr_var[@]}"; do
+    for _arr_v in "${_self[@]}"; do
         [[ "$_arr_v" == "$_arr_val" ]] && return
     done
     false
 }
 
 function arr.add() {
-    ref _arr_var=$1
+    ref _self=$1
     local _arr_val=$2
-    _arr_var[${#_arr_var[@]}]="$_arr_val"
+    _self[${#_self[@]}]="$_arr_val"
 }
 
 function arr.length() {
-    ref _arr_var=$1
-    echo ${#_arr_var[@]}
+    ref _self=$1
+    echo ${#_self[@]}
 }
 
 function arr::is_array() {
@@ -193,11 +193,11 @@ function arr::is_array() {
 }
 
 function arr.to_string() {
-    ref _arr_var=$1
+    ref _self=$1
     arr _arr_quote
 
     local _arr_i
-    for _arr_i in "${_arr_var[@]}"; do
+    for _arr_i in "${_self[@]}"; do
         arr.add _arr_quote "'$_arr_i'"
     done
 
@@ -249,9 +249,9 @@ complete -F arr::_completion arr.contains arr.add arr.length arr.to_string
 alias map='declare -A'
 
 function map.contains_key() {
-    ref _map_var=$1
+    ref _self=$1
     local _map_key=$2
-    [[ -n "$_map_key" ]] && [[ "${_map_var[$_map_key]+isset}" ]]
+    [[ -n "$_map_key" ]] && [[ "${_self[$_map_key]+isset}" ]]
 }
 
 function map::is_map() {
@@ -261,16 +261,16 @@ function map::is_map() {
 }
 
 function map.to_string() {
-    ref _map_var=$1
-    if [ "${#_map_var[@]}" -eq 0 ]; then
+    ref _self=$1
+    if [ "${#_self[@]}" -eq 0 ]; then
         printf 'map %s = {}\n' "$1"
         return
     fi
 
     printf 'map %s = {\n' "$1"
     local _map_key _map_val
-    for _map_key in "${!_map_var[@]}"; do
-        _map_val="${_map_var[$_map_key]}"
+    for _map_key in "${!_self[@]}"; do
+        _map_val="${_self[$_map_key]}"
         printf '    %s: %s\n' "'$_map_key'" "'$_map_val'"
     done
     printf '}\n'
