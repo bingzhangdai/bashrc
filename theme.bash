@@ -3,10 +3,9 @@ function _show_pwd() {
     format="${1:-$format}"
     local path="${2:-$PWD}"
     # case insensitive replace prefix
-    if os::is_wsl || os::is_mac; then
+    if os::is_wsl && str.starts_with path '/mnt/c' || os::is_mac; then
         local _tmp_path=${path,,}
-        _tmp_path=${_tmp_path/#${HOME,,}}
-        if [[ ${#_tmp_path} -ne ${#path} ]]; then
+        if str.starts_with _tmp_path "${HOME,,}" ; then
             path="~${path:${#HOME}}"
         fi
     else

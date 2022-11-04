@@ -147,6 +147,18 @@ function str.to_string() {
     printf "str %s = '%s'\n" "$1" "$_str_var"
 }
 
+function str.starts_with() {
+    ref _str_var=$1
+    local _str_val=$2
+    [[ $_str_var == $_str_val* ]]
+}
+
+function str.ends_with() {
+    ref _str_var=$1
+    local _str_val=$2
+    [[ $_str_var == *$_str_val ]]
+}
+
 # endregion
 
 # region arr
