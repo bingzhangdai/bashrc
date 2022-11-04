@@ -46,6 +46,8 @@ function ref.to_string() {
     false
 }
 
+# endregion
+
 # region env
 
 # alias env='declare -x'
@@ -54,8 +56,6 @@ function env.to_string() {
     ref _env_var=$1
     printf "env %s = '%s'\n" "$1" "$_env_var"
 }
-
-# endregion
 
 # endregion
 
