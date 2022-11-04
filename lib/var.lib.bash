@@ -24,7 +24,7 @@ function var::list_all() {
     # compgen -v does not list all variables
     #   e.g. `declare -a array; compgen -v` does not include `array`
     # on mac, brew install grep
-    declare -p | grep -Po '^declare -[a-zA-Z\-]+ \K[a-zA-Z_][a-zA-Z_0-9]*'
+    declare -p | grep -Po '^declare -[a-zA-Z\-]+ \K[a-zA-Z_][a-zA-Z_0-9]*' | grep -v '^COMP_'
 }
 
 # region ref
@@ -219,7 +219,7 @@ function arr.to_string() {
 }
 
 function arr::list_all() {
-    declare -p | grep -Po '^declare -[a-zA-Z]*a[a-zA-Z]* \K[a-zA-Z_][a-zA-Z_0-9]*'
+    declare -p | grep -Po '^declare -[a-zA-Z]*a[a-zA-Z]* \K[a-zA-Z_][a-zA-Z_0-9]*' | grep -v '^COMP_'
 }
 
 function arr::_completion() {
