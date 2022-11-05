@@ -15,6 +15,7 @@ function type::pprint() {
 
     # print function
     if type::is_function "$1"; then
+        printf 'function '
         declare -f $1
         ret=0
     fi

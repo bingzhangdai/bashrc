@@ -1,6 +1,6 @@
 if os::is_wsl; then
     # ignore treating *.dll files as executable under WSL
-    export EXECIGNORE=*.dll
+    export EXECIGNORE=*.dll:*.pdb:*.mof:*.ini
 
     # invoke Windows exe when there is not Linux one with the same name
     # https://github.com/microsoft/WSL/issues/2003#issuecomment-297792622
@@ -23,8 +23,11 @@ if os::is_wsl; then
         }
     fi
     command_not_found_handle() {
-        if powershell.exe Get-Command "$1" -errorAction SilentlyContinue > /dev/null; then
-            powershell.exe "$@"
+        # powershell is too slow
+        # if powershell.exe Get-Command "$1" -errorAction SilentlyContinue > /dev/null; then
+        if cmd.exe /c "(help $1 > nul || exit 0) && where $1 > nul 2> nul"; then
+            # powershell.exe "$@"
+            cmd.exe /c "$*"
         else
             wsl_orig_command_not_found_handle "$*"
         fi

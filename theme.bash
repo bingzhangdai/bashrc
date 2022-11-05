@@ -2,7 +2,15 @@ function _show_pwd() {
     local format='%s'
     format="${1:-$format}"
     local path="${2:-$PWD}"
-    path=${path/#$HOME/\~}
+    # case insensitive replace prefix
+    if os::is_wsl && str.starts_with path '/mnt/c' || os::is_mac; then
+        : ${path,,}
+        if str.starts_with _ ${HOME,,} ; then
+            path="~${path:${#HOME}}"
+        fi
+    else
+        path=${path/#$HOME/\~}
+    fi
     local _short_path
     if [ -n "$eliminate_ambiguity" ]; then
         path::shrink -d -o _short_path "$path"
