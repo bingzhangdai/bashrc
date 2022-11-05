@@ -1,5 +1,5 @@
 # execute the command without changing the previous return status
-no_return_call() {
+clean_call() {
     # preserve exit status
     local exit=$?
     local cmd="$1"
@@ -8,8 +8,8 @@ no_return_call() {
     return "$exit"
 }
 
-# eval is generally more dengerous, use it only when no_return_call fails
-no_return_eval() {
+# eval is generally more dengerous, use it only when clean_call fails
+clean_eval() {
     # preserve exit status
     local exit=$?
     eval "$@"

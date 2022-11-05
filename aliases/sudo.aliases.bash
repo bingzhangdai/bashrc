@@ -11,10 +11,13 @@ alias sudo='sudo '
 # }
 
 function sudo() {
+    # TODO: parse args
     if [ $# -gt 1 ] && [ "$1" = 'vi' -o "$1" = 'vim' ]; then
         # `command` will suppress shell function lookups
         EDITOR="$1" command sudo -e "${@:2}";
+    elif [ $# -gt 1 ] && : $(which $1) && str.starts_with _ "$_DOT_BASH_BASEDIR/bin"; then
+        command sudo bash -c "PATH=\$PATH:$_DOT_BASH_BASEDIR/bin $@"
     else
-        command sudo "$@"
+        command sudo $@
     fi
 }
