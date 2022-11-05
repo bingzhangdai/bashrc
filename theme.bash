@@ -56,9 +56,9 @@ function ternary_operator() {
 if [ "$_color_prompt" = yes ]; then
      # username@hostname
     if [[ "$UID" == "0" ]]; then
-        PS1="\[${ORANGE}\]\u\[${NONE}\]@\[\$(clean_call ternary_operator \\j \${ORANGE} \${RED})\]${hostname}"
+        PS1="\[${ORANGE}\]\u\[\$(clean_call ternary_operator \\j \${NONE} \${RED})\]@\[\${ORANGE}\]${hostname}"
     else
-        PS1="\[${GREEN}\]\u\[${NONE}\]@\[\$(clean_call ternary_operator \\j \${GREEN} \${RED})\]${hostname}"
+        PS1="\[${GREEN}\]\u\[\$(clean_call ternary_operator \\j \${NONE} \${RED})\]@\[\${GREEN}\]${hostname}"
     fi
     PS1+='\[$(clean_eval "[[ -w \w ]]; ternary_operator \$? \${NONE} \${RED}" )\]:'
     # PS1+="\[${NONE}\]:"
