@@ -56,11 +56,12 @@ function ternary_operator() {
 if [ "$_color_prompt" = yes ]; then
      # username@hostname
     if [[ "$UID" == "0" ]]; then
-        PS1="\[${ORANGE}\]\u\[\$(clean_call ternary_operator \\j \${NONE} \${RED})\]@\[\${ORANGE}\]${hostname}"
+        : $ORANGE
     else
-        PS1="\[${GREEN}\]\u\[\$(clean_call ternary_operator \\j \${NONE} \${RED})\]@\[\${GREEN}\]${hostname}"
+        : $GREEN
     fi
-    PS1+='\[$(clean_eval "[[ -w \w ]]; ternary_operator \$? \${NONE} \${RED}" )\]:'
+    PS1="\[$_\]\u\[\$(clean_call ternary_operator \\j \${NONE} \${RED})\]@\[$_\]${hostname}"
+    PS1+='\[$(clean_eval "[[ -w \w ]]; ternary_operator \\$? \\${NONE} \\${RED}" )\]:'
     # PS1+="\[${NONE}\]:"
     # \w
     if [ -n "$fish_prompt" ]; then
@@ -101,3 +102,4 @@ xterm*|rxvt*)
 esac
 
 unset hostname
+unset ps_symbol
