@@ -42,13 +42,13 @@ if os::is_wsl; then
 fi
 
 ps_symbol='\$'
-if os::is_mac; then
-    ps_symbol=''
-fi
+# if os::is_mac; then
+#     ps_symbol='\[\]'
+# fi
 
-# ternary_operator(cond, out1, out2)
+# _ternary_op(cond, out1, out2)
 # cond == 0 ? printf out1 : printf out2
-function ternary_operator() {
+function _ternary_op() {
     [ "$1" -eq 0 ] && printf "$2" || printf "$3"
 }
 
@@ -56,13 +56,12 @@ function ternary_operator() {
 if [ "$_color_prompt" = yes ]; then
      # username@hostname
     if [[ "$UID" == "0" ]]; then
-        : $ORANGE
+        : ORANGE
     else
-        : $GREEN
+        : GREEN
     fi
-    PS1="\[$_\]\u\[\$(clean_call ternary_operator \\j \${NONE} \${RED})\]@\[$_\]${hostname}"
-    PS1+='\[$(clean_eval "[[ -w \w ]]; ternary_operator \\$? \\${NONE} \\${RED}" )\]:'
-    # PS1+="\[${NONE}\]:"
+    PS1="\[\${$_}\]\u\[\$(clean_call _ternary_op \\j \${NONE} \${RED})\]@\[\${$_}\]${hostname}"
+    PS1+='\[$(clean_eval "[[ -w \w ]]; _ternary_op \\$? \\${NONE} \\${RED}" )\]:'
     # \w
     if [ -n "$fish_prompt" ]; then
         PS1+='$(clean_call _show_pwd "\[${YELLOW}\]%s" "\w")' # _show_pwd
@@ -73,7 +72,7 @@ if [ "$_color_prompt" = yes ]; then
     if [ -n "$git_prompt" ]; then
         PS1+='$(clean_call _show_git "\[${BLACK_B}\](%s)")'
     fi
-    PS1+="\[\$(ternary_operator \$? \${NONE} \${RED})\]$ps_symbol\[\${NONE}\] "
+    PS1+="\[\$(_ternary_op \$? \${NONE} \${RED})\]$ps_symbol\[\${NONE}\] "
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
 else
     PS1="\u@${hostname}"
