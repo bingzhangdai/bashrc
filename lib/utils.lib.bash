@@ -1,17 +1,11 @@
-# execute the command without changing the previous return status
+# execute the command without changing the exit code
 clean_call() {
     # preserve exit status
     local exit=$?
-    local cmd="$1"
-    shift
-    $cmd $@
-    return "$exit"
-}
-
-# eval is generally more dengerous, use it only when clean_call fails
-clean_eval() {
-    # preserve exit status
-    local exit=$?
-    eval "$@"
+    if command -v "$1" >> /dev/null; then
+        $@
+    else
+        eval "$@"
+    fi
     return "$exit"
 }

@@ -61,7 +61,7 @@ if [ "$_color_prompt" = yes ]; then
         : GREEN
     fi
     PS1="\[\${$_}\]\u\[\$(clean_call _ternary_op \\j \${NONE} \${RED})\]@\[\${$_}\]${hostname}"
-    PS1+='\[$(clean_eval "[[ -w \w ]]; _ternary_op \\$? \\${NONE} \\${RED}" )\]:'
+    PS1+='\[$(clean_call "[[ -w \w ]] && printf \\${NONE} || printf \\${RED}" )\]:'
     # \w
     if [ -n "$fish_prompt" ]; then
         PS1+='$(clean_call _show_pwd "\[${YELLOW}\]%s" "\w")' # _show_pwd
