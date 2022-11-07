@@ -41,9 +41,14 @@ if os::is_wsl; then
     fi
 fi
 
-# ternary_operator(cond, out1, out2)
+ps_symbol='\$'
+# if os::is_mac; then
+#     ps_symbol='\[\]'
+# fi
+
+# _ternary_op(cond, out1, out2)
 # cond == 0 ? printf out1 : printf out2
-function ternary_operator() {
+function _ternary_op() {
     [ "$1" -eq 0 ] && printf "$2" || printf "$3"
 }
 
@@ -51,34 +56,35 @@ function ternary_operator() {
 if [ "$_color_prompt" = yes ]; then
      # username@hostname
     if [[ "$UID" == "0" ]]; then
-        PS1="\[${ORANGE}\]\u\[${NONE}\]@\[\$(no_return_call ternary_operator \\j \${ORANGE} \${RED})\]${hostname}"
+        : ORANGE
     else
-        PS1="\[${GREEN}\]\u\[${NONE}\]@\[\$(no_return_call ternary_operator \\j \${GREEN} \${RED})\]${hostname}"
+        : GREEN
     fi
-    PS1+="\[${NONE}\]:"
+    PS1="\[\${$_}\]\u\[\$(clean_call _ternary_op \\j \${NONE} \${RED})\]@\[\${$_}\]${hostname}"
+    PS1+='\[$(clean_call "[[ -w \w ]] && printf \\${NONE} || printf \\${RED}" )\]:'
     # \w
     if [ -n "$fish_prompt" ]; then
-        PS1+='$(no_return_call _show_pwd "\[${YELLOW}\]%s" "\w")' # _show_pwd
+        PS1+='$(clean_call _show_pwd "\[${YELLOW}\]%s" "\w")' # _show_pwd
     else
         PS1+='\[${YELLOW}\]\w' # _show_pwd
     fi
     # git branch
     if [ -n "$git_prompt" ]; then
-        PS1+='$(no_return_call _show_git "\[${BLACK_B}\](%s)")'
+        PS1+='$(clean_call _show_git "\[${BLACK_B}\](%s)")'
     fi
-    PS1+='$(ternary_operator $? "\[${NONE}\]" "\[${RED}\]")\$\[${NONE}\] '
+    PS1+="\[\$(_ternary_op \$? \${NONE} \${RED})\]$ps_symbol\[\${NONE}\] "
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
 else
     PS1="\u@${hostname}"
     # \w
     if [ -n "$fish_prompt" ]; then
-        PS1+=':$(no_return_call _show_pwd "%s" "\w")'
+        PS1+=':$(clean_call _show_pwd "%s" "\w")'
     else
         PS1+=':\w' # _show_pwd
     fi
     # git branch
     if [ -n "$git_prompt" ]; then
-        PS1+='$(no_return_call _show_git "(%s)")'
+        PS1+='$(clean_call _show_git "(%s)")'
     fi
     # PS1+='$(exit=$?; [[ "$exit" == "0" ]] || printf ":$exit")'
     PS1+='\$ '
@@ -95,3 +101,4 @@ xterm*|rxvt*)
 esac
 
 unset hostname
+unset ps_symbol

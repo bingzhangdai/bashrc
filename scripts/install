@@ -34,8 +34,9 @@ if ! command -v git > /dev/null; then
 fi
 
 builtin pushd $HOME
+BASHRC_REPO=$HOME/.bashrc.git
 if [ -d .bashrc.git ]; then
-    builtin pushd .bashrc.git
+    builtin pushd $BASHRC_REPO
     execute "git" "fetch" "--force" "origin"
     execute "git" "fetch" "--force" "--tags" "origin"
 
@@ -74,13 +75,24 @@ append_line() {
     set +e
 }
 
-
-BASHRC_REPO=$HOME/.bashrc.git
-append_line "source $BASHRC_REPO/bashrc" ~/.bashrc
 append_line "source $BASHRC_REPO/bash_logout" ~/.bash_logout
 append_line "\$include $BASHRC_REPO/inputrc" ~/.inputrc
 
-# TODO: settings.bash
+if ! command -v envsubst > /dev/null; then
+    abort "envsubst is required before install this script."
+fi
+
+(
+    set -a
+    source $BASHRC_REPO/scripts/settings.bash
+    [[ -r "~/.settings.bash" ]] && source "~/.settings.bash"
+    set +a
+    mv ~/.settings.bash ~/.settings.bash.$(date "+%Y%m%d-%s%3N")
+    cat "$BASHRC_REPO/scripts/settings.bash.tpl" | envsubst > ~/.settings.bash
+)
+
+append_line '~/.settings.bash' ~/.bashrc
+append_line "source $BASHRC_REPO/bashrc" ~/.bashrc
 
 builtin popd
 

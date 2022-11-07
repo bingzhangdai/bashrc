@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+
+ROOT_PATH="$(builtin cd $(dirname ${BASH_SOURCE[0]})/.. && builtin pwd)"
+pushd $ROOT_PATH > /dev/null
+builtin source lib/os.lib.bash
+
 # install or remove a package through package manager
 # Usage:
 #     package { install | remove } pkg...
@@ -57,3 +63,7 @@ function package() {
 
     $pkgmgr $action "$@"
 }
+
+
+
+package $@

@@ -30,6 +30,7 @@ export EDITOR='vi'
 
 _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && builtin pwd)"
 
+PATH=$PATH:$_DOT_BASH_BASEDIR/bin
 
 # https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
 source "${_DOT_BASH_BASEDIR}"/setup.bash
