@@ -5,7 +5,7 @@
 ## quick start
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/bingzhangdai/bashrc/main/install)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/bingzhangdai/bashrc/main/scripts/install)"
 ```
 
 ## key points
