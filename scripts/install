@@ -33,8 +33,8 @@ if ! command -v git > /dev/null; then
     abort "Git is required before install this script."
 fi
 
-builtin pushd $HOME
-BASHRC_REPO=$HOME/.bashrc.git
+cd ~
+BASHRC_REPO=~/.bashrc.git
 if [ -d .bashrc.git ]; then
     builtin pushd $BASHRC_REPO
     execute "git" "fetch" "--force" "origin"
@@ -43,7 +43,7 @@ if [ -d .bashrc.git ]; then
     execute "git" "reset" "--hard" "origin/main"
     builtin popd
 else
-    execute "git" "clone" "https://github.com/bingzhangdai/bashrc.git" ".bashrc.git"
+    execute "git" "clone" "https://github.com/bingzhangdai/bashrc.git" $BASHRC_REPO
 fi
 
 append_line() {
@@ -84,16 +84,14 @@ fi
 
 (
     set -a
-    source $BASHRC_REPO/scripts/settings.bash
+    source $BASHRC_REPO/scripts/settings.default.bash
     [[ -r "~/.settings.bash" ]] && source "~/.settings.bash"
     set +a
     mv ~/.settings.bash ~/.settings.bash.$(date "+%Y%m%d-%s%3N")
-    cat "$BASHRC_REPO/scripts/settings.bash.tpl" | envsubst > ~/.settings.bash
+    cat "$BASHRC_REPO/scripts/settings.tpl.bash" | envsubst > ~/.settings.bash
 )
 
-append_line '~/.settings.bash' ~/.bashrc
+append_line 'source ~/.settings.bash' ~/.bashrc
 append_line "source $BASHRC_REPO/bashrc" ~/.bashrc
-
-builtin popd
 
 # TOD: install packages
