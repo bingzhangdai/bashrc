@@ -12,15 +12,23 @@
 #     return "$exit"
 # }
 
-clean_call() {
+function clean_call() {
     # preserve exit status
     local exit=$?
     $@
     return "$exit"
 }
 
-clean_eval() {
+function clean_eval() {
     local exit=$?
     eval "$*"
     return "$exit"
 }
+
+function benchmark() (
+    export TIMEFORMAT='%3R'
+    time=$({ time for _ in {0..100}; do eval "$*" &>> /dev/null; done; } 2>&1)
+    : ${time/./}
+    : ${_##0}
+    printf '%dms\n' "$(( (_ + 50) / 100 ))"
+)

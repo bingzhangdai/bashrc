@@ -68,7 +68,7 @@ function _detect_battery() {
         battery::_value _ && return
     fi
     function battery::_value() {
-        printf -v "$1" -1
+        printf -v "$1" -- '%d' -1
         false
     }
 }
