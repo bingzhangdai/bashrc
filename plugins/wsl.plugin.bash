@@ -5,7 +5,7 @@ if os::is_wsl; then
     # invoke Windows exe when there is not Linux one with the same name
     # https://github.com/microsoft/WSL/issues/2003#issuecomment-297792622
     if declare -F command_not_found_handle > /dev/null; then
-        eval "$(echo "wsl_orig_command_not_found_handle()"; declare -f command_not_found_handle | tail -n +2)"
+        fun::rename command_not_found_handle wsl_orig_command_not_found_handle
     else
         function wsl_orig_command_not_found_handle() {
             if [ -x /usr/lib/command-not-found ]; then
