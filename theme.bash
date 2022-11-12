@@ -69,11 +69,11 @@ fi
 if [ "$_color_prompt" = yes ]; then
      # username@hostname
     [[ "$UID" == "0" ]] && : '${ORANGE}' || : '${GREEN}'
-    PS1="\[$_\]\u\[\$(clean_call _ternary_op \\j \${NONE} \${RED})\]@\[\$(clean_call 'battery::is_low && printf \${RED} || printf $_')\]${hostname}"
+    PS1="\[$_\]\u\[\$(clean_call _ternary_op \\j \${NONE} \${RED})\]@\[\$(clean_eval 'battery::is_low && printf \${RED} || printf $_')\]${hostname}"
     # :
     PS1+='\[${NONE}\]:'
     # \w
-    PS1+='\[$(clean_call "[[ -w \w ]] && printf \\${YELLOW} || printf \\${RED}" )\]'
+    PS1+='\[$(clean_eval "[[ -w \w ]] && printf \\${YELLOW} || printf \\${RED}" )\]'
     if [ -n "$fish_prompt" ]; then
         PS1+='$(clean_call _show_pwd "%s" "\w")'
     else
