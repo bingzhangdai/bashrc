@@ -32,3 +32,5 @@ function benchmark() (
     : "${_#"${_%%[!0]*}"}"
     printf '%d.%2dms\n' "$(( _ / 100 ))" "$(( _ % 100 ))"
 )
+
+$( complete -p | grep time) benchmark
