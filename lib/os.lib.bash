@@ -1,9 +1,9 @@
 function os::wsl_version() {
     local verson='';
     # mac does not have /proc/version
-    [ -f /proc/version ] && version="$(</proc/version)"
-    if echo "$version" | grep -iqF microsoft; then
-        echo "$version" | grep -iqF wsl2 && printf 2 || printf 1
+    [[ -f /proc/version ]] && version="$(</proc/version)"
+    if [[ "$version" = *[Mm]icrosoft* ]]; then
+        [[ "${version^^}" = *WSL2* ]] && printf 2 || printf 1
         return
     fi
     false
