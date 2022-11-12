@@ -71,6 +71,8 @@ function fcd() {
     cd "$dir"
 }
 
+os::is_mac && bind -x '"ç": fcd'
+
 function _set_fzf_default_opts() {
     if command -v bat > /dev/null; then
         local cat='bat --color=always'

@@ -12,16 +12,16 @@
 function git::branch() {
     local _head_file _head
     local _dir="$PWD"
-    while [ -n "$_dir" ]; do
+    while [[ -n "$_dir" ]]; do
         _head_file="$_dir/.git/HEAD"
-        if [ -f "$_dir/.git" ]; then
+        if [[ -f "$_dir/.git" ]]; then
             read -r _head_file < "$_dir/.git" && _head_file="$_dir/${_head_file#gitdir: }/HEAD"
         fi
-        [ -f "$_head_file" ] && break
+        [[ -f "$_head_file" ]] && break
         _dir="${_dir%/*}"
     done
 
-    [ -f "$_head_file" ] || return
+    [[ -f "$_head_file" ]] || return
     read -r _head < "$_head_file" || return
 
     local branch=''
@@ -34,8 +34,8 @@ function git::branch() {
             branch="${_head:0:9}"
             ;;
         *)
-            false
-            return
+            >&2 printf '%s\n' 'fatal: not a git repository (or any of the parent directories): .git'
+            return 128
             ;;
     esac
 
