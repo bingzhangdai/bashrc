@@ -30,7 +30,5 @@ function benchmark() (
     local time=$({ time for _ in {0..100}; do eval "$*" &>> /dev/null; done; } 2>&1)
     : "${time/./}"
     : "${_#"${_%%[!0]*}"}"
-    printf '%d.%2dms\n' "$(( _ / 100 ))" "$(( _ % 100 ))"
+    printf '%d.%02dms\n' "$(( _ / 100 ))" "$(( _ % 100 ))"
 )
-
-$( complete -p | grep time) benchmark

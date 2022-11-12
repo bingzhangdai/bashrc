@@ -49,3 +49,5 @@ if [ "${BASH_VERSINFO}" -ge 5 ]; then
 
   complete -o default -I -F _bash_command_complete
 fi
+
+$( complete -p | grep time) benchmark
