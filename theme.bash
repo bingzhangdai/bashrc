@@ -1,7 +1,6 @@
-function _show_pwd() {
-    local format='%s'
-    format="${1:-$format}"
-    local path="${2:-$PWD}"
+# Usage: _get_short_path output_var path
+function _get_short_path() {
+    local path=$2
     # case insensitive replace prefix
     if os::is_mac || { os::is_wsl && str.starts_with path '/mnt/c'; }; then
         : ${path,,}
@@ -17,18 +16,16 @@ function _show_pwd() {
     else
         path::shrink -o _short_path "$path"
     fi
-    printf -- "$format" "$_short_path"
+    printf -v "$1" -- "$_short_path"
 }
 
-function _show_git() {
-    local format='[%s]'
-    format="${1:-$format}"
+# Usage: _get_short_git_branch output_var
+function _get_short_git_branch() {
     local _git_branch
-    git::branch -o _git_branch
-    [[ -z "$_git_branch" ]] && return $exit
+    git::branch -o _git_branch || return
     local _short_branch
     path::shrink -o _short_branch "${_git_branch}"
-    printf -- "$format" "$_short_branch"
+    printf -v "$1" -- "$_short_branch"
 }
 
 # Special prompt variable: https://ss64.com/bash/syntax-prompt.html
@@ -41,64 +38,56 @@ if os::is_wsl; then
     fi
 fi
 
-ps_symbol='\$'
-# if os::is_mac; then
-#     ps_symbol='\[\]'
-# fi
-
-# cond == 0 ? printf out1 : printf out2
-function _ternary_op() {
-    [ "$1" -eq 0 ] && printf "$2" || printf "$3"
-}
-
-if [ -n "$git_prompt" ] && [[ -n "" ]]; then
-    function print_git() {
-        local _git_branch
-        git::branch -o _git_branch
-        [[ -z "$_git_branch" ]] && return
-        local _short_branch
-        path::shrink -o _short_branch "${_git_branch}"
-        echo -en "\E[6n";read -sdR _pos; : ${_pos#*;};
-        # printf "\033[500C\033[${#_short_branch}D${ORANGE}%s${NONE}\033[$(( COLUMNS - _ ))D" "${_short_branch}"
-        printf "${ORANGE}%${COLUMNS}s${NONE}\033[$(( COLUMNS - _ ))D" "${_short_branch}"
-    }
-    PROMPT_COMMAND="$PROMPT_COMMAND"$'\n''print_git'
+if [[ "$_color_prompt" == yes ]]; then
+    [[ "$UID" == "0" ]] && : ${ORANGE} || : ${GREEN}
+    _PROMPT_USER_COLOR=$_
+    _PROMPT_RETURN_CODE_COLOR=
+    _PROMPT_JOBS_COLOR=$NONE
+    _PROMPT_BATTERY_COLOR=
+    _PROMPT_PATH_COLOR=
+    _PROMPT_GIT_COLOR=${BLACK_B}
 fi
+_PROMPT_PATH=
+_PROMPT_GIT=
+function _generate_prompt() {
+    local _exit=$?
+    if [[ "$_color_prompt" == yes ]]; then
+        [[ "$_exit" == 0 ]] && : ${NONE} || : ${RED}; _PROMPT_RETURN_CODE_COLOR=$_
+        [[ -n "$(jobs -p)" ]] && : ${RED} || : ${NONE}; _PROMPT_JOBS_COLOR=$_
+        battery::is_low && : ${RED} || : ${_PROMPT_USER_COLOR}; _PROMPT_BATTERY_COLOR=$_
+        [[ -w "$PWD" ]] && : ${YELLOW} || : ${RED}; _PROMPT_PATH_COLOR=$_
+    fi
+    if [[ -n "$fish_prompt" ]]; then
+        _get_short_path _PROMPT_PATH "$PWD"
+    else
+        _PROMPT_PATH=$PWD
+    fi
+    if [[ -n "$git_prompt" ]]; then
+        if _get_short_git_branch _PROMPT_GIT; then
+            _PROMPT_GIT="(${_PROMPT_GIT})"
+        else
+            _PROMPT_GIT=
+        fi
+    fi
+    return $_exit
+}
+_generate_prompt
+PROMPT_COMMAND="_generate_prompt;$PROMPT_COMMAND"
 
 # colors can be found in lib/color.lib.bash
-if [ "$_color_prompt" = yes ]; then
+if [[ "$_color_prompt" == yes ]]; then
      # username@hostname
-    [[ "$UID" == "0" ]] && : '${ORANGE}' || : '${GREEN}'
-    PS1="\[$_\]\u\[\$(clean_call _ternary_op \\j \${NONE} \${RED})\]@\[\$(clean_eval 'battery::is_low && printf \${RED} || printf $_')\]${hostname}"
+    PS1="\[\${_PROMPT_USER_COLOR}\]\u\[\${_PROMPT_JOBS_COLOR}\]@\[\${_PROMPT_BATTERY_COLOR}\]${hostname}"
     # :
-    PS1+='\[${NONE}\]:'
-    # \w
-    PS1+='\[$(clean_eval "[[ -w \w ]] && printf \\${YELLOW} || printf \\${RED}" )\]'
-    if [ -n "$fish_prompt" ]; then
-        PS1+='$(clean_call _show_pwd "%s" "\w")'
-    else
-        PS1+='\w'
-    fi
+    PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]${_PROMPT_PATH}'
     # git branch
-    if [ -n "$git_prompt" ]; then
-        PS1+='$(clean_call _show_git "\[${BLACK_B}\](%s)")'
+    if [[ -n "$git_prompt" ]]; then
+        PS1+='\[${_PROMPT_GIT_COLOR}\]${_PROMPT_GIT}'
     fi
-    PS1+="\[\$(_ternary_op \$? \${NONE} \${RED})\]$ps_symbol\[\${NONE}\] "
+    PS1+='\[${_PROMPT_RETURN_CODE_COLOR}\]\$\[${NONE}\] '
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
 else
-    PS1="\u@${hostname}"
-    # \w
-    if [ -n "$fish_prompt" ]; then
-        PS1+=':$(clean_call _show_pwd "%s" "\w")'
-    else
-        PS1+=':\w'
-    fi
-    # git branch
-    if [ -n "$git_prompt" ]; then
-        PS1+='$(clean_call _show_git "(%s)")'
-    fi
-    # PS1+='$(exit=$?; [[ "$exit" == "0" ]] || printf ":$exit")'
-    PS1+='\$ '
+    PS1="\u@${hostname}:\${_PROMPT_PATH}\${_PROMPT_GIT}\$ "
 fi
 
 # If this is an xterm set the title to user@host:dir
