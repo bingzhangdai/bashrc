@@ -27,7 +27,7 @@ function clean_eval() {
 
 function benchmark() (
     export TIMEFORMAT='%3R'
-    local time=$({ time for _ in {0..100}; do eval "$*" &>> /dev/null; done; } 2>&1)
+    local time=$({ time for _ in {1..100}; do eval "$*" &>> /dev/null; done; } 2>&1)
     : "${time/./}"
     : "${_#"${_%%[!0]*}"}"
     printf '%d.%02dms\n' "$(( _ / 100 ))" "$(( _ % 100 ))"
