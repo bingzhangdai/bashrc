@@ -77,7 +77,7 @@ PROMPT_COMMAND="_generate_prompt;$PROMPT_COMMAND"
 # colors can be found in lib/color.lib.bash
 if [[ "$_color_prompt" == yes ]]; then
      # username@hostname
-    PS1="\[\${_PROMPT_USER_COLOR}\]\u\[\\033[\$((\\j?31:0))m\]@\[\${_PROMPT_BATTERY_COLOR}\]${hostname}"
+    PS1='\[${_PROMPT_USER_COLOR}\]\u\[\033[$((\j?31:0))m\]@\[${_PROMPT_BATTERY_COLOR}\]'"${hostname}"
     # :
     PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]${_PROMPT_PATH}'
     # git branch
