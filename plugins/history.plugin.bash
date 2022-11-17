@@ -27,8 +27,8 @@ shopt -s cmdhist
 shopt -u lithist
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-readonly HISTSIZE=-1
-readonly HISTFILESIZE=-1
+HISTSIZE=-1
+HISTFILESIZE=-1
 
 # https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
 # store history immediately

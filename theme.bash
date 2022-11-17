@@ -22,7 +22,7 @@ function _get_short_path() {
 # Usage: _get_short_git_branch output_var
 function _get_short_git_branch() {
     local _git_branch
-    git::branch -o _git_branch || return
+    git::branch -o _git_branch 2> /dev/null
     local _short_branch
     path::shrink -o _short_branch "${_git_branch}"
     printf -v "$1" -- "$_short_branch"
@@ -63,11 +63,7 @@ function _generate_prompt() {
         _PROMPT_PATH=$PWD
     fi
     if [[ -n "$git_prompt" ]]; then
-        if _get_short_git_branch _PROMPT_GIT; then
-            _PROMPT_GIT="(${_PROMPT_GIT})"
-        else
-            _PROMPT_GIT=
-        fi
+        _get_short_git_branch _PROMPT_GIT
     fi
     return $_exit
 }
@@ -82,7 +78,7 @@ if [[ "$_color_prompt" == yes ]]; then
     PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]${_PROMPT_PATH}'
     # git branch
     if [[ -n "$git_prompt" ]]; then
-        PS1+='\[${_PROMPT_GIT_COLOR}\]${_PROMPT_GIT}'
+        PS1+='\[${_PROMPT_GIT_COLOR}\]${_PROMPT_GIT:+($_PROMPT_GIT)}'
     fi
     PS1+='\[${_PROMPT_RETURN_CODE_COLOR}\]\$\[${NONE}\] '
     PS2="\[${YELLOW}\]${PS2}\[${NONE}\]"
