@@ -1,9 +1,10 @@
 function error::explain() {
     case "$1" in
+        0): 'Successful' ;;
         1) : 'Catchall for general errors' ;;
-        2) : 'Misuse of shell builtins' ;;
+        2) : 'Misuse of shell builtins (according to Bash documentation)' ;;
         126) : 'Command invoked cannot execute' ;;
-        127) : 'command not found' ;;
+        127) : 'Command not found' ;;
         128) : 'Invalid argument to exit' ;;
         130) : 'Script terminated by Control-C' ;;
         255) : 'Exit status out of range' ;;
