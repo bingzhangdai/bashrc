@@ -9,7 +9,9 @@ function error::explain() {
         255) : 'Exit status out of range' ;;
         *)
             if (( $1 > 128 )); then
-                : "Fatal error signal \"$(( $1 - 128 ))\""
+                # the actual meaning of signal varies among platforms
+                : $(kill -l | grep -Po "[^0-9]$(($1 - 128))\) \K[[:alnum:]]+")
+                : "Fatal error signal \"${_:-$(($1 - 128))}\""
             else
                 : 'Undefined exit code'
             fi
