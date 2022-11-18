@@ -45,6 +45,6 @@ function benchmark() (
     : $({ time for ((i=0;i<iter;i++)); do eval "$*" &>> /dev/null; done; } 2>&1)
     : "${_/./}"
     : "${_#"${_%%[!0]*}"}"
-    >&2 printf '%d.%02dms\n' "$(( (_ + time) / (iter + 1) ))" "$(( (_ + time) % (iter + 1) ))"
+    >&2 printf '%d.%02dms\n' "$(( (_ + time) / (iter + 1) ))" "$(( (_ + time) % (iter + 1) * 100 / (iter + 1) ))"
     return $_exit
 )
