@@ -25,13 +25,26 @@ function clean_eval() {
     return "$exit"
 }
 
+
+_BENCHMARK_MIN_ITER=3
 function benchmark() (
-    # print the sample output
-    printf "${BLACK_B}Command output: $NONE"; eval "$*"; _exit=$?
     export TIMEFORMAT='%3R'
-    local time=$({ time for _ in {1..100}; do eval "$*" &>> /dev/null; done; } 2>&1)
+    # print the sample output
+    printf "${YELLOW_B}------ Command starts ------$NONE\n";
+    { time=$({ time eval "$*" 2>&1; } 2>&1 1>&3) _exit=$?; } 3>&1
+    printf "${YELLOW_B}------ Command ends --------$NONE\n"
+    # calculate the number of iterations
     : "${time/./}"
     : "${_#"${_%%[!0]*}"}"
-    printf '%d.%02dms\n' "$(( _ / 100 ))" "$(( _ % 100 ))"
+    : $(( _ ? _ : 1 ))
+    : $(( (10000 - _ / 2) / _ ))
+    : $(( _ < _BENCHMARK_MIN_ITER ? _BENCHMARK_MIN_ITER : _ ))
+    : $(( _ > 100 ? 100 : _ ))
+    local iter=$_
+
+    : $({ time for ((i=0;i<iter;i++)); do eval "$*" &>> /dev/null; done; } 2>&1)
+    : "${_/./}"
+    : "${_#"${_%%[!0]*}"}"
+    >&2 printf '%d.%02dms\n' "$(( _ / iter ))" "$(( _ % iter ))"
     return $_exit
 )
