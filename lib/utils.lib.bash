@@ -44,7 +44,7 @@ function benchmark() (
     : $(( _ > 100 ? 100 : _ ))
     local iter=$_
 
-    : $({ time for ((i=1;i<iter;i++)); do eval "$*" &>> /dev/null; done; } 2>&1)
+    : $({ time for ((_bench_it=1; _bench_it<iter; _bench_it++)); do eval "$*" &>> /dev/null; done; } 2>&1)
     : "${_/./}"
     : "${_#"${_%%[!0]*}"}"
     : $(( _ + time ))
