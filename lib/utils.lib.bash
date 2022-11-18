@@ -37,14 +37,17 @@ function benchmark() (
     : "${time/./}"
     : "${_#"${_%%[!0]*}"}"
     time=$(( _ ? _ : 1 ))
-    : $(( (10000 - time / 2) / time ))
-    : $(( _ < _BENCHMARK_MIN_ITER - 1 ? _BENCHMARK_MIN_ITER - 1 : _ ))
+    # (10 * 1000 - time + time/2) / time
+    : $(( (10000 - time / 2) / time))
+    : $(( _ + 1 ))
+    : $(( _ < _BENCHMARK_MIN_ITER ? _BENCHMARK_MIN_ITER : _ ))
     : $(( _ > 100 ? 100 : _ ))
     local iter=$_
 
-    : $({ time for ((i=0;i<iter;i++)); do eval "$*" &>> /dev/null; done; } 2>&1)
+    : $({ time for ((i=1;i<iter;i++)); do eval "$*" &>> /dev/null; done; } 2>&1)
     : "${_/./}"
     : "${_#"${_%%[!0]*}"}"
-    >&2 printf '%d.%02dms\n' "$(( (_ + time) / (iter + 1) ))" "$(( (_ + time) % (iter + 1) * 100 / (iter + 1) ))"
+    : $(( _ + time ))
+    >&2 printf '%d iterations, average: %d.%02dms\n' "$iter" "$(( _ / iter ))" "$(( _ % iter * 100 / iter ))"
     return $_exit
 )
