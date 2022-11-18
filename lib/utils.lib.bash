@@ -30,21 +30,21 @@ _BENCHMARK_MIN_ITER=3
 function benchmark() (
     export TIMEFORMAT='%3R'
     # print the sample output
-    printf "${YELLOW_B}------ Command starts ------$NONE\n";
+    printf "${YELLOW_B}------ begin command output ------$NONE\n";
     { time=$({ time eval "$*" 2>&1; } 2>&1 1>&3) _exit=$?; } 3>&1
-    printf "${YELLOW_B}------ Command ends --------$NONE\n"
+    printf "${YELLOW_B}------ end command output --------$NONE\n"
     # calculate the number of iterations
     : "${time/./}"
     : "${_#"${_%%[!0]*}"}"
-    : $(( _ ? _ : 1 ))
-    : $(( (10000 - _ / 2) / _ ))
-    : $(( _ < _BENCHMARK_MIN_ITER ? _BENCHMARK_MIN_ITER : _ ))
+    time=$(( _ ? _ : 1 ))
+    : $(( (10000 - time / 2) / time ))
+    : $(( _ < _BENCHMARK_MIN_ITER - 1 ? _BENCHMARK_MIN_ITER - 1 : _ ))
     : $(( _ > 100 ? 100 : _ ))
     local iter=$_
 
     : $({ time for ((i=0;i<iter;i++)); do eval "$*" &>> /dev/null; done; } 2>&1)
     : "${_/./}"
     : "${_#"${_%%[!0]*}"}"
-    >&2 printf '%d.%02dms\n' "$(( _ / iter ))" "$(( _ % iter ))"
+    >&2 printf '%d.%02dms\n' "$(( (_ + time) / (iter + 1) ))" "$(( (_ + time) % (iter + 1) ))"
     return $_exit
 )
