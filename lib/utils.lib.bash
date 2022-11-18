@@ -30,7 +30,7 @@ _BENCHMARK_MIN_ITER=3
 function benchmark() (
     export TIMEFORMAT='%3R'
     # print the sample output
-    printf "${YELLOW_B}------ begin command output ------$NONE\n";
+    printf "${YELLOW_B}------ begin command output ------$NONE\n"
     { time=$({ time eval "$*" 2>&1; } 2>&1 1>&3) _exit=$?; } 3>&1
     printf "${YELLOW_B}------ end command output --------$NONE\n"
     # calculate the number of iterations
