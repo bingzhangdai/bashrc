@@ -17,6 +17,10 @@ if [ -n "$color_prompt" ]; then
   esac
 fi
 
+function color::truecolor() {
+  [[ $COLORTERM =~ ^(truecolor|24bit)$ ]]
+}
+
 # region https://github.com/tmux/tmux/blob/dae2868d1227b95fd076fb4a5efa6256c7245943/colour.c#L57
 # TODO: test: https://gist.github.com/MicahElliott/719710
 function color::_color_dist_sq() {
@@ -84,7 +88,8 @@ function color::hex_to_256() {
 }
 
 function color::256() {
-  tput setaf $1
+  # tput setaf $1
+  printf -- "\e[38;5;${1}m"
 }
 
 function color::hex() {
@@ -168,19 +173,16 @@ if [ -n "$_color_prompt" ]; then
   CYAN_BG_BRT=$'\033[0;106m'
   WHITE_BG_BRT=$'\033[0;107m'
 
-  if tput setaf 1 &>/dev/null; then
-    NONE=$(tput sgr0)
-    # monokai
-    # ref: https://github.com/microsoft/vscode/blob/main/extensions/theme-monokai/themes/monokai-color-theme.json
-    ORANGE=$(color::hex "#FD971F")
-    BLACK=$(color::hex "#272822") # background
-    YELLOW=$(color::hex "#E6DB74")
-    PURPLE=$(color::hex "#AE81FF")
-    BLUE=$(color::hex "#66D9EF")
-    GREEN=$(color::hex "#A6E22E")
-    RED=$(color::hex "#F92672")
-    WHITE=$(color::hex "#F8F8F2") # foreground
-    BLACK_B=$(color::hex "#75715E") # comment
-  fi
+  # monokai
+  # ref: https://github.com/microsoft/vscode/blob/main/extensions/theme-monokai/themes/monokai-color-theme.json
+  ORANGE=$(color::hex "#FD971F")
+  BLACK=$(color::hex "#272822") # background
+  YELLOW=$(color::hex "#E6DB74")
+  PURPLE=$(color::hex "#AE81FF")
+  BLUE=$(color::hex "#66D9EF")
+  GREEN=$(color::hex "#A6E22E")
+  RED=$(color::hex "#F92672")
+  WHITE=$(color::hex "#F8F8F2") # foreground
+  BLACK_B=$(color::hex "#75715E") # comment
 fi
 

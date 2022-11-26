@@ -15,8 +15,8 @@ function type::pprint() {
 
     # print function
     if type::is_function "$1"; then
-        printf 'function '
-        declare -f $1
+        printf "function $1() {\n"
+        declare -f $1 | tail -n +3
         ret=0
     fi
 

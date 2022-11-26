@@ -16,3 +16,22 @@ function term::is_telnet() {
 function term::is_local() {
     ! term::is_ssh && ! term::is_telnet
 }
+
+function term::x() {
+    local _x_pos
+    term::_get_cursor_pos _x_pos _
+    printf '%d\n' "$_x_pos"
+}
+
+function term::y() {
+    local _y_pos
+    term::_get_cursor_pos _ _y_pos
+    printf '%d\n' "$_y_pos"
+}
+
+function term::_get_cursor_pos() {
+    local _x _y
+    IFS='[;' read -p $'\e[6n' -d R -rs _ _y _x _
+    printf -v "$1" "$_x"
+    printf -v "$2" "$_y"
+}
