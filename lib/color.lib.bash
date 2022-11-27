@@ -18,7 +18,7 @@ if [ -n "$color_prompt" ]; then
 fi
 
 function color::truecolor() {
-    [[ $COLORTERM =~ ^(truecolor|24bit)$ ]]
+    [[ $COLORTERM =~ ^(truecolor|24bit)$ ]] || [[ -n "$WT_SESSION" ]]
 }
 
 function color::256() {
