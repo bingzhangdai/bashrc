@@ -60,3 +60,8 @@ function os::os_family() {
     esac
 }
 
+# https://learn.microsoft.com/en-us/windows/wsl/wsl-config
+if os::is_wsl; then
+    WSL_AUTOMOUNT_ROOT='/mnt/'
+    WSL_NETWORK_HOSTNAME=
+fi

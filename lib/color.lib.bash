@@ -1,24 +1,9 @@
-# set a fancy prompt (non-color, unless we know we "want" color)
-_color_prompt=
-if [ -n "$color_prompt" ]; then
-    # set a fancy prompt (non-color, unless we know we "want" color)
-    case "$TERM" in
-        xterm-*color)
-            _color_prompt=yes
-            ;;
-        *)
-            if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-                # We have color support; assume it's compliant with Ecma-48
-                # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-                # a case would tend to support setf rather than setaf.)
-                _color_prompt=yes
-            fi
-            ;;
-    esac
+if [[ -n "$WT_SESSION" ]]; then
+    export COLORTERM=truecolor
 fi
 
 function color::truecolor() {
-    [[ $COLORTERM =~ ^(truecolor|24bit)$ ]] || [[ -n "$WT_SESSION" ]]
+    [[ $COLORTERM =~ ^(truecolor|24bit)$ ]]
 }
 
 function color::256() {
@@ -110,101 +95,98 @@ fi
 # http://wiki.bash-hackers.org/scripting/terminalcodes
 # https://gist.github.com/vratiu/9780109
 # https://mybatis.org/migrations/xref/org/apache/ibatis/migration/ConsoleColors.html
-if [ -n "$_color_prompt" ]; then
-    NONE=$'\033[00m'
+NONE=$'\033[00m'
 
-    # regular colors
-    BLACK=$'\033[0;30m'
-    RED=$'\033[0;31m'
-    GREEN=$'\033[0;32m'
-    YELLOW=$'\033[0;33m'
-    BLUE=$'\033[0;34m'
-    PURPLE=$'\033[0;35m'
-    CYAN=$'\033[0;36m'
-    WHITE=$'\033[0;37m'
-    ORANGE=$'\033[38;5;202m'
+# regular colors
+BLACK=$'\033[0;30m'
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+BLUE=$'\033[0;34m'
+PURPLE=$'\033[0;35m'
+CYAN=$'\033[0;36m'
+WHITE=$'\033[0;37m'
+ORANGE=$'\033[38;5;202m'
 
-    # bold
-    BLACK_B=$'\033[1;30m'
-    RED_B=$'\033[1;31m'
-    GREEN_B=$'\033[1;32m'
-    YELLOW_B=$'\033[1;33m'
-    BLUE_B=$'\033[1;34m'
-    PURPLE_B=$'\033[1;35m'
-    CYAN_B=$'\033[1;36m'
-    WHITE_B=$'\033[1;37m'
+# bold
+BLACK_B=$'\033[1;30m'
+RED_B=$'\033[1;31m'
+GREEN_B=$'\033[1;32m'
+YELLOW_B=$'\033[1;33m'
+BLUE_B=$'\033[1;34m'
+PURPLE_B=$'\033[1;35m'
+CYAN_B=$'\033[1;36m'
+WHITE_B=$'\033[1;37m'
 
-    # underlined
-    BLACK_U=$'\033[4;30m'
-    RED_U=$'\033[4;31m'
-    GREEN_U=$'\033[4;32m'
-    YELLOW_U=$'\033[4;33m'
-    BLUE_U=$'\033[4;34m'
-    PURPLE_U=$'\033[4;35m'
-    CYAN_U=$'\033[4;36m'
-    WHITE_U=$'\033[4;37m'
+# underlined
+BLACK_U=$'\033[4;30m'
+RED_U=$'\033[4;31m'
+GREEN_U=$'\033[4;32m'
+YELLOW_U=$'\033[4;33m'
+BLUE_U=$'\033[4;34m'
+PURPLE_U=$'\033[4;35m'
+CYAN_U=$'\033[4;36m'
+WHITE_U=$'\033[4;37m'
 
-    # background
-    BLACK_BG=$'\033[40m'
-    RED_BG=$'\033[41m'
-    GREEN_BG=$'\033[42m'
-    YELLOW_BG=$'\033[43m'
-    BLUE_BG=$'\033[44m'
-    PURPLE_BG=$'\033[45m'
-    CYAN_BG=$'\033[46m'
-    WHITE_BG=$'\033[47m'
+# background
+BLACK_BG=$'\033[40m'
+RED_BG=$'\033[41m'
+GREEN_BG=$'\033[42m'
+YELLOW_BG=$'\033[43m'
+BLUE_BG=$'\033[44m'
+PURPLE_BG=$'\033[45m'
+CYAN_BG=$'\033[46m'
+WHITE_BG=$'\033[47m'
 
-    # high intensity
-    BLACK_BRT=$'\033[0;90m'
-    RED_BRT=$'\033[0;91m'
-    GREEN_BRT=$'\033[0;92m'
-    YELLOW_BRT=$'\033[0;93m'
-    BLUE_BRT=$'\033[0;94m'
-    PURPLE_BRT=$'\033[0;95m'
-    CYAN_BRT=$'\033[0;96m'
-    WHITE_BRT=$'\033[0;97m'
+# high intensity
+BLACK_BRT=$'\033[0;90m'
+RED_BRT=$'\033[0;91m'
+GREEN_BRT=$'\033[0;92m'
+YELLOW_BRT=$'\033[0;93m'
+BLUE_BRT=$'\033[0;94m'
+PURPLE_BRT=$'\033[0;95m'
+CYAN_BRT=$'\033[0;96m'
+WHITE_BRT=$'\033[0;97m'
 
-    # bold high intensity
-    BLACK_B_BRT=$'\033[1;90m'
-    RED_B_BRT=$'\033[1;91m'
-    GREEN_B_BRT=$'\033[1;92m'
-    YELLOW_B_BRT=$'\033[1;93m'
-    BLUE_B_BRT=$'\033[1;94m'
-    PURPLE_B_BRT=$'\033[1;95m'
-    CYAN_B_BRT=$'\033[1;96m'
-    WHITE_B_BRT=$'\033[1;97m'
+# bold high intensity
+BLACK_B_BRT=$'\033[1;90m'
+RED_B_BRT=$'\033[1;91m'
+GREEN_B_BRT=$'\033[1;92m'
+YELLOW_B_BRT=$'\033[1;93m'
+BLUE_B_BRT=$'\033[1;94m'
+PURPLE_B_BRT=$'\033[1;95m'
+CYAN_B_BRT=$'\033[1;96m'
+WHITE_B_BRT=$'\033[1;97m'
 
-    # high intensity backgrounds
-    BLACK_BG_BRT=$'\033[0;100m'
-    RED_BG_BRT=$'\033[0;101m'
-    GREEN_BG_BRT=$'\033[0;102m'
-    YELLOW_BG_BRT=$'\033[0;103m'
-    BLUE_BG_BRT=$'\033[0;104m'
-    PURPLE_BG_BRT=$'\033[0;105m'
-    CYAN_BG_BRT=$'\033[0;106m'
-    WHITE_BG_BRT=$'\033[0;107m'
+# high intensity backgrounds
+BLACK_BG_BRT=$'\033[0;100m'
+RED_BG_BRT=$'\033[0;101m'
+GREEN_BG_BRT=$'\033[0;102m'
+YELLOW_BG_BRT=$'\033[0;103m'
+BLUE_BG_BRT=$'\033[0;104m'
+PURPLE_BG_BRT=$'\033[0;105m'
+CYAN_BG_BRT=$'\033[0;106m'
+WHITE_BG_BRT=$'\033[0;107m'
 
-    # monokai
-    # ref: https://github.com/microsoft/vscode/blob/main/extensions/theme-monokai/themes/monokai-color-theme.json
-    # Palette       Hex Code
-    # Background    #272822
-    # Foreground    #F8F8F2
-    # Comment       #75715E
-    # Red           #F92672
-    # Orange        #FD971F
-    # Light Orange  #E69F66
-    # Yellow        #E6DB74
-    # Green         #A6E22E
-    # Blue          #66D9EF
-    # Purple        #AE81FF
-    ORANGE=$(color::hex "#FD971F")
-    BLACK=$(color::hex "#272822") # background
-    YELLOW=$(color::hex "#E6DB74")
-    PURPLE=$(color::hex "#AE81FF")
-    BLUE=$(color::hex "#66D9EF")
-    GREEN=$(color::hex "#A6E22E")
-    RED=$(color::hex "#F92672")
-    WHITE=$(color::hex "#F8F8F2") # foreground
-    BLACK_B=$(color::hex "#75715E") # comment
-fi
-
+# monokai
+# ref: https://github.com/microsoft/vscode/blob/main/extensions/theme-monokai/themes/monokai-color-theme.json
+# Palette       Hex Code
+# Background    #272822
+# Foreground    #F8F8F2
+# Comment       #75715E
+# Red           #F92672
+# Orange        #FD971F
+# Light Orange  #E69F66
+# Yellow        #E6DB74
+# Green         #A6E22E
+# Blue          #66D9EF
+# Purple        #AE81FF
+ORANGE=$(color::hex "#FD971F")
+BLACK=$(color::hex "#272822") # background
+YELLOW=$(color::hex "#E6DB74")
+PURPLE=$(color::hex "#AE81FF")
+BLUE=$(color::hex "#66D9EF")
+GREEN=$(color::hex "#A6E22E")
+RED=$(color::hex "#F92672")
+WHITE=$(color::hex "#F8F8F2") # foreground
+BLACK_B=$(color::hex "#75715E") # comment

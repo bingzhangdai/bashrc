@@ -2,7 +2,7 @@
 function _get_short_path() {
     local path=$2
     # case insensitive replace prefix
-    if os::is_mac || { os::is_wsl && str.starts_with path '/mnt/c'; }; then
+    if os::is_mac || { os::is_wsl && str.starts_with path "$WSL_AUTOMOUNT_ROOT"; }; then
         : ${path,,}
         if str.starts_with _ ${HOME,,} ; then
             path="~${path:${#HOME}}"
@@ -31,14 +31,13 @@ function _get_short_git_branch() {
 # Special prompt variable: https://ss64.com/bash/syntax-prompt.html
 hostname='\h'
 if os::is_wsl; then
-    if [[ -n "$WSL_DISTRO_NAME" ]]; then
-        hostname="$WSL_DISTRO_NAME"
-    else
-        hostname="${NAME:-WSL}-$(os::wsl_version)"
-    fi
+    : ${WSL_NETWORK_HOSTNAME}
+    : ${_:-$WSL_DISTRO_NAME}
+    : ${_:-"${NAME:-WSL}-$(os::wsl_version)"}
+    hostname=$_
 fi
 
-if [[ "$_color_prompt" == yes ]]; then
+if [[ "$color_prompt" == yes ]]; then
     [[ "$UID" == "0" ]] && : ${ORANGE} || : ${GREEN}
     _PROMPT_USER_COLOR=$_
     _PROMPT_RETURN_CODE_COLOR=
@@ -51,7 +50,7 @@ _PROMPT_PATH=
 _PROMPT_GIT=
 function _generate_prompt() {
     local _exit=$?
-    if [[ "$_color_prompt" == yes ]]; then
+    if [[ "$color_prompt" == yes ]]; then
         [[ "$_exit" == 0 ]] && : ${NONE} || : ${RED}; _PROMPT_RETURN_CODE_COLOR=$_
         # [[ -n "$(jobs -p)" ]] && : ${RED} || : ${NONE}; _PROMPT_JOBS_COLOR=$_
         battery::is_low && : ${RED} || : ${_PROMPT_USER_COLOR}; _PROMPT_BATTERY_COLOR=$_
@@ -71,7 +70,7 @@ _generate_prompt
 PROMPT_COMMAND="_generate_prompt;$PROMPT_COMMAND"
 
 # colors can be found in lib/color.lib.bash
-if [[ "$_color_prompt" == yes ]]; then
+if [[ "$color_prompt" == yes ]]; then
      # username@hostname
     PS1='\[${_PROMPT_USER_COLOR}\]\u\[\033[$((\j?31:0))m\]@\[${_PROMPT_BATTERY_COLOR}\]'"${hostname}"
     # :
