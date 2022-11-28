@@ -31,10 +31,9 @@ function _get_short_git_branch() {
 # Special prompt variable: https://ss64.com/bash/syntax-prompt.html
 hostname='\h'
 if os::is_wsl; then
-    : ${WSL_NETWORK_HOSTNAME}
-    : ${_:-$WSL_DISTRO_NAME}
-    : ${_:-"${NAME:-WSL}-$(os::wsl_version)"}
-    hostname=$_
+    hostname=${WSL_NETWORK_HOSTNAME}
+    : "${hostname:=$WSL_DISTRO_NAME}"
+    : "${hostname:="${NAME:-WSL}-$(os::wsl_version)"}"
 fi
 
 if [[ "$color_prompt" == yes ]]; then

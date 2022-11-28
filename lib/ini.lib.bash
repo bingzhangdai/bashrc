@@ -3,9 +3,9 @@ function ini::filter_by_section() {
     while IFS=$'\n' read -r _line; do
         _line=${_line%%;*}
         _line=${_line%%#*}
-        [[ -z "$line" ]] && continue
-        [[ "$_line" =~ ^\[.*\]$ ]] && _section=${BASH_REMATCH[1]} && continue
-        [[ "$_section" == "$1" ]] && printf '%s\n' "$line"
+        [[ -z "$_line" ]] && continue
+        [[ "$_line" =~ ^\[(.*)\]$ ]] && _section=${BASH_REMATCH[1]} && continue
+        [[ "$_section" == "$1" ]] && printf '%s\n' "$_line"
     done
 }
 
@@ -15,6 +15,12 @@ function ini::get_value_by_key() {
         _line=${_line%%;*}
         _line=${_line%%#*}
         [[ -z "$_line" ]] && continue
-        [[ "$_line" =~ $1[[:space:]]*=[[:space:]]*([^[:space:]]*) ]] && printf '%s\n' "${BASH_REMATCH[1]}"
+        if [[ "$_line" =~ $1[[:space:]]*=(.*) ]]; then
+            : "${BASH_REMATCH[1]}"
+            # trim white space
+            : "${_#"${_%%[![:space:]]*}"}"
+            : "${_%"${_##*[![:space:]]}"}"
+            printf '%s\n' "$_"
+        fi
     done
 }

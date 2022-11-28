@@ -1,3 +1,5 @@
+source ini.lib.bash
+
 function os::wsl_version() {
     local verson='';
     # mac does not have /proc/version
@@ -62,6 +64,7 @@ function os::os_family() {
 
 # https://learn.microsoft.com/en-us/windows/wsl/wsl-config
 if os::is_wsl; then
-    WSL_AUTOMOUNT_ROOT='/mnt/'
-    WSL_NETWORK_HOSTNAME=
+    WSL_NETWORK_HOSTNAME=$(ini::filter_by_section network < /etc/wsl.conf | ini::get_value_by_key hostname)
+    WSL_AUTOMOUNT_ROOT=$(ini::filter_by_section automount < /etc/wsl.conf | ini::get_value_by_key root)
+    : ${WSL_AUTOMOUNT_ROOT:='/mnt/'}
 fi
