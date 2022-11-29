@@ -11,7 +11,7 @@ function _get_short_path() {
         path=${path/#$HOME/\~}
     fi
     local _short_path
-    if [ -n "$eliminate_ambiguity" ]; then
+    if [ -n "$OPT_UNAMBIGUOUS_SHORT_PATH" ]; then
         path::shrink -d -o _short_path "$path"
     else
         path::shrink -o _short_path "$path"
@@ -36,12 +36,12 @@ if os::is_wsl; then
     : "${hostname:="${NAME:-WSL}-$(os::wsl_version)"}"
 fi
 
-if [[ "$color_prompt" == yes ]]; then
+if [[ "$OPT_ENABLE_COLOR" == yes ]]; then
     [[ "$UID" == "0" ]] && : ${ORANGE} || : ${GREEN}
     _PROMPT_USER_COLOR=$_
     _PROMPT_RETURN_CODE_COLOR=
     _PROMPT_JOBS_COLOR=$NONE
-    _PROMPT_BATTERY_COLOR=
+    _PROMPT_BATTERY_COLOR=$_PROMPT_USER_COLOR
     _PROMPT_PATH_COLOR=
     _PROMPT_GIT_COLOR=${BLACK_B}
 fi
@@ -49,18 +49,20 @@ _PROMPT_PATH=
 _PROMPT_GIT=
 function _generate_prompt() {
     local _exit=$?
-    if [[ "$color_prompt" == yes ]]; then
+    if [[ "$OPT_ENABLE_COLOR" == yes ]]; then
         [[ "$_exit" == 0 ]] && : ${NONE} || : ${RED}; _PROMPT_RETURN_CODE_COLOR=$_
         # [[ -n "$(jobs -p)" ]] && : ${RED} || : ${NONE}; _PROMPT_JOBS_COLOR=$_
-        battery::is_low && : ${RED} || : ${_PROMPT_USER_COLOR}; _PROMPT_BATTERY_COLOR=$_
+        if [[ -n "$OPT_ENABLE_BATTERY_COLOR" ]]; then
+            battery::is_low && : ${RED} || : ${_PROMPT_USER_COLOR}; _PROMPT_BATTERY_COLOR=$_
+        fi
         [[ -w "$PWD" ]] && : ${YELLOW} || : ${RED}; _PROMPT_PATH_COLOR=$_
     fi
-    if [[ -n "$fish_prompt" ]]; then
+    if [[ -n "$OPT_ENABLE_SHORT_PATH" ]]; then
         _get_short_path _PROMPT_PATH "$PWD"
     else
         _PROMPT_PATH=$PWD
     fi
-    if [[ -n "$git_prompt" ]]; then
+    if [[ -n "$OPT_ENABLE_GIT_BRANCH" ]]; then
         _get_short_git_branch _PROMPT_GIT
     fi
     return $_exit
@@ -69,13 +71,17 @@ _generate_prompt
 PROMPT_COMMAND="_generate_prompt;$PROMPT_COMMAND"
 
 # colors can be found in lib/color.lib.bash
-if [[ "$color_prompt" == yes ]]; then
+if [[ "$OPT_ENABLE_COLOR" == yes ]]; then
      # username@hostname
     PS1='\[${_PROMPT_USER_COLOR}\]\u\[\033[$((\j?31:0))m\]@\[${_PROMPT_BATTERY_COLOR}\]'"${hostname}"
     # :
-    PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]${_PROMPT_PATH}'
+    if [[ -n "$OPT_ENABLE_SHORT_PATH" ]]; then
+        PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]${_PROMPT_PATH}'
+    else
+        PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]\w'
+    fi
     # git branch
-    if [[ -n "$git_prompt" ]]; then
+    if [[ -n "$OPT_ENABLE_GIT_BRANCH" ]]; then
         PS1+='\[${_PROMPT_GIT_COLOR}\]${_PROMPT_GIT:+($_PROMPT_GIT)}'
     fi
     PS1+='\[${_PROMPT_RETURN_CODE_COLOR}\]\$\[${NONE}\] '

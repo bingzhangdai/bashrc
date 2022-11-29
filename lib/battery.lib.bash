@@ -9,7 +9,7 @@ function battery::value() {
 function battery::is_low() {
     local _val
     battery::_value _val || return
-    (( _ != -1 && _ < 20 ))
+    (( _ != -1 && _ < ${OPT_BATTER_THRESHOLD:-20} ))
 }
 
 function _detect_battery() {

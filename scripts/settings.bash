@@ -1,25 +1,20 @@
-# region prompt
+## prompt: user@host:/path/to/dir(git_branch)$ 
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-color_prompt=yes
+# uncomment for a colored prompt, if the terminal has the capability
+OPT_ENABLE_COLOR=yes
 
 # uncomment to add git information to the prompt
-git_prompt=yes
-git_right_align=
+OPT_ENABLE_GIT_BRANCH=yes
 
 # uncomment to enable abbreviated working directory in your command prompt
-abbreviated_prompt=yes
-# uncomment to make the fish-style working directory unambiguous
-abbreviated_with_no_ambiguity=yes
+# by default the each directory will be shortened to one character
+# e.g. /path/to/current/directory -> /p/t/c/directory
+OPT_ENABLE_SHORT_PATH=yes
+# uncomment to shrink the each directory name to the shortest unambiguous prefix
+OPT_UNAMBIGUOUS_SHORT_PATH=yes
 
-# endregion
-
-# region profile
-
-BATTER_THRESHOLD
-
-SHORT_PATH
-
-# endregion
+# hostname will become red if the battery is below `OPT_BATTER_THRESHOLD`
+# run battery::value the get the current percentage
+OPT_ENABLE_BATTERY_COLOR=yes
+# battery below 20% will considered low
+OPT_BATTER_THRESHOLD=20
