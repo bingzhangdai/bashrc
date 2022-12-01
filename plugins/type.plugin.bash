@@ -1,20 +1,15 @@
-
-function type::is_function() {
-    declare -F "$1" > /dev/null
-}
-
 function type::pprint() {
     local ret=1
 
     # print variable
     local _type=$(decltype "$1")
-    if [ -n "$_type" ] && type::is_function "$_type".to_string; then
+    if [ -n "$_type" ] && fun::is_function "$_type".to_string; then
         "$_type".to_string "$1"
         ret=0
     fi
 
     # print function
-    if type::is_function "$1"; then
+    if fun::is_function "$1"; then
         printf "function $1() {\n"
         declare -f $1 | tail -n +3
         ret=0

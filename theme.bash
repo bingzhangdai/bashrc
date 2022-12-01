@@ -22,7 +22,7 @@ function _get_short_path() {
 # Usage: _get_short_git_branch output_var
 function _get_short_git_branch() {
     local _git_branch
-    git::branch -o _git_branch 2> /dev/null
+    git::_branch _git_branch 2> /dev/null
     local _short_branch
     path::shrink -o _short_branch "${_git_branch}"
     printf -v "$1" -- "$_short_branch"

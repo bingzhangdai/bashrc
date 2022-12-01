@@ -1,15 +1,4 @@
-# pure bash version of git branch, even faster than git symbolic-ref --short -q HEAD
-#
-# The following options are available:
-#   -o, --output VAR        the variable to save the branch
-#
-# usage:
-#   git::branch [-o VAR]
-#
-# example:
-#   git::branch -> 'master'
-#   git::branch -o branch -> branch='master'
-function git::branch() {
+function git::_branch() {
     local _head_file _head
     local _dir="$PWD"
     while [[ -n "$_dir" ]]; do
@@ -39,12 +28,14 @@ function git::branch() {
             ;;
     esac
 
-    if [ "$1" = '-o' ]; then
-        printf -v "$2" '%s' "$branch"
-    else
-        echo "$branch"
-    fi
+    printf -v "$1" '%s' "$branch"
 }
+
+# pure bash version of git branch, even faster than git symbolic-ref --short -q HEAD
+#
+# example:
+#   git::branch -> 'master'
+@create_public_fun git::_branch
 
 # # slower version
 # function git::branch() {
