@@ -1,3 +1,5 @@
+source fun.lib.bash
+
 # Suppress the return value of the given function
 #
 # example:
@@ -16,7 +18,7 @@ function @no_return() {
 }
 
 # Create a public function of given (inner) function.
-# The (inner) function's first argument should be the return value
+# The (inner) function's first argument should be the return value, use with caution
 #
 # usage: @create_public_fun _inner_fun
 #   public function is inner_fun

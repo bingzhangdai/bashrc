@@ -1,3 +1,5 @@
+source decorator.lib.bash
+
 if [[ -n "$WT_SESSION" ]]; then
     export COLORTERM=truecolor
 fi
@@ -6,23 +8,24 @@ function color::truecolor() {
     [[ $COLORTERM =~ ^(truecolor|24bit)$ ]]
 }
 
-function color::256() {
+function color::_256() {
     # tput setaf $1
-    printf -- "\e[38;5;${1}m"
+    printf -v "$1" -- "\e[38;5;${1}m"
 }
+@create_public_fun color::_256
 
 if color::truecolor; then
-    function color::hex() {
-        local hex=${1#"#"}
+    function color::_hex() {
+        local hex=${2#"#"}
         local r=${hex:0:2} g=${hex:2:2} b=${hex:4:2}
         r=$((16#${r}))
         g=$((16#${g}))
         b=$((16#${b}))
-        printf -- "\e[38;2;${r};${g};${b}m"
+        printf -v "$1" -- "\e[38;2;${r};${g};${b}m"
     }
 else
-    function color::hex() {
-        color::256 $(color::hex_to_256 "$1")
+    function color::_hex() {
+        color::_256 "$1" $(color::hex_to_256 "$2")
     }
 
     # 256 Colors Cheat Sheet
@@ -91,6 +94,8 @@ else
 
     # endregion
 fi
+
+@create_public_fun color::_hex
 
 # http://wiki.bash-hackers.org/scripting/terminalcodes
 # https://gist.github.com/vratiu/9780109
@@ -181,12 +186,12 @@ WHITE_BG_BRT=$'\033[0;107m'
 # Green         #A6E22E
 # Blue          #66D9EF
 # Purple        #AE81FF
-ORANGE=$(color::hex "#FD971F")
-BLACK=$(color::hex "#272822") # background
-YELLOW=$(color::hex "#E6DB74")
-PURPLE=$(color::hex "#AE81FF")
-BLUE=$(color::hex "#66D9EF")
-GREEN=$(color::hex "#A6E22E")
-RED=$(color::hex "#F92672")
-WHITE=$(color::hex "#F8F8F2") # foreground
-BLACK_B=$(color::hex "#75715E") # comment
+color::_hex ORANGE "#FD971F"
+color::_hex BLACK "#272822" # background
+color::_hex YELLOW "#E6DB74"
+color::_hex PURPLE "#AE81FF"
+color::_hex BLUE "#66D9EF"
+color::_hex GREEN "#A6E22E"
+color::_hex RED "#F92672"
+color::_hex WHITE "#F8F8F2" # foreground
+color::_hex BLACK_B "#75715E" # comment
