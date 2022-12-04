@@ -105,7 +105,4 @@ $if mode=vi
     # Ctrl + Backspace # Ctrl + H
     # https://unix.stackexchange.com/questions/264791/ctrl-backspace-and-ctrl-delete-in-bash
     "\C-h": backward-kill-word
-    # Short cut
-    "\es": "\eIsudo \eA"
-    "\ep": "\eIproxy \eA"
 $endif
