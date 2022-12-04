@@ -194,4 +194,4 @@ color::_hex BLUE "#66D9EF"
 color::_hex GREEN "#A6E22E"
 color::_hex RED "#F92672"
 color::_hex WHITE "#F8F8F2" # foreground
-color::_hex BLACK_B "#75715E" # comment
+color::_hex GREY "#75715E" # comment

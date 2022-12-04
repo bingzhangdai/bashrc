@@ -121,7 +121,7 @@ alias log=logger.log
 
 function logger::stack_trace() {
     local _method_color _file_color _line_color _none
-    [ -t 2 ] && _method_color=$BLUE && _file_color=$BLACK_B && _line_color=$PURPLE && _none=$NONE
+    [ -t 2 ] && _method_color=$BLUE && _file_color=$GREY && _line_color=$PURPLE && _none=$NONE
     local _i
     for (( _i=1; _i<${#BASH_SOURCE[@]}; _i++ )); do
         >&2 printf -- "  at ${_method_color}%s${_none} in ${_file_color}%s${_none}:line ${_line_color}%d${_none}\n" \
