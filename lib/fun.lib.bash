@@ -10,5 +10,6 @@ function fun::rename() {
 }
 
 function fun.to_string() {
-    :
+    printf "function $1() {\n"
+    declare -f $1 | tail -n +3
 }

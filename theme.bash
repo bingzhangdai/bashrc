@@ -75,11 +75,8 @@ if [[ "$OPT_ENABLE_COLOR" == yes ]]; then
      # username@hostname
     PS1='\[${_PROMPT_USER_COLOR}\]\u\[\033[$((\j?31:0))m\]@\[${_PROMPT_BATTERY_COLOR}\]'"${hostname}"
     # :
-    if [[ "$OPT_ENABLE_SHORT_PATH" == yes ]]; then
-        PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]${_PROMPT_PATH}'
-    else
-        PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]\w'
-    fi
+    [[ "$OPT_ENABLE_SHORT_PATH" == yes ]] && : '${_PROMPT_PATH}' || : '\w'
+    PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]'$_
     # git branch
     if [[ "$OPT_ENABLE_GIT_BRANCH" == yes ]]; then
         PS1+='\[${_PROMPT_GIT_COLOR}\]${_PROMPT_GIT:+($_PROMPT_GIT)}'

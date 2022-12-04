@@ -10,8 +10,7 @@ function type::pprint() {
 
     # print function
     if fun::is_function "$1"; then
-        printf "function $1() {\n"
-        declare -f $1 | tail -n +3
+        fun.to_string "$1"
         ret=0
     fi
 
