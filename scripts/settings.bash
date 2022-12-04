@@ -18,3 +18,8 @@ OPT_UNAMBIGUOUS_SHORT_PATH=yes
 OPT_ENABLE_BATTERY_COLOR=yes
 # battery below 20% will considered low
 OPT_BATTER_THRESHOLD=20
+
+# set 'yes' to enable auto update
+OPT_ENABLE_AUTO_UPDATE=yes
+# prompt for update every 30 days
+OPT_AUTO_UPDATE_PERIOD=30

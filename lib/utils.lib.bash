@@ -51,3 +51,19 @@ function benchmark() (
     >&2 printf '%d iterations, average: %d.%02dms\n' "$iter" "$(( _ / iter ))" "$(( _ % iter * 100 / iter ))"
     return $_exit
 )
+
+: ${OPT_AUTO_UPDATE_PERIOD:=30}
+function __prompt_update() (
+    local _file=${_DOT_BASH_BASEDIR}/cache/update_history
+    if [[ ! -e "$_file" ]]; then
+        __write_update_record
+        return
+    fi
+    
+)
+
+function __write_update_record() {
+    local _file=${_DOT_BASH_BASEDIR}/cache/update_history
+    [[ ! -e "$_file" ]] && touch "$_file"
+    echo ""
+}

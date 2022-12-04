@@ -43,7 +43,10 @@ function @create_public_fun() {
             local _val
             $1 _val \$@
             local _exit=\$?
-            [[ -n \"\$_val\" ]] && printf -- \"\$_val\"
+            [[ -n \"\$_val\" ]] && {
+                printf -- \"\$_val\"
+                ! str.ends_with _val '\n' && printf '\n'
+            }
             return \$_exit
         }
     "

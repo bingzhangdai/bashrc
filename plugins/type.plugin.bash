@@ -8,9 +8,22 @@ function type::pprint() {
         ret=0
     fi
 
+    if alias::is_alias "$1"; then
+        if command -v bat > /dev/null; then
+            alias.to_string "$1" | bat --style=plain --color=always --paging=never --language=bash
+        else
+            alias.to_string "$1"
+        fi
+        ret=0
+    fi
+
     # print function
     if fun::is_function "$1"; then
-        fun.to_string "$1"
+        if command -v bat > /dev/null; then
+            fun.to_string "$1" | bat --style=plain --color=always --paging=never --language=bash
+        else
+            fun.to_string "$1"
+        fi
         ret=0
     fi
 
