@@ -11,7 +11,7 @@ function _get_short_path() {
         path=${path/#$HOME/\~}
     fi
     local _short_path
-    if [ -n "$OPT_UNAMBIGUOUS_SHORT_PATH" ]; then
+    if [ "$OPT_UNAMBIGUOUS_SHORT_PATH" == yes ]; then
         path::shrink -d -o _short_path "$path"
     else
         path::shrink -o _short_path "$path"
@@ -52,17 +52,17 @@ function _generate_prompt() {
     if [[ "$OPT_ENABLE_COLOR" == yes ]]; then
         [[ "$_exit" == 0 ]] && : ${NONE} || : ${RED}; _PROMPT_RETURN_CODE_COLOR=$_
         # [[ -n "$(jobs -p)" ]] && : ${RED} || : ${NONE}; _PROMPT_JOBS_COLOR=$_
-        if [[ -n "$OPT_ENABLE_BATTERY_COLOR" ]]; then
+        if [[ "$OPT_ENABLE_BATTERY_COLOR" == yes ]]; then
             battery::is_low && : ${RED} || : ${_PROMPT_USER_COLOR}; _PROMPT_BATTERY_COLOR=$_
         fi
         [[ -w "$PWD" ]] && : ${YELLOW} || : ${RED}; _PROMPT_PATH_COLOR=$_
     fi
-    if [[ -n "$OPT_ENABLE_SHORT_PATH" ]]; then
+    if [[ "$OPT_ENABLE_SHORT_PATH" == yes ]]; then
         _get_short_path _PROMPT_PATH "$PWD"
     else
         _PROMPT_PATH=$PWD
     fi
-    if [[ -n "$OPT_ENABLE_GIT_BRANCH" ]]; then
+    if [[ "$OPT_ENABLE_GIT_BRANCH" == yes ]]; then
         _get_short_git_branch _PROMPT_GIT
     fi
     return $_exit
@@ -75,13 +75,13 @@ if [[ "$OPT_ENABLE_COLOR" == yes ]]; then
      # username@hostname
     PS1='\[${_PROMPT_USER_COLOR}\]\u\[\033[$((\j?31:0))m\]@\[${_PROMPT_BATTERY_COLOR}\]'"${hostname}"
     # :
-    if [[ -n "$OPT_ENABLE_SHORT_PATH" ]]; then
+    if [[ "$OPT_ENABLE_SHORT_PATH" == yes ]]; then
         PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]${_PROMPT_PATH}'
     else
         PS1+='\[${NONE}\]:\[$_PROMPT_PATH_COLOR\]\w'
     fi
     # git branch
-    if [[ -n "$OPT_ENABLE_GIT_BRANCH" ]]; then
+    if [[ "$OPT_ENABLE_GIT_BRANCH" == yes ]]; then
         PS1+='\[${_PROMPT_GIT_COLOR}\]${_PROMPT_GIT:+($_PROMPT_GIT)}'
     fi
     PS1+='\[${_PROMPT_RETURN_CODE_COLOR}\]\$\[${NONE}\] '
