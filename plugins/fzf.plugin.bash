@@ -43,8 +43,8 @@ if ! _setup_fzf_using_package && ! _setup_fzf_using_base_dir && ! _setup_fzf_usi
     else
         logger.log INFO "command fzf cannot be found, skipped."
     fi
-    false
-    return
+    unset -f _setup_fzf_using_package _setup_fzf_using_base_dir _setup_fzf_using_homebrew
+    return 1
 fi
 
 if source fd.plugin.bash; then
@@ -88,3 +88,4 @@ function _set_fzf_default_opts() {
 }
 
 _set_fzf_default_opts
+unset -f _set_fzf_default_opts
