@@ -25,7 +25,7 @@ function os::is_mac() {
 
 # store the homebrew prefix, avoid unncessary calls of brew command
 if command -v brew > /dev/null; then
-    _brew_prefxi="$(brew --prefix)"
+    _BREW_PREFIX="$(brew --prefix)"
     if os::is_mac && command -v gls > /dev/null; then
         PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
     fi

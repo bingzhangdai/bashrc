@@ -26,8 +26,8 @@ function _setup_fzf_using_base_dir() {
 }
 
 function _setup_fzf_using_homebrew() {
-    local auto_completion="$_brew_prefxi"/opt/fzf/shell/completion.bash
-    local key_bindings="$_brew_prefxi"/opt/fzf/shell/key-bindings.bash
+    local auto_completion="$_BREW_PREFIX"/opt/fzf/shell/completion.bash
+    local key_bindings="$_BREW_PREFIX"/opt/fzf/shell/key-bindings.bash
     if [ -r $auto_completion ] && [ -r $key_bindings ]; then
         builtin source $auto_completion
         builtin source $key_bindings
