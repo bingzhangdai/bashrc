@@ -17,6 +17,11 @@ case $BASH_VERSION in
     ;;
 esac
 
+# ANSI C locale
+# export LC_ALL='C'
+# export LC_ALL='zh_CN.UTF-8'
+unset LC_ALL
+
 if [ -f ~/.settings.bash ]; then
     source ~/.settings.bash
 fi

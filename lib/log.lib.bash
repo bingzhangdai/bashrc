@@ -119,6 +119,16 @@ logger.log() {
 
 alias log=logger.log
 
+function logger::stack_trace() {
+    local _method_color _file_color _line_color _none
+    [ -t 2 ] && _method_color=$BLUE && _file_color=$BLACK_B && _line_color=$PURPLE && _none=$NONE
+    local _i
+    for (( _i=1; _i<${#BASH_SOURCE[@]}; _i++ )); do
+        >&2 printf -- "  at ${_method_color}%s${_none} in ${_file_color}%s${_none}:line ${_line_color}%d${_none}\n" \
+            "${FUNCNAME[_i]}" "${BASH_SOURCE[_i]}" "${BASH_LINENO[$((_i-1))]}"
+    done
+}
+
 function logger::_loglevel_complete() {
     local CURRENT_PROMPT="${COMP_WORDS[COMP_CWORD]}"
     local PREV_PROMPT="${COMP_WORDS[COMP_CWORD-1]}"

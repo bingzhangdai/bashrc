@@ -144,7 +144,10 @@ function str.length() {
 
 function str.to_string() {
     local _self="${!1}"
-    printf "str %s = '%s'\n" "$1" "$_self"
+    local _val
+    printf -v _val '%q' "$_self"
+    str.starts_with _val '$' || printf -v _val "'%s'" "$_self"
+    printf 'str %s = %s\n' "$1" "$_val"
 }
 
 function str.starts_with() {

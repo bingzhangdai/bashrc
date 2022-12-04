@@ -25,6 +25,35 @@ path::filename() {
     echo "${path##*/}"
 }
 
+path::_dirname() {
+    local tmp=${1:-.}
+
+    [[ $tmp != *[!/]* ]] && {
+        printf '/\n'
+        return
+    }
+
+    tmp=${tmp%%"${tmp##*[!/]}"}
+
+    [[ $tmp != */* ]] && {
+        printf '.\n'
+        return
+    }
+
+    tmp=${tmp%/*}
+    tmp=${tmp%%"${tmp##*[!/]}"}
+
+    printf -v "$1" "${tmp:-/}"
+}
+
+path::_basename() {
+    local tmp=${1%"${1##*[!/]}"}
+    tmp=${tmp##*/}
+    tmp=${tmp%"${2/"$tmp"}"}
+
+    printf -v "$1" "${tmp:-/}"
+}
+
 # get the absolute path of the caller
 path::caller_path() {
     if [ "${#BASH_SOURCE[@]}" -le 2 ]; then

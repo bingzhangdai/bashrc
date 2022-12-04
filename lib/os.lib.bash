@@ -1,17 +1,21 @@
+source ini.lib.bash
+
 function os::wsl_version() {
     local verson='';
     # mac does not have /proc/version
-    [ -f /proc/version ] && version="$(cat /proc/version)";
-    if echo "$version" | grep -iqF microsoft; then
-        echo "$version" | grep -iqF wsl2 && printf 2 || printf 1
+    [[ -f /proc/version ]] && version="$(</proc/version)"
+    if [[ "$version" = *[Mm]icrosoft* ]]; then
+        [[ "${version^^}" = *WSL2* ]] && printf 2 || printf 1
+        return
     fi
+    false
 }
 
 function os::is_wsl() {
     # $WSL_DISTRO_NAME is available since WSL builds 18362, also for WSL2
     [[ -n "$WSL_DISTRO_NAME" ]] && return
     [[ -n "$(uname -r | sed -E 's/^[0-9.]+-([0-9]+)-Microsoft.*|.*/\1/')" ]] && return
-    [[ -n "$(os::wsl_version)" ]]
+    os::wsl_version > /dev/null
 }
 
 # try: uname -s
@@ -58,3 +62,9 @@ function os::os_family() {
     esac
 }
 
+# https://learn.microsoft.com/en-us/windows/wsl/wsl-config
+if os::is_wsl; then
+    WSL_NETWORK_HOSTNAME=$(ini::filter_by_section network < /etc/wsl.conf | ini::get_value_by_key hostname)
+    WSL_AUTOMOUNT_ROOT=$(ini::filter_by_section automount < /etc/wsl.conf | ini::get_value_by_key root)
+    : ${WSL_AUTOMOUNT_ROOT:='/mnt/'}
+fi

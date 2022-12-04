@@ -79,16 +79,23 @@ append_line "source $BASHRC_REPO/bash_logout" ~/.bash_logout
 append_line "\$include $BASHRC_REPO/inputrc" ~/.inputrc
 
 if ! command -v envsubst > /dev/null; then
-    abort "envsubst is required before install this script."
+    function envsubst() {
+        while read -r line; do
+            while [[ "$line" =~ \$([a-zA-Z_][a-zA-Z_0-9]*) ]] || [[ "$line" =~ \${([a-zA-Z_][a-zA-Z_0-9]*)} ]]; do
+                line=${line/${BASH_REMATCH[0]}/${!BASH_REMATCH[1]}}
+            done
+            echo $line
+        done
+    }
 fi
 
 (
     set -a
-    source $BASHRC_REPO/scripts/settings.default.bash
+    source $BASHRC_REPO/scripts/settings.bash
     [[ -r "~/.settings.bash" ]] && source "~/.settings.bash"
     set +a
     mv ~/.settings.bash ~/.settings.bash.$(date "+%Y%m%d-%s%3N")
-    cat "$BASHRC_REPO/scripts/settings.tpl.bash" | envsubst > ~/.settings.bash
+    cat "$BASHRC_REPO/scripts/settings.bash" | sed -E "s/(.*)=(.*)/\1=\$\1/g" | envsubst >| ~/.settings.bash
 )
 
 append_line 'source ~/.settings.bash' ~/.bashrc

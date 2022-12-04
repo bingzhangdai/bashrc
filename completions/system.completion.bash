@@ -45,7 +45,9 @@ if [ "${BASH_VERSINFO}" -ge 5 ]; then
             done
         fi
         [[ -d "${candidates[0]}" ]] && compopt -o nospace
-  }
+    }
 
   complete -o default -I -F _bash_command_complete
 fi
+
+$( complete -p | grep time) benchmark
