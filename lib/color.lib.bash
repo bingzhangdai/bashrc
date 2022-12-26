@@ -10,7 +10,7 @@ function color::truecolor() {
 
 function color::_256() {
     # tput setaf $1
-    printf -v "$1" -- "\e[38;5;${1}m"
+    printf -v "$1" -- "\e[38;5;${2}m"
 }
 @create_public_fun color::_256
 
