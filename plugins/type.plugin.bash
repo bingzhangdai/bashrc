@@ -26,7 +26,9 @@ function type::pprint() {
 }
 
 type::__pprint_color() {
-    if command -v bat > /dev/null; then
+    if command -v batcat /dev/null; then
+        batcat --style=plain --color=always --paging=never $@
+    elif command -v bat > /dev/null; then
         bat --style=plain --color=always --paging=never $@
     else
         cat
