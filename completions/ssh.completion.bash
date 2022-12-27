@@ -13,7 +13,7 @@ _sshcomplete() {
     fi
 
     # parse all defined hosts from .ssh/config and files included there
-    if [[ -r "$HOME/.ssh/config" ]]
+    if [[ -r "$HOME/.ssh/config" ]]; then
         for fl in "$HOME/.ssh/config" \
             $(grep "^\s*Include" "$HOME/.ssh/config" |
                 awk '{for (i=2; i<=NF; i++) print $i}' |
