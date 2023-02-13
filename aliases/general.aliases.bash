@@ -55,6 +55,11 @@ alias cls='clear'
 
 # temporarily use proxy
 alias proxy='http_proxy=http://127.0.0.1:1080 https_proxy=http://127.0.0.1:1080 '
+if os::is_wsl; then
+    _WSL_HOST_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')
+    alias proxy="http_proxy=http://$_WSL_HOST_IP:1080 https_proxy=http://$_WSL_HOST_IP:1080 "
+    unset _WSL_HOST_IP
+fi
 
 # reload bash
 alias reload="exec ${SHELL} -l"
