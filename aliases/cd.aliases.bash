@@ -15,10 +15,12 @@ cd() {
             local _dest="${CDSTACK[$_i]}"
             builtin cd "$_dest"
             result="$?"
-            arr.push_back CDREVSTACK "$OLDPWD"
-            arr.pop_back CDSTACK
+            if [[ "$result" -eq 0 ]]; then
+                arr.push_back CDREVSTACK "$OLDPWD"
+                arr.pop_back CDSTACK
+            fi
         else
-            echo "-bash: cd: ERROR: no more previous working directories on forward directory stack" 1>&2
+            echo "-bash: cd: ERROR: no more previous working directories on forward directory stack (CDSTACK)" 1>&2
             result=1
         fi
     elif [[ "$1" == "+" ]]; then
@@ -29,10 +31,12 @@ cd() {
             local _dest="${CDREVSTACK[$_i]/#~/$HOME}"
             builtin cd "$_dest"
             result="$?"
-            arr.push_back CDSTACK "$OLDPWD"
-            arr.pop_back CDREVSTACK
+            if [[ "$result" -eq 0 ]]; then
+                arr.push_back CDSTACK "$OLDPWD"
+                arr.pop_back CDREVSTACK
+            fi
         else
-            echo "-bash: cd: ERROR: no more previous working directories on reverse directory stack" 1>&2
+            echo "-bash: cd: ERROR: no more previous working directories on reverse directory stack (CDREVSTACK)" 1>&2
             result=1
         fi
     else
@@ -49,7 +53,6 @@ cd() {
             if [[ "${#CDSTACK[*]}" -ge 2 && "${CDSTACK[0]/#~/$HOME}" == "${CDSTACK[1]/#~/$HOME}" ]]; then
                 arr.pop_back CDSTACK
             fi
-
         fi
     fi
 

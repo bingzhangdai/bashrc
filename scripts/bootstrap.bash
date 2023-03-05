@@ -1,4 +1,5 @@
 _DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[1]}) && builtin pwd)"
+_DOT_BASH_CACHE="$_DOT_BASH_BASEDIR/cache"
 
 PATH=$PATH:$_DOT_BASH_BASEDIR/bin
 
