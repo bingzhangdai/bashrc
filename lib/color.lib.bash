@@ -10,7 +10,7 @@ function color::truecolor() {
 
 function color::_256() {
     # tput setaf $1
-    printf -v "$1" -- "\e[38;5;${1}m"
+    printf -v "$1" -- "\e[38;5;${2}m"
 }
 @create_public_fun color::_256
 
@@ -194,4 +194,4 @@ color::_hex BLUE "#66D9EF"
 color::_hex GREEN "#A6E22E"
 color::_hex RED "#F92672"
 color::_hex WHITE "#F8F8F2" # foreground
-color::_hex BLACK_B "#75715E" # comment
+color::_hex GREY "#75715E" # comment

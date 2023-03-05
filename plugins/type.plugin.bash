@@ -4,17 +4,35 @@ function type::pprint() {
     # print variable
     local _type=$(decltype "$1")
     if [ -n "$_type" ] && fun::is_function "$_type".to_string; then
-        "$_type".to_string "$1"
+        printf -- "${GREY}%s\n${NONE}" "# '$1' might be a bash variable:"
+        "$_type".to_string "$1" | type::__pprint_color --language=python
+        ret=0
+    fi
+
+    if alias::is_alias "$1"; then
+        printf -- "${GREY}%s\n${NONE}" "# '$1' might be a bash alias:"
+        alias.to_string "$1" | type::__pprint_color --language=bash
         ret=0
     fi
 
     # print function
     if fun::is_function "$1"; then
-        fun.to_string "$1"
+        printf -- "${GREY}%s\n${NONE}" "# '$1' might be a bash function:"
+        fun.to_string "$1" | type::__pprint_color --language=bash
         ret=0
     fi
 
     return $ret
+}
+
+type::__pprint_color() {
+    if command -v batcat > /dev/null; then
+        batcat --style=plain --color=always --paging=never $@
+    elif command -v bat > /dev/null; then
+        bat --style=plain --color=always --paging=never $@
+    else
+        cat
+    fi
 }
 
 alias pprint=type::pprint

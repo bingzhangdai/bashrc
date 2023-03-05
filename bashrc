@@ -33,12 +33,10 @@ fi
 ## default editor
 export EDITOR='vi'
 
-_DOT_BASH_BASEDIR="$(builtin cd $(dirname ${BASH_SOURCE[0]}) && builtin pwd)"
+source "$(builtin cd $(dirname ${BASH_SOURCE[0]}) && builtin pwd)/scripts/bootstrap.bash"
 
-PATH=$PATH:$_DOT_BASH_BASEDIR/bin
-
-# https://stackoverflow.com/questions/5014823/how-to-profile-a-bash-shell-script-slow-startup
-source "${_DOT_BASH_BASEDIR}"/setup.bash
+# load logging library
+. lib/log.lib.bash
 
 # lib should be sourced first. It contais predefined vars and funcs 
 # completions should be sourced before plugins, otherwise, system.completion.bash will overwrite plugin's (fzf.plugin.bash)
@@ -65,3 +63,7 @@ cleanup
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
+
+source $_DOT_BASH_BASEDIR/scripts/auto_update.bash
+
+# dedup PATH

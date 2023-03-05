@@ -13,3 +13,11 @@ function fun.to_string() {
     printf "function $1() {\n"
     declare -f $1 | tail -n +3
 }
+
+function alias::is_alias() {
+    alias "$1" > /dev/null 2>&1
+}
+
+function alias.to_string() {
+    alias "$1"
+}

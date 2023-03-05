@@ -12,11 +12,11 @@ if ! shopt -oq posix; then
         builtin source /etc/profile.d/bash_completion.sh
     # homebrew
     # bash_completion@2
-    elif [ -r "$_brew_prefxi"/etc/profile.d/bash_completion.sh ]; then
-        builtin source "$_brew_prefxi"/etc/profile.d/bash_completion.sh
+    elif [ -r "$_BREW_PREFIX"/etc/profile.d/bash_completion.sh ]; then
+        builtin source "$_BREW_PREFIX"/etc/profile.d/bash_completion.sh
     # bash_completion@1
-    elif [ -r "$_brew_prefxi"/etc/bash_completion ]; then
-        builtin source "$_brew_prefxi"/etc/bash_completion
+    elif [ -r "$_BREW_PREFIX"/etc/bash_completion ]; then
+        builtin source "$_BREW_PREFIX"/etc/bash_completion
     fi
 fi
 
@@ -50,4 +50,6 @@ if [ "${BASH_VERSINFO}" -ge 5 ]; then
   complete -o default -I -F _bash_command_complete
 fi
 
-$( complete -p | grep time) benchmark
+_time_completion=$(complete -p time 2> /dev/null)
+[[ -n "$_time_completion" ]] && $_time_completion benchmark
+unset _time_completion

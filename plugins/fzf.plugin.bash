@@ -26,8 +26,8 @@ function _setup_fzf_using_base_dir() {
 }
 
 function _setup_fzf_using_homebrew() {
-    local auto_completion="$_brew_prefxi"/opt/fzf/shell/completion.bash
-    local key_bindings="$_brew_prefxi"/opt/fzf/shell/key-bindings.bash
+    local auto_completion="$_BREW_PREFIX"/opt/fzf/shell/completion.bash
+    local key_bindings="$_BREW_PREFIX"/opt/fzf/shell/key-bindings.bash
     if [ -r $auto_completion ] && [ -r $key_bindings ]; then
         builtin source $auto_completion
         builtin source $key_bindings
@@ -43,8 +43,8 @@ if ! _setup_fzf_using_package && ! _setup_fzf_using_base_dir && ! _setup_fzf_usi
     else
         logger.log INFO "command fzf cannot be found, skipped."
     fi
-    false
-    return
+    unset -f _setup_fzf_using_package _setup_fzf_using_base_dir _setup_fzf_using_homebrew
+    return 1
 fi
 
 if source fd.plugin.bash; then
@@ -71,7 +71,7 @@ function fcd() {
     cd "$dir"
 }
 
-os::is_mac && bind -x '"ç": fcd'
+os::is_mac && bind '"ç": "\ec"'
 
 function _set_fzf_default_opts() {
     if command -v bat > /dev/null; then
@@ -88,3 +88,4 @@ function _set_fzf_default_opts() {
 }
 
 _set_fzf_default_opts
+unset -f _set_fzf_default_opts
