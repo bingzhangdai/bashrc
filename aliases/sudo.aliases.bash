@@ -24,3 +24,13 @@ alias sudo='sudo '
 #         command sudo $@
 #     fi
 # }
+
+function sudo() {
+    local -a args
+    while [[ "$1" == -* ]]; do
+        arr.add args "$1"
+        shift
+    done
+    local exposed="$(expose -q)"
+    command sudo ${args[@]} bash -c "${exposed}${exposed:+;} $@"
+}

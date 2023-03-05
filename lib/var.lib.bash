@@ -199,9 +199,11 @@ function arr.to_string() {
     ref _self=$1
     arr _arr_quote
 
-    local _arr_i
+    local _arr_i _tmp
     for _arr_i in "${_self[@]}"; do
-        arr.add _arr_quote "'$_arr_i'"
+        printf -v _tmp '%q' "$_arr_i"
+        str.starts_with _tmp '$' || printf -v _tmp "'%s'" "$_arr_i"
+        arr.add _arr_quote "$_tmp"
     done
 
     int _arr_count=$(( ${#1} + 9 )) _arr_width=${COLUMNS-80}
@@ -273,8 +275,9 @@ function map.to_string() {
     printf 'map %s = {\n' "$1"
     local _map_key _map_val
     for _map_key in "${!_self[@]}"; do
-        _map_val="${_self[$_map_key]}"
-        printf '    %s: %s\n' "'$_map_key'" "'$_map_val'"
+        printf -v _map_val '%q' "${_self[$_map_key]}"
+        str.starts_with _map_val '$' || printf -v _map_val "'%s'" "${_self[$_map_key]}"
+        printf '    %s: %s\n' "'$_map_key'" "$_map_val"
     done
     printf '}\n'
 }
@@ -321,3 +324,69 @@ function var::_complete() {
 }
 
 complete -F var::_complete decltype arr::is_array map::is_map
+
+# expose function to sudo
+# expose var; expose -f func
+map -g __EXPOSED_VAR
+function expose() {
+    while [[ "$1" == -* ]]; do
+        case "$1" in
+            --)
+                shift
+                break
+                ;;
+            -f)
+                __EXPOSED_VAR["$2"]="$(declare -f $2)"
+                return
+                ;;
+            -n)
+                unset __EXPOSED_VAR["$2"]
+                return
+                ;;
+            -p)
+                str::join -d $'\n' "${__EXPOSED_VAR[@]}"
+                return
+                ;;
+            -q)
+                str::join -d $';' "${__EXPOSED_VAR[@]}"
+                return
+                ;;
+            -h|--help)
+                cat << EOL
+Usage: expose [-fn] [name=[value] ...] or expose -p
+    Expose attribute for shell variables under sudo command.
+
+    Marks each NAME for automatic expose to the sudo command.
+    If VALUE is supplied, assign VALUE before exposing.
+
+    Options:
+      -f        refer to shell functions
+      -n        remove the expose property from each NAME
+      -p        display a list of all exposed variables and functions
+      -q        similar to \`-p' but in a way in a way that can 
+                be reused as shell input
+
+    An argument of \`--' disables further option processing.
+
+    Exit Status:
+    Returns success unless an invalid option is given or NAME is invalid.
+EOL
+                return
+                ;;
+            -*)
+                printf -- 'Unknown option: %s\n' "$1" >&2
+                expose --help >&2
+                return 1
+                ;;
+        esac
+    done
+
+    local _key _val
+    IFS='=' read -r _key _val <<< "$1"
+    if [[ -n "$_val" ]]; then
+        printf -v "$_key" '%s' "$_val"
+    else
+        _val="${!_key}"
+    fi
+    __EXPOSED_VAR["$_key"]="$_key=$_val"
+}
