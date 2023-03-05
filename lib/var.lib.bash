@@ -168,6 +168,16 @@ function str.ends_with() {
 
 alias arr='declare -a'
 
+function arr.size() {
+    ref _self=$1
+    echo ${#_self[@]}
+}
+
+function arr.is_empty() {
+    ref _self=$1
+    [[ ${#_self[@]} == 0 ]]
+}
+
 function arr.contains() {
     ref _self=$1
     local _arr_val=$2
@@ -178,15 +188,37 @@ function arr.contains() {
     false
 }
 
-function arr.add() {
+function arr.push_back() {
     ref _self=$1
     local _arr_val=$2
     _self[${#_self[@]}]="$_arr_val"
 }
 
-function arr.length() {
+function arr.add() {
+    arr.push_back $@
+}
+
+function arr.pop_back() {
     ref _self=$1
-    echo ${#_self[@]}
+    if arr.is_empty $1; then
+        >&2 printf -- "error: arr $1 is empty"
+        return 1
+    fi
+    unset _self[${#_self[@]}-1]
+}
+
+function arr.push_front() {
+    ref _self=$1
+    _self=( "$2" "${_self[@]}" )
+}
+
+function arr.pop_front() {
+    ref _self=$1
+    if arr.is_empty $1; then
+        >&2 printf -- "error: arr $1 is empty"
+        return 1
+    fi
+    unset _self[0]
 }
 
 function arr::is_array() {
@@ -245,7 +277,7 @@ function arr::_completion() {
         fi
     done
 }
-complete -F arr::_completion arr.contains arr.add arr.length arr.to_string
+complete -F arr::_completion arr.contains arr.add arr.size arr.to_string
 
 # endregion
 
