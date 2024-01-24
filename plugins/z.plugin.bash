@@ -11,9 +11,8 @@ if [[ ! -e "$zsh_plugin" ]]; then
     logger.log "download rupa/z succeeded"
 fi
 
-builtin source $zsh_plugin
-
 export _Z_NO_RESOLVE_SYMLINKS=1
+builtin source $zsh_plugin
 
 if source fzf.plugin.bash; then
     unalias z 2> /dev/null
