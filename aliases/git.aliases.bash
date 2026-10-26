@@ -40,8 +40,8 @@ function _setup_git_aliases() {
         git config --global alias.update 'fetch --all --prune'
     }
     ! (( _conf_exist )) || ! ini::filter_by_section alias < ~/.gitconfig | ini::get_value_by_key purge > /dev/null && {
-        # remove local branches whose upstream is gone, skipping ones checked out in a worktree
-        git config --global alias.purge '!git for-each-ref --format="%(refname:short) %(upstream:track) %(worktreepath)" refs/heads | awk '"'"'$2=="[gone]" && $3=="" {print $1}'"'"' | xargs -r git branch -D'
+        # remove worktrees and local branches whose upstream is gone, skipping worktrees that are dirty, locked or in use
+        git config --global alias.purge '!f() { git worktree list --porcelain | awk '"'"'/^worktree /{wt=substr($0,10)} /^branch /{print substr($0,8), wt}'"'"' | while read -r ref wt; do [ "$(git for-each-ref --format="%(upstream:track)" "$ref")" = "[gone]" ] || continue; for d in /proc/[0-9]*/cwd; do case "$(readlink "$d" 2>/dev/null)" in "$wt"|"$wt"/*) echo "skip (in use): $wt"; continue 2;; esac; done; git worktree remove "$wt" && echo "removed worktree: $wt"; done; git for-each-ref --format="%(refname:short) %(upstream:track) %(worktreepath)" refs/heads | awk '"'"'$2=="[gone]" && $3=="" {print $1}'"'"' | xargs -r git branch -D; }; f'
     }
     ! (( _conf_exist )) || ! ini::filter_by_section alias < ~/.gitconfig | ini::get_value_by_key graph > /dev/null && {
         # show graph of commits
