@@ -40,8 +40,8 @@ function _setup_git_aliases() {
         git config --global alias.update 'fetch --all --prune'
     }
     ! (( _conf_exist )) || ! ini::filter_by_section alias < ~/.gitconfig | ini::get_value_by_key purge > /dev/null && {
-        # remove local tracking branches that do not exist on remote anymore
-        git config --global alias.purge '!bash -c "git branch -r | awk '"'{print \\\$1}'"' | grep -E -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '"'{print \\\$1}'"' | xargs -r git branch -D"'
+        # remove local branches whose upstream is gone, skipping ones checked out in a worktree
+        git config --global alias.purge '!git for-each-ref --format="%(refname:short) %(upstream:track) %(worktreepath)" refs/heads | awk '"'"'$2=="[gone]" && $3=="" {print $1}'"'"' | xargs -r git branch -D'
     }
     ! (( _conf_exist )) || ! ini::filter_by_section alias < ~/.gitconfig | ini::get_value_by_key graph > /dev/null && {
         # show graph of commits
